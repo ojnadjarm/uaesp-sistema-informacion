@@ -1,0 +1,49 @@
+{% extends 'ingesta/base.html' %} {# O tu base.html principal #}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4"> {# Centra el contenido horizontalmente y añade margen superior #}
+  <div class="col-md-6 col-lg-5"> {# Limita el ancho en pantallas medianas y grandes #}
+    <div class="card shadow-sm"> {# Añade un contenedor tipo tarjeta con sombra #}
+      <div class="card-body p-4"> {# Añade padding interno #}
+        <h2 class="card-title text-center mb-4">Iniciar Sesión</h2> {# Título centrado #}
+
+        {% if form.errors %}
+          <div class="alert alert-danger" role="alert"> {# Mensaje de error mejor estilizado #}
+            Tu usuario o contraseña no son correctos. Intenta de nuevo.
+          </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <p>Ya has iniciado sesión como {{ user.username }}. <a href="{% url 'logout' %}">Cerrar sesión</a></p>
+        {% else %}
+          <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next|default:'/ingesta/dashboard' }}">
+
+            <div class="mb-3"> {# Agrupa label e input con margen #}
+              <label for="{{ form.username.id_for_label|default:'id_username' }}" class="form-label">Usuario:</label>
+              {# Usamos form.username.field.widget.input_type para obtener el tipo correcto si no es text #}
+              <input type="{{ form.username.field.widget.input_type }}" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label|default:'id_username' }}" required class="form-control form-control-lg"> {# Añade form-control-lg para hacerlo más grande #}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.password.id_for_label|default:'id_password' }}" class="form-label">Contraseña:</label>
+              <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label|default:'id_password' }}" required class="form-control form-control-lg">
+            </div>
+
+            {# Puedes añadir un checkbox de 'Recordarme' si lo configuras #}
+
+            <div class="d-grid mt-4"> {# Hace que el botón ocupe todo el ancho #}
+              <button type="submit" class="btn btn-primary btn-lg">Iniciar Sesión</button>
+            </div>
+
+            {# Opcional: Enlaces para reseteo de contraseña o registro #}
+            </form>
+        {% endif %}
+      </div> {# /.card-body #}
+    </div> {# /.card #}
+  </div> {# /.col #}
+</div> {# /.row #}
+{% endblock %}

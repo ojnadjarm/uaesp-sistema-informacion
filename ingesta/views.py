@@ -4,6 +4,7 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
+from django.contrib.auth.decorators import login_required 
 from minio import Minio
 from minio.error import S3Error
 from .forms import UploadFileForm
@@ -30,6 +31,7 @@ except Exception as e:
     minio_client = None
 
 # --- Vista para el Dashboard ---
+@login_required
 def dashboard_view(request):
     """
     Muestra una lista de las últimas cargas de archivos registradas.
