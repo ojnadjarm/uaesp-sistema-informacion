@@ -1,0 +1,6 @@
+# requirements.txt
+django~=4.2 # O la versión LTS más reciente que prefieras
+psycopg2-binary # Driver para conectar con PostgreSQL
+python-dotenv # Para leer variables del archivo .env en settings.py (opcional pero útil)
+minio # Cliente para MinIO
+pandas
