@@ -1,33 +1,10 @@
 import io
 import pandas as pd
+from .forms import PROCESO_DATA  # Try relative import from the same package
 
-CABECERAS_PESAJE = [
-    'FECHA_ENTRADA', 'FECHA_SALIDA', 'CONSECUTIVO_ENTRADA', 'CONSECUTIVO_SALIDA', 'PLACA',
-    'NUMERO_VEHICULO', 'CONCESION', 'MACRORUTA', 'MICRORUTA', 'ASE',
-    'SERVICIO', 'ZONA_DESCARGA', 'PESO_ENTRADA', 'PESO_SALIDA', 'PESO_RESIDUOS',
-    'PERSONAS_ENTRADA', 'PERSONAS_SALIDA', 'USUARIO_ENTRADA', 'USUARIO_SALIDA',
-    'OBSERVACIONES_ENTRADA', 'OBSERVACIONES_SALIDA', 'OBSERVACIONES_ALERTA_TARA',
-    'OPCIONES', 'IMAGEN_ENTRADA', 'IMAGEN_SALIDA'
-]
-
-FORMATOS_CABECERAS = {
-    'disposicion_final_pesaje': CABECERAS_PESAJE,
-}
-
-def validar_estructura_csv(uploaded_file, tipo_proceso):
-    """
-    Valida si la estructura de un archivo CSV subido coincide con la esperada
-    para un tipo de proceso dado.
-
-    Args:
-        uploaded_file: El objeto InMemoryUploadedFile de Django.
-        tipo_proceso (str): La clave del tipo de proceso (ej. 'disposicion_final_pesaje').
-
-    Returns:
-        tuple: (bool, str or None) -> (es_valido, mensaje_error)
-    """
+def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     # Busca las cabeceras esperadas en el diccionario
-    cabeceras_esperadas = FORMATOS_CABECERAS.get(tipo_proceso)
+    cabeceras_esperadas = PROCESO_DATA.get(subsecretaria, {}).get('procesos', {}).get(tipo_proceso, {}).get('cabeceras', None)
 
     if not cabeceras_esperadas:
         return False, f"No se ha definido una estructura esperada para el tipo de proceso '{tipo_proceso}'."

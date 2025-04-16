@@ -16,6 +16,7 @@ class RegistroCarga(models.Model):
     subsecretaria_origen = models.CharField(max_length=100, blank=True, null=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='RECIBIDO')
     mensaje_error = models.TextField(blank=True, null=True)
+    tipo_proceso = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f"{self.nombre_archivo_original} ({self.fecha_hora_carga.strftime('%Y-%m-%d %H:%M')})"

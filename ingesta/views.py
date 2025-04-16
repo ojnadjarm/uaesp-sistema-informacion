@@ -59,6 +59,7 @@ def upload_file_view(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             uploaded_file = form.cleaned_data['file']
+            subsecretaria_origen = form.cleaned_data['subsecretaria']
             tipo_proceso_seleccionado = form.cleaned_data['tipo_proceso']
 
             # Validación básica de extensión
@@ -68,14 +69,14 @@ def upload_file_view(request):
 
             # Validación de estructura específica usando la función importada
             print(f"Validando archivo '{uploaded_file.name}' para el proceso: {tipo_proceso_seleccionado}")
-            es_valido, error_validacion = validar_estructura_csv(uploaded_file, tipo_proceso_seleccionado)
+            es_valido, error_validacion = validar_estructura_csv(uploaded_file, subsecretaria_origen, tipo_proceso_seleccionado)
 
             if not es_valido:
                 messages.error(request, f"Error de formato en '{uploaded_file.name}': {error_validacion}")
                 return render(request, 'ingesta/upload_form.html', {'form': form})
 
             # Si la validación es correcta, proceder
-            print(f"Archivo validado correctamente. Procediendo a subir a MinIO.")
+            print(f"Archivo validado correctamente. Procediendo a subir al servidor.")
             if not minio_client:
                  messages.error(request, 'Error: Servicio MinIO no configurado.')
                  return render(request, 'ingesta/upload_form.html', {'form': form})
@@ -84,7 +85,7 @@ def upload_file_view(request):
             original_filename = uploaded_file.name
             timestamp_folder = datetime.now().strftime('%Y/%m/%d')
             unique_id = uuid.uuid4()
-            object_name = f"csv_entrantes/{tipo_proceso_seleccionado}/{timestamp_folder}/{original_filename.replace('.csv', '')}_{unique_id}.csv"
+            object_name = f"{subsecretaria_origen}/{tipo_proceso_seleccionado}/{timestamp_folder}/{original_filename.replace('.csv', '')}_{unique_id}.csv"
 
             # Subir a MinIO y luego guardar en BD
             try:
@@ -113,8 +114,8 @@ def upload_file_view(request):
                         nombre_archivo_original=original_filename,
                         path_minio=object_name,
                         estado='EN_MINIO', # Estado actualizado
-                        tipo_proceso=tipo_proceso_seleccionado # Guardamos el tipo
-                        # subsecretaria_origen = ... # Añadir si se captura
+                        tipo_proceso=tipo_proceso_seleccionado, # Guardamos el tipo
+                        subsecretaria_origen = subsecretaria_origen, # Guardamos la subsecretaria
                     )
                     registro.save()
                     print(f"Registro de carga guardado en BD (ID: {registro.id})")
