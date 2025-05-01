@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment variables
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Services data
+minio_data/
+postgres_data/
+nifi_conf/
+nifi_database_repository/
+nifi_flowfile_repository/
+nifi_content_repository/
+nifi_provenance_repository/
+nifi_state/
+nifi_logs/
+
+# Project specific
+*.xlsx
+*.csv
+uploads/
+temp/ 

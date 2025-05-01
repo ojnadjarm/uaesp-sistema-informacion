@@ -52,7 +52,7 @@ services:
       - nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
       - nifi_state:/opt/nifi/nifi-current/state
       - nifi_logs:/opt/nifi/nifi-current/logs
-      - ./nifi_drivers:/opt/nifi/nifi-current/drivers
+      - ./nifi_drivers:/opt/nifi/drivers
     environment:
       - NIFI_WEB_HTTPS_PORT=8443
       - NIFI_CLUSTER_IS_NODE=false

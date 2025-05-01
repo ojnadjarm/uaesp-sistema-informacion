@@ -10,6 +10,10 @@ PROCESO_DATA = {
              'disposicion_final_pesaje': {
                  'nombre': 'Disposición Final - Pesaje',
                  'cabeceras': CABECERAS_PESAJE,
+                 'file_type': 'xlsx',
+                 'file_start_row': 6,
+                 'file_start_col': 'B',
+                 'file_end_col': 'Z'
             },
         }
     },
@@ -42,7 +46,7 @@ class UploadFileForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select mb-3'})
     )
     file = forms.FileField(
-        label='Seleccionar archivo CSV',
+        label='Seleccionar archivo (CSV o XLSX)',
         required=True,
-        widget=forms.FileInput(attrs={'class': 'form-control'})
+        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': '.csv,.xlsx'})
     )

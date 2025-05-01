@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z+r%h!g^)uw=wv72znlk#5vt#*ml#316(gmjm2m-!9yrb*^pc$'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-z+r%h!g^)uw=wv72znlk#5vt#*ml#316(gmjm2m-!9yrb*^pc$')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -74,10 +76,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# Load environment variables from .env file
+env_path = Path(__file__).resolve().parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'uaesp_dev_db'),
+        'USER': os.environ.get('POSTGRES_USER', 'uaesp_dev_user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_db'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'uaesp_postgres_db'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'OPTIONS': {
+            'connect_timeout': 5,
+        }
     }
 }
 

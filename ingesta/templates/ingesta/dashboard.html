@@ -1,23 +1,26 @@
-{% extends 'ingesta/base.html' %} {% block title %}Dashboard de Cargas{% endblock %}
+{% extends 'ingesta/base.html' %}
+{% load static %}
+
+{% block title %}{{ TEMPLATE_DASHBOARD_TITLE }}{% endblock %}
 
 {% block content %}
     <h2>Dashboard - Últimas Cargas de Archivos</h2>
 
     <div class="mb-3">
-        <a href="{% url 'upload_file' %}" class="btn btn-success">Ir a Cargar Nuevo Archivo</a>
+        <a href="{% url 'upload_file' %}" class="btn btn-success">{{ TEMPLATE_LOAD_NEW_FILE }}</a>
     </div>
 
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th scope="col">Fecha/Hora</th>
-                    <th scope="col">Archivo Original</th>
-                    <th scope="col">Subsecretaría</th>
-                    <th scope="col">Tipo de Proceso</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Path en MinIO</th>
-                    <th scope="col">Error</th>
+                    <th scope="col">{{ TEMPLATE_DATE_TIME }}</th>
+                    <th scope="col">{{ TEMPLATE_ORIGINAL_FILE }}</th>
+                    <th scope="col">{{ TEMPLATE_SUBSECRETARY }}</th>
+                    <th scope="col">{{ TEMPLATE_PROCESS_TYPE }}</th>
+                    <th scope="col">{{ TEMPLATE_STATUS }}</th>
+                    <th scope="col">{{ TEMPLATE_MINIO_PATH }}</th>
+                    <th scope="col">{{ TEMPLATE_ERROR }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,7 +28,7 @@
                 <tr>
                     <td>{{ carga.fecha_hora_carga|date:"Y-m-d H:i:s" }}</td>
                     <td>{{ carga.nombre_archivo_original }}</td>
-                    <td>{{ carga.subsecretaria_origen|default:"N/A" }}</td>
+                    <td>{{ carga.subsecretaria_origen|default:TEMPLATE_NA }}</td>
                     <td>{{ carga.tipo_proceso }}</td>
                     <td>
                         <span class="badge
@@ -34,15 +37,15 @@
                             {% elif carga.estado == 'COMPLETADO' %} bg-success
                             {% elif carga.estado == 'ERROR' %} bg-danger
                             {% else %} bg-secondary {% endif %}">
-                            {{ carga.get_estado_display }} {# Muestra el valor legible del Choice #}
+                            {{ carga.get_estado_display }}
                         </span>
                     </td>
-                    <td>{{ carga.path_minio|default:"-" }}</td>
+                    <td>{{ carga.path_minio|default:TEMPLATE_DASH }}</td>
                     <td>{{ carga.mensaje_error|default:"" }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center">No hay cargas registradas todavía.</td>
+                    <td colspan="7" class="text-center">{{ TEMPLATE_NO_RECORDS }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

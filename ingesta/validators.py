@@ -1,45 +1,89 @@
 import io
 import pandas as pd
-from .forms import PROCESO_DATA  # Try relative import from the same package
+from .forms import PROCESO_DATA
+from .messages import (
+    FILE_EMPTY, FILE_FORMAT_ERROR, FILE_ENCODING_ERROR, FILE_UNEXPECTED_ERROR,
+    FILE_HEADERS_MISMATCH, FILE_MISSING_COLUMNS, FILE_EXTRA_COLUMNS,
+    NO_PROCESS_STRUCTURE, PRINT_HEADERS_EXPECTED, PRINT_HEADERS_FOUND,
+    PRINT_UNEXPECTED_ERROR
+)
 
 def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
-    # Busca las cabeceras esperadas en el diccionario
-    cabeceras_esperadas = PROCESO_DATA.get(subsecretaria, {}).get('procesos', {}).get(tipo_proceso, {}).get('cabeceras', None)
+    # Get process configuration from PROCESO_DATA
+    proceso_config = PROCESO_DATA.get(subsecretaria, {}).get('procesos', {}).get(tipo_proceso, {})
+    
+    if not proceso_config:
+        return False, NO_PROCESS_STRUCTURE.format(process_type=tipo_proceso)
+
+    cabeceras_esperadas = proceso_config.get('cabeceras', None)
+    file_type = proceso_config.get('file_type', 'csv')
+    file_start_row = proceso_config.get('file_start_row', 0)
+    file_start_col = proceso_config.get('file_start_col', 'A')
+    file_end_col = proceso_config.get('file_end_col', 'Z')
 
     if not cabeceras_esperadas:
-        return False, f"No se ha definido una estructura esperada para el tipo de proceso '{tipo_proceso}'."
+        return False, NO_PROCESS_STRUCTURE.format(process_type=tipo_proceso)
 
     try:
         uploaded_file.seek(0)
-        # Asume delimitador ';' por defecto basado en la imagen, ajusta si es necesario
-        df = pd.read_csv(io.BytesIO(uploaded_file.read()), delimiter=';', dtype=str, keep_default_na=False) # Leer todo como texto inicialmente
+        
+        # Check if file type matches configuration
+        if uploaded_file.name.lower().endswith('.xlsx') and file_type != 'xlsx':
+            return False, FILE_FORMAT_ERROR.format(error="File must be CSV")
+        elif uploaded_file.name.lower().endswith('.csv') and file_type != 'csv':
+            return False, FILE_FORMAT_ERROR.format(error="File must be XLSX")
+        
+        # Read file based on configuration
+        if file_type == 'xlsx':
+            # Read XLSX file with configured start row and columns
+            df = pd.read_excel(
+                uploaded_file,
+                header=file_start_row - 1,  # Convert to 0-based index
+                usecols=f"{file_start_col}:{file_end_col}"
+            )
+        else:
+            # For CSV files, keep existing logic
+            df = pd.read_csv(io.BytesIO(uploaded_file.read()), delimiter=';', dtype=str, keep_default_na=False)
+        
         uploaded_file.seek(0)
 
         if df.empty:
-            return False, "El archivo CSV está vacío o no tiene datos."
+            return False, FILE_EMPTY
 
         cabeceras_reales = df.columns.tolist()
         if cabeceras_reales != cabeceras_esperadas:
-            print(f"Cabeceras esperadas ({tipo_proceso}): {cabeceras_esperadas}")
-            print(f"Cabeceras reales:           {cabeceras_reales}")
-            # Podrías calcular qué columnas faltan o sobran para un mensaje más útil
+            print(PRINT_HEADERS_EXPECTED.format(
+                process_type=tipo_proceso,
+                headers=cabeceras_esperadas
+            ))
+            print(PRINT_HEADERS_FOUND.format(headers=cabeceras_reales))
+            
+            msg_error = FILE_HEADERS_MISMATCH.format(
+                expected_count=len(cabeceras_esperadas),
+                found_count=len(cabeceras_reales)
+            )
+
             faltan = set(cabeceras_esperadas) - set(cabeceras_reales)
             sobran = set(cabeceras_reales) - set(cabeceras_esperadas)
-            msg_error = f"Las columnas no coinciden. Esperadas: {len(cabeceras_esperadas)}, Encontradas: {len(cabeceras_reales)}."
+
             if faltan:
-                msg_error += f" Faltan: {', '.join(list(faltan)[:3])}{'...' if len(faltan)>3 else ''}."
+                msg_error += FILE_MISSING_COLUMNS.format(
+                    columns=', '.join(list(faltan)[:3]) + ('...' if len(faltan)>3 else '')
+                )
             if sobran:
-                 msg_error += f" Sobran: {', '.join(list(sobran)[:3])}{'...' if len(sobran)>3 else ''}."
+                msg_error += FILE_EXTRA_COLUMNS.format(
+                    columns=', '.join(list(sobran)[:3]) + ('...' if len(sobran)>3 else '')
+                )
             return False, msg_error
 
         return True, None
 
     except pd.errors.EmptyDataError:
-        return False, "El archivo CSV parece estar vacío."
+        return False, FILE_EMPTY
     except pd.errors.ParserError as e:
-        return False, f"Error al procesar el archivo CSV. Verifica formato/delimitador: {e}"
+        return False, FILE_FORMAT_ERROR.format(error=str(e))
     except UnicodeDecodeError:
-        return False, "Error de codificación. Asegúrate que sea UTF-8 o compatible."
+        return False, FILE_ENCODING_ERROR
     except Exception as e:
-        print(f"Error inesperado en validación: {e}")
-        return False, f"Error inesperado al validar el archivo: {e}"
+        print(PRINT_UNEXPECTED_ERROR.format(error=e))
+        return False, FILE_UNEXPECTED_ERROR.format(error=str(e))

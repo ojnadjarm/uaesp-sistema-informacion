@@ -1,11 +1,11 @@
 {% extends 'ingesta/base.html' %} {# Asume que base.html tiene Bootstrap #}
 
-{% block title %}Cargar Archivo CSV{% endblock %}
+{% block title %}{{ TEMPLATE_UPLOAD_TITLE }}{% endblock %}
 
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <h2 class="mb-4">Cargar Indicadores (Archivo CSV)</h2>
+            <h2 class="mb-4">{{ TEMPLATE_UPLOAD_TITLE }}</h2>
 
             <div class="card p-4 shadow-sm">
                 <form method="post" enctype="multipart/form-data">
@@ -39,11 +39,11 @@
                                 {% for error in form.file.errors %}<span>{{ error }}</span>{% endfor %}
                             </div>
                         {% endif %}
-                        <div id="fileHelp" class="form-text">Selecciona el archivo CSV correspondiente al proceso.</div>
+                        <div id="fileHelp" class="form-text">{{ TEMPLATE_FILE_HELP }}</div>
                     </div>
 
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">Cargar Archivo</button>
+                        <button type="submit" class="btn btn-primary btn-lg">{{ TEMPLATE_UPLOAD_BUTTON }}</button>
                     </div>
                 </form>
             </div> </div> </div> {% endblock %}

@@ -4,3 +4,4 @@ psycopg2-binary # Driver para conectar con PostgreSQL
 python-dotenv # Para leer variables del archivo .env en settings.py (opcional pero útil)
 minio # Cliente para MinIO
 pandas
+openpyxl # Para leer archivos Excel

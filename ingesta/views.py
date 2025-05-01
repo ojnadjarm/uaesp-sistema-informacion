@@ -10,6 +10,20 @@ from minio.error import S3Error
 from .forms import UploadFileForm
 from .validators import validar_estructura_csv
 from .models import RegistroCarga
+from .messages import (
+    FILE_EXTENSION_ERROR, MINIO_NOT_CONFIGURED, MINIO_UPLOAD_ERROR,
+    MINIO_BUCKET_CREATED, MINIO_UPLOAD_SUCCESS, DB_SAVE_ERROR,
+    DB_SAVE_SUCCESS, INVALID_FORM, DASHBOARD_ERROR, MINIO_INIT_SUCCESS,
+    MINIO_INIT_ERROR, DB_SAVE_PRINT, DB_LOAD_ERROR, PRINT_VALIDATING_FILE,
+    PRINT_VALIDATION_SUCCESS, PRINT_DB_ERROR, PRINT_MINIO_ERROR,
+    PRINT_GENERAL_ERROR, TEMPLATE_TITLE, TEMPLATE_NAVBAR_BRAND,
+    TEMPLATE_DASHBOARD, TEMPLATE_UPLOAD_FILE, TEMPLATE_LOAD_NEW_FILE,
+    TEMPLATE_NO_RECORDS, TEMPLATE_UPLOAD_TITLE, TEMPLATE_FILE_HELP,
+    TEMPLATE_UPLOAD_BUTTON, TEMPLATE_DASHBOARD_TITLE, TEMPLATE_DATE_TIME,
+    TEMPLATE_ORIGINAL_FILE, TEMPLATE_SUBSECRETARY, TEMPLATE_PROCESS_TYPE,
+    TEMPLATE_STATUS, TEMPLATE_MINIO_PATH, TEMPLATE_ERROR, TEMPLATE_NA,
+    TEMPLATE_DASH
+)
 
 # --- Configuración Cliente MinIO ---
 try:
@@ -25,9 +39,9 @@ try:
         secret_key=MINIO_SECRET_KEY,
         secure=MINIO_USE_HTTPS
     )
-    print("Cliente MinIO inicializado correctamente.")
+    print(MINIO_INIT_SUCCESS)
 except Exception as e:
-    print(f"ERROR CRÍTICO: No se pudo configurar el cliente MinIO. Verifica variables de entorno. Error: {e}")
+    print(MINIO_INIT_ERROR.format(error=e))
     minio_client = None
 
 # --- Vista para el Dashboard ---
@@ -36,21 +50,32 @@ def dashboard_view(request):
     """
     Muestra una lista de las últimas cargas de archivos registradas.
     """
-    # Obtiene los últimos 20 registros de carga, ordenados por fecha descendente
     try:
         ultimas_cargas = RegistroCarga.objects.all().order_by('-fecha_hora_carga')[:20]
     except Exception as e:
-        # Manejo básico de error si la tabla no existe o hay otro problema
-        print(f"Error al obtener registros de carga: {e}")
-        messages.error(request, "No se pudieron obtener los registros de carga.")
-        ultimas_cargas = [] # Envía una lista vacía a la plantilla
+        print(DB_LOAD_ERROR.format(error=e))
+        messages.error(request, DASHBOARD_ERROR)
+        ultimas_cargas = []
 
-    # Prepara el contexto para la plantilla
     context = {
         'cargas': ultimas_cargas,
-        'titulo_pagina': 'Dashboard de Cargas' # Ejemplo de otra variable de contexto
+        'titulo_pagina': TEMPLATE_DASHBOARD_TITLE,
+        'TEMPLATE_TITLE': TEMPLATE_TITLE,
+        'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
+        'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
+        'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+        'TEMPLATE_LOAD_NEW_FILE': TEMPLATE_LOAD_NEW_FILE,
+        'TEMPLATE_NO_RECORDS': TEMPLATE_NO_RECORDS,
+        'TEMPLATE_DATE_TIME': TEMPLATE_DATE_TIME,
+        'TEMPLATE_ORIGINAL_FILE': TEMPLATE_ORIGINAL_FILE,
+        'TEMPLATE_SUBSECRETARY': TEMPLATE_SUBSECRETARY,
+        'TEMPLATE_PROCESS_TYPE': TEMPLATE_PROCESS_TYPE,
+        'TEMPLATE_STATUS': TEMPLATE_STATUS,
+        'TEMPLATE_MINIO_PATH': TEMPLATE_MINIO_PATH,
+        'TEMPLATE_ERROR': TEMPLATE_ERROR,
+        'TEMPLATE_NA': TEMPLATE_NA,
+        'TEMPLATE_DASH': TEMPLATE_DASH
     }
-    # Renderiza la plantilla HTML del dashboard
     return render(request, 'ingesta/dashboard.html', context)
 
 # --- Vista Principal de Carga ---
@@ -63,37 +88,67 @@ def upload_file_view(request):
             tipo_proceso_seleccionado = form.cleaned_data['tipo_proceso']
 
             # Validación básica de extensión
-            if not uploaded_file.name.lower().endswith('.csv'):
-                messages.error(request, 'Error: El archivo debe tener extensión .csv')
-                return render(request, 'ingesta/upload_form.html', {'form': form})
+            if not (uploaded_file.name.lower().endswith('.csv') or uploaded_file.name.lower().endswith('.xlsx')):
+                messages.error(request, FILE_EXTENSION_ERROR)
+                return render(request, 'ingesta/upload_form.html', {
+                    'form': form,
+                    'TEMPLATE_TITLE': TEMPLATE_TITLE,
+                    'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
+                    'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
+                    'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+                    'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
+                    'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
+                    'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+                })
 
             # Validación de estructura específica usando la función importada
-            print(f"Validando archivo '{uploaded_file.name}' para el proceso: {tipo_proceso_seleccionado}")
+            print(PRINT_VALIDATING_FILE.format(
+                filename=uploaded_file.name,
+                process_type=tipo_proceso_seleccionado
+            ))
             es_valido, error_validacion = validar_estructura_csv(uploaded_file, subsecretaria_origen, tipo_proceso_seleccionado)
 
             if not es_valido:
-                messages.error(request, f"Error de formato en '{uploaded_file.name}': {error_validacion}")
-                return render(request, 'ingesta/upload_form.html', {'form': form})
+                messages.error(request, error_validacion)
+                return render(request, 'ingesta/upload_form.html', {
+                    'form': form,
+                    'TEMPLATE_TITLE': TEMPLATE_TITLE,
+                    'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
+                    'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
+                    'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+                    'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
+                    'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
+                    'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+                })
 
             # Si la validación es correcta, proceder
-            print(f"Archivo validado correctamente. Procediendo a subir al servidor.")
+            print(PRINT_VALIDATION_SUCCESS)
             if not minio_client:
-                 messages.error(request, 'Error: Servicio MinIO no configurado.')
-                 return render(request, 'ingesta/upload_form.html', {'form': form})
+                messages.error(request, MINIO_NOT_CONFIGURED)
+                return render(request, 'ingesta/upload_form.html', {
+                    'form': form,
+                    'TEMPLATE_TITLE': TEMPLATE_TITLE,
+                    'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
+                    'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
+                    'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+                    'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
+                    'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
+                    'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+                })
 
             # Definir nombre del objeto en MinIO
             original_filename = uploaded_file.name
             timestamp_folder = datetime.now().strftime('%Y/%m/%d')
             unique_id = uuid.uuid4()
-            object_name = f"{subsecretaria_origen}/{tipo_proceso_seleccionado}/{timestamp_folder}/{original_filename.replace('.csv', '')}_{unique_id}.csv"
+            object_name = f"{subsecretaria_origen}/{tipo_proceso_seleccionado}/{timestamp_folder}/{original_filename.replace('.csv', '').replace('.xlsx', '')}_{unique_id}{'.csv' if original_filename.lower().endswith('.csv') else '.xlsx'}"
 
             # Subir a MinIO y luego guardar en BD
             try:
-                # Asegurar que el bucket exista (opcional pero recomendado)
+                # Asegurar que el bucket exista
                 found = minio_client.bucket_exists(MINIO_BUCKET)
                 if not found:
                     minio_client.make_bucket(MINIO_BUCKET)
-                    print(f"Bucket '{MINIO_BUCKET}' creado en MinIO.")
+                    print(MINIO_BUCKET_CREATED.format(bucket=MINIO_BUCKET))
 
                 # Volver al inicio del archivo antes de subir
                 uploaded_file.seek(0)
@@ -104,51 +159,56 @@ def upload_file_view(request):
                     object_name=object_name,
                     data=uploaded_file,
                     length=uploaded_file.size,
-                    content_type='text/csv' # Forzar tipo correcto
+                    content_type='text/csv' if original_filename.lower().endswith('.csv') else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
-                print(f"Archivo subido exitosamente a MinIO como {object_name}")
+                print(MINIO_UPLOAD_SUCCESS.format(object_name=object_name))
 
                 # Si la subida a MinIO fue exitosa, intentar guardar en BD
                 try:
                     registro = RegistroCarga(
                         nombre_archivo_original=original_filename,
                         path_minio=object_name,
-                        estado='EN_MINIO', # Estado actualizado
-                        tipo_proceso=tipo_proceso_seleccionado, # Guardamos el tipo
-                        subsecretaria_origen = subsecretaria_origen, # Guardamos la subsecretaria
+                        estado='EN_MINIO',
+                        tipo_proceso=tipo_proceso_seleccionado,
+                        subsecretaria_origen=subsecretaria_origen,
                     )
                     registro.save()
-                    print(f"Registro de carga guardado en BD (ID: {registro.id})")
-                    # Mensaje final de éxito solo si todo funcionó
-                    messages.success(request, f'Archivo "{original_filename}" (Tipo: {tipo_proceso_seleccionado}) validado y subido correctamente.')
+                    print(DB_SAVE_PRINT.format(id=registro.id))
+                    messages.success(request, DB_SAVE_SUCCESS.format(
+                        filename=original_filename,
+                        process_type=tipo_proceso_seleccionado
+                    ))
 
                 except Exception as db_error:
-                    # Error SÓLO al guardar en BD (ya subió a MinIO)
-                    print(f"ERROR al guardar en BD después de subir a MinIO: {db_error}")
-                    messages.error(request, f"Error CRÍTICO: El archivo '{original_filename}' se subió al almacenamiento, pero falló el registro en la base de datos. Contacta al administrador. Error: {db_error}")
-                    # Considerar qué hacer aquí. ¿Dejar el archivo en MinIO? ¿Intentar borrarlo?
-                    # Por ahora, informamos el error grave. No redirigimos.
+                    print(PRINT_DB_ERROR.format(error=db_error))
+                    messages.error(request, DB_SAVE_ERROR.format(
+                        filename=original_filename,
+                        error=str(db_error)
+                    ))
 
             except S3Error as minio_error:
-                # Error durante la subida a MinIO
-                print(f"Error de MinIO/S3 al subir archivo: {minio_error}")
-                messages.error(request, f"Error al subir archivo al almacenamiento: {minio_error}")
+                print(PRINT_MINIO_ERROR.format(error=minio_error))
+                messages.error(request, MINIO_UPLOAD_ERROR.format(error=str(minio_error)))
             except Exception as general_error:
-                # Otro error inesperado
-                print(f"Error inesperado durante la subida/guardado: {general_error}")
-                messages.error(request, f"Error inesperado al procesar el archivo: {general_error}")
+                print(PRINT_GENERAL_ERROR.format(error=general_error))
+                messages.error(request, str(general_error))
 
-            # Redirigir SOLO si todo el bloque try/except anidado fue exitoso
-            # Si hubo error de BD, no se llega aquí. Si hubo error de MinIO, tampoco.
-            if 'registro' in locals() and registro.pk: # Verifica si se creó el registro
-                 return redirect('upload_file')
-            # Si no se guardó en BD (por el error específico de BD), no redirige
+            if 'registro' in locals() and registro.pk:
+                return redirect('upload_file')
 
-        else: # Formulario no válido (campos faltantes, etc.)
-             messages.error(request, 'Formulario inválido. Revisa los campos.')
+        else:
+            messages.error(request, INVALID_FORM)
 
-    else: # Petición GET
+    else:
         form = UploadFileForm()
 
-    # Renderizar la plantilla en caso de GET o si hubo errores que no redirigieron
-    return render(request, 'ingesta/upload_form.html', {'form': form})
+    return render(request, 'ingesta/upload_form.html', {
+        'form': form,
+        'TEMPLATE_TITLE': TEMPLATE_TITLE,
+        'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
+        'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
+        'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+        'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
+        'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
+        'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+    })
