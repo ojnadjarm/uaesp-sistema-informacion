@@ -1,6 +1,6 @@
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
@@ -22,7 +22,15 @@ from .messages import (
     TEMPLATE_UPLOAD_BUTTON, TEMPLATE_DASHBOARD_TITLE, TEMPLATE_DATE_TIME,
     TEMPLATE_ORIGINAL_FILE, TEMPLATE_SUBSECRETARY, TEMPLATE_PROCESS_TYPE,
     TEMPLATE_STATUS, TEMPLATE_MINIO_PATH, TEMPLATE_ERROR, TEMPLATE_NA,
-    TEMPLATE_DASH
+    TEMPLATE_DASH, TEMPLATE_DASHBOARD_WELCOME, TEMPLATE_DASHBOARD_DESCRIPTION,
+    TEMPLATE_TOTAL_FILES, TEMPLATE_SUCCESS_RATE, TEMPLATE_RECENT_UPLOADS,
+    TEMPLATE_ACTIVE_PROCESSES, TEMPLATE_QUICK_ACTIONS, TEMPLATE_VIEW_HISTORY,
+    TEMPLATE_SYSTEM_STATUS, TEMPLATE_ACTIVITY_OVERVIEW, TEMPLATE_FILE_HISTORY,
+    TEMPLATE_HISTORY_TITLE, TEMPLATE_HISTORY_DESCRIPTION, TEMPLATE_NO_RECORDS_DESCRIPTION,
+    TEMPLATE_MODULE_INGESTA, TEMPLATE_MODULE_INGESTA_DESC, TEMPLATE_MODULE_PRESUPUESTO,
+    TEMPLATE_MODULE_PRESUPUESTO_DESC, TEMPLATE_MODULE_PAA, TEMPLATE_MODULE_PAA_DESC,
+    TEMPLATE_MODULE_REPORTES, TEMPLATE_MODULE_REPORTES_DESC, TEMPLATE_MODULE_COMING_SOON,
+    TEMPLATE_MODULE_COMING_SOON_DESC
 )
 
 # --- Configuración Cliente MinIO ---
@@ -48,24 +56,120 @@ except Exception as e:
 @login_required
 def dashboard_view(request):
     """
-    Muestra una lista de las últimas cargas de archivos registradas.
+    Muestra el panel principal con estadísticas y actividad reciente.
     """
     try:
-        ultimas_cargas = RegistroCarga.objects.all().order_by('-fecha_hora_carga')[:20]
+        # Get statistics
+        total_files = RegistroCarga.objects.count()
+        completed_files = RegistroCarga.objects.filter(estado='COMPLETADO').count()
+        success_rate = round((completed_files / total_files * 100) if total_files > 0 else 0)
+        recent_uploads = RegistroCarga.objects.filter(
+            fecha_hora_carga__gte=datetime.now() - timedelta(hours=24)
+        ).count()
+        active_processes = RegistroCarga.objects.filter(
+            estado__in=['EN_MINIO', 'PROCESANDO_NIFI']
+        ).count()
+
+        # Get recent activity
+        recent_activity = RegistroCarga.objects.all().order_by('-fecha_hora_carga')[:5]
+
+        # System services status
+        system_services = [
+            {
+                'name': 'MinIO Storage',
+                'description': 'Servicio de almacenamiento de archivos',
+                'status': 'active' if minio_client else 'error',
+                'status_display': TEMPLATE_ACTIVE if minio_client else TEMPLATE_ERROR
+            },
+            {
+                'name': 'Base de Datos',
+                'description': 'PostgreSQL Database',
+                'status': 'active',
+                'status_display': TEMPLATE_ACTIVE
+            },
+            {
+                'name': 'NiFi Pipeline',
+                'description': 'Procesamiento de datos',
+                'status': 'active' if active_processes > 0 else 'inactive',
+                'status_display': TEMPLATE_ACTIVE if active_processes > 0 else TEMPLATE_INACTIVE
+            }
+        ]
+
     except Exception as e:
         print(DB_LOAD_ERROR.format(error=e))
         messages.error(request, DASHBOARD_ERROR)
-        ultimas_cargas = []
+        total_files = 0
+        success_rate = 0
+        recent_uploads = 0
+        active_processes = 0
+        recent_activity = []
+        system_services = []
 
     context = {
-        'cargas': ultimas_cargas,
-        'titulo_pagina': TEMPLATE_DASHBOARD_TITLE,
+        'total_files': total_files,
+        'success_rate': success_rate,
+        'recent_uploads': recent_uploads,
+        'active_processes': active_processes,
+        'recent_activity': recent_activity,
+        'system_services': system_services,
+        'TEMPLATE_TITLE': TEMPLATE_TITLE,
+        'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
+        'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
+        'TEMPLATE_DASHBOARD_TITLE': TEMPLATE_DASHBOARD_TITLE,
+        'TEMPLATE_DASHBOARD_WELCOME': TEMPLATE_DASHBOARD_WELCOME,
+        'TEMPLATE_DASHBOARD_DESCRIPTION': TEMPLATE_DASHBOARD_DESCRIPTION,
+        'TEMPLATE_TOTAL_FILES': TEMPLATE_TOTAL_FILES,
+        'TEMPLATE_SUCCESS_RATE': TEMPLATE_SUCCESS_RATE,
+        'TEMPLATE_RECENT_UPLOADS': TEMPLATE_RECENT_UPLOADS,
+        'TEMPLATE_ACTIVE_PROCESSES': TEMPLATE_ACTIVE_PROCESSES,
+        'TEMPLATE_QUICK_ACTIONS': TEMPLATE_QUICK_ACTIONS,
+        'TEMPLATE_VIEW_HISTORY': TEMPLATE_VIEW_HISTORY,
+        'TEMPLATE_SYSTEM_STATUS': TEMPLATE_SYSTEM_STATUS,
+        'TEMPLATE_ACTIVITY_OVERVIEW': TEMPLATE_ACTIVITY_OVERVIEW,
+        'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+        'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
+        'TEMPLATE_DATE_TIME': TEMPLATE_DATE_TIME,
+        'TEMPLATE_ORIGINAL_FILE': TEMPLATE_ORIGINAL_FILE,
+        'TEMPLATE_PROCESS_TYPE': TEMPLATE_PROCESS_TYPE,
+        'TEMPLATE_STATUS': TEMPLATE_STATUS,
+        'TEMPLATE_NO_RECORDS': TEMPLATE_NO_RECORDS,
+        'TEMPLATE_NO_RECORDS_DESCRIPTION': TEMPLATE_NO_RECORDS_DESCRIPTION,
+        'TEMPLATE_MODULE_INGESTA': TEMPLATE_MODULE_INGESTA,
+        'TEMPLATE_MODULE_INGESTA_DESC': TEMPLATE_MODULE_INGESTA_DESC,
+        'TEMPLATE_MODULE_PRESUPUESTO': TEMPLATE_MODULE_PRESUPUESTO,
+        'TEMPLATE_MODULE_PRESUPUESTO_DESC': TEMPLATE_MODULE_PRESUPUESTO_DESC,
+        'TEMPLATE_MODULE_PAA': TEMPLATE_MODULE_PAA,
+        'TEMPLATE_MODULE_PAA_DESC': TEMPLATE_MODULE_PAA_DESC,
+        'TEMPLATE_MODULE_REPORTES': TEMPLATE_MODULE_REPORTES,
+        'TEMPLATE_MODULE_REPORTES_DESC': TEMPLATE_MODULE_REPORTES_DESC,
+        'TEMPLATE_MODULE_COMING_SOON': TEMPLATE_MODULE_COMING_SOON,
+        'TEMPLATE_MODULE_COMING_SOON_DESC': TEMPLATE_MODULE_COMING_SOON_DESC
+    }
+    return render(request, 'ingesta/dashboard.html', context)
+
+# --- Vista para el Historial de Archivos ---
+@login_required
+def file_history_view(request):
+    """
+    Muestra una lista completa de las cargas de archivos registradas.
+    """
+    try:
+        cargas = RegistroCarga.objects.all().order_by('-fecha_hora_carga')
+    except Exception as e:
+        print(DB_LOAD_ERROR.format(error=e))
+        messages.error(request, DASHBOARD_ERROR)
+        cargas = []
+
+    context = {
+        'cargas': cargas,
         'TEMPLATE_TITLE': TEMPLATE_TITLE,
         'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
         'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
         'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+        'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
+        'TEMPLATE_HISTORY_TITLE': TEMPLATE_HISTORY_TITLE,
+        'TEMPLATE_HISTORY_DESCRIPTION': TEMPLATE_HISTORY_DESCRIPTION,
         'TEMPLATE_LOAD_NEW_FILE': TEMPLATE_LOAD_NEW_FILE,
-        'TEMPLATE_NO_RECORDS': TEMPLATE_NO_RECORDS,
         'TEMPLATE_DATE_TIME': TEMPLATE_DATE_TIME,
         'TEMPLATE_ORIGINAL_FILE': TEMPLATE_ORIGINAL_FILE,
         'TEMPLATE_SUBSECRETARY': TEMPLATE_SUBSECRETARY,
@@ -74,9 +178,11 @@ def dashboard_view(request):
         'TEMPLATE_MINIO_PATH': TEMPLATE_MINIO_PATH,
         'TEMPLATE_ERROR': TEMPLATE_ERROR,
         'TEMPLATE_NA': TEMPLATE_NA,
-        'TEMPLATE_DASH': TEMPLATE_DASH
+        'TEMPLATE_DASH': TEMPLATE_DASH,
+        'TEMPLATE_NO_RECORDS': TEMPLATE_NO_RECORDS,
+        'TEMPLATE_NO_RECORDS_DESCRIPTION': TEMPLATE_NO_RECORDS_DESCRIPTION
     }
-    return render(request, 'ingesta/dashboard.html', context)
+    return render(request, 'ingesta/file_history.html', context)
 
 # --- Vista Principal de Carga ---
 def upload_file_view(request):
@@ -96,6 +202,7 @@ def upload_file_view(request):
                     'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
                     'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
                     'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+                    'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
                     'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
                     'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
                     'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
@@ -116,6 +223,7 @@ def upload_file_view(request):
                     'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
                     'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
                     'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+                    'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
                     'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
                     'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
                     'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
@@ -131,6 +239,7 @@ def upload_file_view(request):
                     'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
                     'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
                     'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+                    'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
                     'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
                     'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
                     'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
@@ -208,6 +317,7 @@ def upload_file_view(request):
         'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
         'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
         'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
+        'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
         'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
         'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
         'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON

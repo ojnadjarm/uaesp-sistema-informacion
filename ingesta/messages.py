@@ -40,22 +40,66 @@ PRINT_MINIO_ERROR = "MinIO/S3 error uploading file: {error}"
 PRINT_GENERAL_ERROR = "Unexpected error during upload/save: {error}"
 
 # Template messages
-TEMPLATE_TITLE = "UAESP Information System"
-TEMPLATE_NAVBAR_BRAND = "UAESP Ingesta"
-TEMPLATE_DASHBOARD = "Dashboard"
-TEMPLATE_UPLOAD_FILE = "Upload File"
-TEMPLATE_LOAD_NEW_FILE = "Go to Upload New File"
-TEMPLATE_NO_RECORDS = "No load records yet."
-TEMPLATE_UPLOAD_TITLE = "Upload CSV File"
-TEMPLATE_FILE_HELP = "Select the CSV file corresponding to the process."
-TEMPLATE_UPLOAD_BUTTON = "Upload File"
-TEMPLATE_DASHBOARD_TITLE = "Dashboard - Latest File Uploads"
-TEMPLATE_DATE_TIME = "Date/Time"
-TEMPLATE_ORIGINAL_FILE = "Original File"
-TEMPLATE_SUBSECRETARY = "Subsecretary"
-TEMPLATE_PROCESS_TYPE = "Process Type"
-TEMPLATE_STATUS = "Status"
-TEMPLATE_MINIO_PATH = "Path in MinIO"
+TEMPLATE_TITLE = "Sistema de Información UAESP"
+TEMPLATE_NAVBAR_BRAND = "UAESP"
+TEMPLATE_DASHBOARD = "Panel Principal"
+TEMPLATE_FILE_HISTORY = "Historial de Carga"
+TEMPLATE_UPLOAD_FILE = "Cargar Archivo"
+TEMPLATE_LOAD_NEW_FILE = "Cargar Nuevo Archivo"
+TEMPLATE_NO_RECORDS = "No hay registros de carga."
+TEMPLATE_NO_RECORDS_DESCRIPTION = "No se han encontrado registros de carga en el sistema."
+TEMPLATE_UPLOAD_TITLE = "Cargar Archivo CSV"
+TEMPLATE_FILE_HELP = "Seleccione el archivo CSV correspondiente al proceso."
+TEMPLATE_UPLOAD_BUTTON = "Cargar Archivo"
+
+# Module Navigation
+TEMPLATE_MODULE_INGESTA = "Ingesta de Datos"
+TEMPLATE_MODULE_INGESTA_DESC = "Gestión y monitoreo de carga de archivos"
+TEMPLATE_MODULE_PRESUPUESTO = "Presupuesto"
+TEMPLATE_MODULE_PRESUPUESTO_DESC = "Gestión presupuestal y financiera"
+TEMPLATE_MODULE_PAA = "Plan Anual de Adquisiciones"
+TEMPLATE_MODULE_PAA_DESC = "Planificación y seguimiento de adquisiciones"
+TEMPLATE_MODULE_REPORTES = "Reportes"
+TEMPLATE_MODULE_REPORTES_DESC = "Generación y visualización de reportes"
+TEMPLATE_MODULE_COMING_SOON = "Próximamente"
+TEMPLATE_MODULE_COMING_SOON_DESC = "Este módulo estará disponible próximamente"
+
+# Dashboard Messages
+TEMPLATE_DASHBOARD_TITLE = "Panel de Control"
+TEMPLATE_DASHBOARD_WELCOME = "Bienvenido al Sistema de Información UAESP"
+TEMPLATE_DASHBOARD_DESCRIPTION = "Gestión y monitoreo de carga de datos"
+
+# Statistics Labels
+TEMPLATE_TOTAL_FILES = "Archivos Procesados"
+TEMPLATE_SUCCESS_RATE = "Tasa de Éxito"
+TEMPLATE_RECENT_UPLOADS = "Cargas Recientes (24h)"
+TEMPLATE_ACTIVE_PROCESSES = "Procesos Activos"
+
+# Quick Actions
+TEMPLATE_QUICK_ACTIONS = "Acciones Rápidas"
+TEMPLATE_VIEW_HISTORY = "Ver Historial"
+TEMPLATE_SYSTEM_STATUS = "Estado del Sistema"
+
+# Activity Overview
+TEMPLATE_ACTIVITY_OVERVIEW = "Resumen de Actividad"
+TEMPLATE_STATUS_DISTRIBUTION = "Distribución de Estados"
+TEMPLATE_PROCESSING_TRENDS = "Tendencias de Procesamiento"
+
+# File History Labels
+TEMPLATE_HISTORY_TITLE = "Historial de Archivos Cargados"
+TEMPLATE_HISTORY_DESCRIPTION = "Registro histórico de archivos procesados"
+TEMPLATE_DATE_TIME = "Fecha/Hora"
+TEMPLATE_ORIGINAL_FILE = "Archivo Original"
+TEMPLATE_SUBSECRETARY = "Subsecretaría"
+TEMPLATE_PROCESS_TYPE = "Tipo de Proceso"
+TEMPLATE_STATUS = "Estado"
+TEMPLATE_MINIO_PATH = "Ruta en MinIO"
 TEMPLATE_ERROR = "Error"
 TEMPLATE_NA = "N/A"
-TEMPLATE_DASH = "-" 
+TEMPLATE_DASH = "-"
+
+# Status Messages
+TEMPLATE_ACTIVE = "Activo"
+TEMPLATE_INACTIVE = "Inactivo"
+TEMPLATE_WARNING = "Advertencia"
+TEMPLATE_ERROR = "Error" 

@@ -82,14 +82,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'uaesp_dev_db'),
-        'USER': os.environ.get('POSTGRES_USER', 'uaesp_dev_user'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password_db'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'uaesp_postgres_db'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        'OPTIONS': {
-            'connect_timeout': 5,
-        }
+        'NAME': 'uaesp_dev_db',
+        'USER': 'uaesp_dev_user',
+        'PASSWORD': 'password_db',
+        'HOST': 'db',  # This is the important part - use 'db' instead of 'localhost'
+        'PORT': '5432',
     }
 }
 
