@@ -5,83 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ TEMPLATE_TITLE }}{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'ingesta/css/styles.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 border-bottom">
-    <div class="container">
-        <a class="navbar-brand" href="#">{% block navbar_brand %}{{ TEMPLATE_NAVBAR_BRAND }}{% endblock %}</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h5 class="mb-0">{{ TEMPLATE_NAVBAR_BRAND }}</h5>
+        </div>
+        <div class="sidebar-content">
             {% if user.is_authenticated %}
-            {# Solo muestra estos enlaces si el usuario está logueado #}
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">{{ TEMPLATE_DASHBOARD }}</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'upload_file' %}active{% endif %}" href="{% url 'upload_file' %}">{{ TEMPLATE_UPLOAD_FILE }}</a>
-            </li>
-            {% endif %}
-            {# Puedes añadir más enlaces públicos aquí si quieres #}
-        </ul>
-        {# Parte derecha de la barra de navegación #}
-        <ul class="navbar-nav ms-auto">
-            {% if user.is_authenticated %}
-            {# Si el usuario está autenticado, muestra su nombre y el enlace de logout #}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Hola, {{ user.username }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                {# Aquí podrías añadir enlaces a perfil, cambio de contraseña, etc. #}
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    {# Usa un formulario POST para logout por seguridad #}
-                    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
-                    <input type="hidden" name="next" value="{% url 'login' %}">
-                    {% csrf_token %}
-                    </form>
-                    <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit(); return false;">Cerrar Sesión</a>
-                </li>
+            <div class="sidebar-top">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                            <i class="bi bi-speedometer2"></i>
+                            {{ TEMPLATE_DASHBOARD }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'upload_file' %}active{% endif %}" href="{% url 'upload_file' %}">
+                            <i class="bi bi-upload"></i>
+                            {{ TEMPLATE_UPLOAD_FILE }}
+                        </a>
+                    </li>
                 </ul>
-            </li>
-            {% else %}
-            {# Si no está autenticado, muestra enlace de login #}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Iniciar Sesión</a>
-            </li>
+            </div>
+            <div class="sidebar-bottom">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit(); return false;">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
+            </div>
             {% endif %}
-        </ul>
         </div>
     </div>
-    </nav>
-    <div class="container">
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-dismissible fade show
-                    {% if message.tags == 'success' %} alert-success
-                    {% elif message.tags == 'error' %} alert-danger
-                    {% elif message.tags == 'warning' %} alert-warning
-                    {% else %} alert-info {% endif %}"
-                    role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Topbar -->
+        <div class="topbar d-flex align-items-center px-4">
+            <button class="btn btn-link text-dark" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="ms-auto">
+                {% if user.is_authenticated %}
+                <span class="text-muted">Hola, {{ user.username }}</span>
+                {% else %}
+                <a class="btn btn-link" href="{% url 'login' %}?next={{ request.path }}">Iniciar Sesión</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-wrapper">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-dismissible fade show
+                        {% if message.tags == 'success' %} alert-success
+                        {% elif message.tags == 'error' %} alert-danger
+                        {% elif message.tags == 'warning' %} alert-warning
+                        {% else %} alert-info {% endif %}"
+                        role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <main>
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12 text-center text-muted">
+                        <p class="mb-0">&copy; {% now "Y" %} UAESP</p>
+                    </div>
                 </div>
-            {% endfor %}
-        {% endif %}
-
-        <main>
-            {% block content %}
-            {% endblock %}
-        </main>
-
-        <footer class="mt-5 text-muted text-center text-small">
-            <p>&copy; {% now "Y" %} UAESP</p>
+            </div>
         </footer>
     </div>
+
+    <!-- Logout Form -->
+    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+        <input type="hidden" name="next" value="{% url 'login' %}">
+        {% csrf_token %}
+    </form>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            });
+
+            // Handle responsive behavior
+            function handleResize() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('expanded');
+                }
+            }
+
+            // Initial check
+            handleResize();
+
+            // Listen for window resize
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
 </body>
 </html>

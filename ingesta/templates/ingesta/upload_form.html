@@ -1,49 +1,98 @@
-{% extends 'ingesta/base.html' %} {# Asume que base.html tiene Bootstrap #}
+{% extends "ingesta/base.html" %}
+{% load static %}
 
 {% block title %}{{ TEMPLATE_UPLOAD_TITLE }}{% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-1">{{ TEMPLATE_UPLOAD_TITLE }}</h1>
+            <p class="text-muted mb-0">{{ TEMPLATE_UPLOAD_DESCRIPTION }}</p>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <h2 class="mb-4">{{ TEMPLATE_UPLOAD_TITLE }}</h2>
-
-            <div class="card p-4 shadow-sm">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-                        <label for="{{ form.subsecretaria.id_for_label }}" class="form-label">{{ form.subsecretaria.label }}</label>
-                        {{ form.subsecretaria }} {# Renderiza el <select> de subsecretarías #}
-                        {% if form.subsecretaria.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.subsecretaria.errors %}<span>{{ error }}</span>{% endfor %}
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label for="{{ form.subsecretaria.id_for_label }}" class="form-label">{{ form.subsecretaria.label }}</label>
+                                {{ form.subsecretaria }}
+                                {% if form.subsecretaria.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.subsecretaria.errors %}<span>{{ error }}</span>{% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.tipo_proceso.id_for_label }}" class="form-label">{{ form.tipo_proceso.label }}</label>
-                        {{ form.tipo_proceso }} {# Renderiza el <select> de tipo de proceso #}
-                        {% if form.tipo_proceso.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.tipo_proceso.errors %}<span>{{ error }}</span>{% endfor %}
+                            <div class="col-md-6">
+                                <label for="{{ form.tipo_proceso.id_for_label }}" class="form-label">{{ form.tipo_proceso.label }}</label>
+                                {{ form.tipo_proceso }}
+                                {% if form.tipo_proceso.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.tipo_proceso.errors %}<span>{{ error }}</span>{% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.file.id_for_label }}" class="form-label">{{ form.file.label }}</label>
-                        {{ form.file }} {# Renderiza el <input type="file"> #}
-                        {% if form.file.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.file.errors %}<span>{{ error }}</span>{% endfor %}
+                            <div class="col-12">
+                                <label for="{{ form.file.id_for_label }}" class="form-label">{{ form.file.label }}</label>
+                                <div class="input-group">
+                                    {{ form.file }}
+                                    {% if form.file.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.file.errors %}<span>{{ error }}</span>{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">{{ TEMPLATE_FILE_HELP }}</div>
                             </div>
-                        {% endif %}
-                        <div id="fileHelp" class="form-text">{{ TEMPLATE_FILE_HELP }}</div>
-                    </div>
+                        </div>
 
-                    <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">{{ TEMPLATE_UPLOAD_BUTTON }}</button>
-                    </div>
-                </form>
-            </div> </div> </div> {% endblock %}
+                        <div class="mt-5 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-upload me-2"></i> {{ TEMPLATE_UPLOAD_BUTTON }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Add Bootstrap classes to form elements
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('select')
+    selects.forEach(select => {
+        select.classList.add('form-select')
+    })
+
+    const fileInputs = document.querySelectorAll('input[type="file"]')
+    fileInputs.forEach(input => {
+        input.classList.add('form-control')
+    })
+})
+</script>
+{% endblock %}
