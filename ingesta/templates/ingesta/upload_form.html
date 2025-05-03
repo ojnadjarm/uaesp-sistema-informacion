@@ -6,54 +6,40 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h3 mb-1">{{ TEMPLATE_UPLOAD_TITLE }}</h1>
+        <div class="col-12 text-center">
+            <h1 class="h3 mb-1"><i class="bi bi-cloud-arrow-up me-2"></i>{{ TEMPLATE_UPLOAD_TITLE }}</h1>
             <p class="text-muted mb-0">{{ TEMPLATE_UPLOAD_DESCRIPTION }}</p>
         </div>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-6">
             <div class="card shadow-sm">
+                <div class="card-header bg-light text-center">
+                    <span class="fw-bold"><i class="bi bi-archive me-2"></i>{{ form.tipo_proceso.label }}</span>
+                </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                         {% csrf_token %}
-                        
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label for="{{ form.subsecretaria.id_for_label }}" class="form-label">{{ form.subsecretaria.label }}</label>
-                                {{ form.subsecretaria }}
-                                {% if form.subsecretaria.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.subsecretaria.errors %}<span>{{ error }}</span>{% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="{{ form.tipo_proceso.id_for_label }}" class="form-label">{{ form.tipo_proceso.label }}</label>
-                                {{ form.tipo_proceso }}
-                                {% if form.tipo_proceso.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.tipo_proceso.errors %}<span>{{ error }}</span>{% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-12">
-                                <label for="{{ form.file.id_for_label }}" class="form-label">{{ form.file.label }}</label>
-                                <div class="input-group">
-                                    {{ form.file }}
-                                    {% if form.file.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {% for error in form.file.errors %}<span>{{ error }}</span>{% endfor %}
-                                        </div>
-                                    {% endif %}
+                        <div class="mb-4">
+                            {{ form.tipo_proceso.label_tag }}
+                            {{ form.tipo_proceso }}
+                            {% if form.tipo_proceso.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.tipo_proceso.errors %}<span>{{ error }}</span>{% endfor %}
                                 </div>
-                                <div class="form-text">{{ TEMPLATE_FILE_HELP }}</div>
-                            </div>
+                            {% endif %}
                         </div>
-
+                        <div class="mb-4">
+                            {{ form.file.label_tag }}
+                            {{ form.file }}
+                            {% if form.file.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.file.errors %}<span>{{ error }}</span>{% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">{{ TEMPLATE_FILE_HELP }}</div>
+                        </div>
                         <div class="mt-5 text-center">
                             <button type="submit" class="btn btn-primary btn-lg px-5">
                                 <i class="bi bi-upload me-2"></i> {{ TEMPLATE_UPLOAD_BUTTON }}
@@ -65,7 +51,6 @@
         </div>
     </div>
 </div>
-
 <script>
 // Form validation
 (function () {

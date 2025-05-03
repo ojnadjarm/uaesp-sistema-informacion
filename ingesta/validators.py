@@ -7,11 +7,11 @@ from globalfunctions.string_manager import get_string
 def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     # Get process configuration from PROCESO_DATA
     proceso_config = PROCESO_DATA.get(subsecretaria, {}).get('procesos', {}).get(tipo_proceso, {})
-    
+
     if not proceso_config:
         return False, get_string('errors.no_process_structure', 'ingesta').format(process_type=tipo_proceso)
 
-    cabeceras_esperadas = proceso_config.get('cabeceras', None)
+    cabeceras_esperadas = proceso_config.get('header', None)
     file_type = proceso_config.get('file_type', 'csv')
     file_start_row = proceso_config.get('file_start_row', 0)
     file_start_col = proceso_config.get('file_start_col', 'A')

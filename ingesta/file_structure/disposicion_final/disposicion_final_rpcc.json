@@ -1,0 +1,15 @@
+{
+    "disposicion_final_rpcc": {
+        "nombre": "Disposición final - pesaje rpcc",
+        "file_type": "csv",
+        "file_start_row": 0,
+        "file_start_col": "A",
+        "file_end_col": "P",
+        "header": [
+            "CONSECUTIVO", "PLACA", "FECHA ENTRADA", "HORA ENTRADA",
+            "PESO ENTRADA", "EQUIPO PESAJE", "FECHA SALIDA", "HORA SALIDA",
+            "PESO SALIDA", "AJUSTE PESO SALIDA", "PESO NETO", "TPO VEHÍCULO",
+            "PROYECTO", "SERVICIO", "OBSERVACIONES", "NOVEDADES"
+        ]
+    }
+}

@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden
 from minio.error import S3Error
-from ingesta.forms import UploadFileForm
+from ingesta.forms import UploadFileForm, PROCESS_TO_SUBSECRETARIA
 from ingesta.validators import validar_estructura_csv
 from ingesta.models import RegistroCarga
 from globalfunctions.string_manager import get_string
@@ -59,18 +59,20 @@ def upload_file_view(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             uploaded_file = form.cleaned_data['file']
-            subsecretaria_origen = form.cleaned_data['subsecretaria']
             tipo_proceso_seleccionado = form.cleaned_data['tipo_proceso']
+            subsecretaria_origen = PROCESS_TO_SUBSECRETARIA.get(tipo_proceso_seleccionado)
 
             # Validación básica de extensión
             if not (uploaded_file.name.lower().endswith('.csv') or uploaded_file.name.lower().endswith('.xlsx')):
                 messages.error(request, get_string('errors.file_extension', 'ingesta'))
-                return render(request, 'ingesta/upload_form.html', {
+                context = {
                     'form': form,
                     'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
                     'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
                     'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
-                })
+                }
+                context.update(get_template_context())
+                return render(request, 'ingesta/upload_form.html', context)
 
             # Validación de estructura específica
             print(get_string('messages.validating_file', 'ingesta').format(
@@ -81,23 +83,27 @@ def upload_file_view(request):
 
             if not es_valido:
                 messages.error(request, error_validacion)
-                return render(request, 'ingesta/upload_form.html', {
+                context = {
                     'form': form,
                     'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
                     'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
                     'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
-                })
+                }
+                context.update(get_template_context())
+                return render(request, 'ingesta/upload_form.html', context)
 
             # Si la validación es correcta, proceder
             print(get_string('messages.validation_success', 'ingesta'))
             if not minio_client:
                 messages.error(request, get_string('errors.minio_not_configured', 'ingesta'))
-                return render(request, 'ingesta/upload_form.html', {
+                context = {
                     'form': form,
                     'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
                     'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
                     'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
-                })
+                }
+                context.update(get_template_context())
+                return render(request, 'ingesta/upload_form.html', context)
 
             # Definir nombre del objeto en MinIO
             original_filename = uploaded_file.name
@@ -161,6 +167,14 @@ def upload_file_view(request):
 
         else:
             messages.error(request, get_string('errors.invalid_form', 'ingesta'))
+            context = {
+                'form': form,
+                'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
+                'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
+                'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
+            }
+            context.update(get_template_context())
+            return render(request, 'ingesta/upload_form.html', context)
 
     else:
         form = UploadFileForm()

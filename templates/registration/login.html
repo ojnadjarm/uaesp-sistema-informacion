@@ -20,7 +20,7 @@
         {% else %}
           <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
-            <input type="hidden" name="next" value="{{ next|default:'/ingesta/dashboard' }}">
+            <input type="hidden" name="next" value="{{ next|default:'/ingesta' }}">
 
             <div class="mb-3"> {# Agrupa label e input con margen #}
               <label for="{{ form.username.id_for_label|default:'id_username' }}" class="form-label">Usuario:</label>

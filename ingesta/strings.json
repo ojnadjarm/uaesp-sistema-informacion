@@ -125,6 +125,15 @@
                 "name": "Próximamente",
                 "description": "Este módulo estará disponible próximamente"
             }
+        },
+        "forms": {
+            "select_default": "---------",
+            "subsecretaria_label": "Subsecretaría de Origen",
+            "tipo_proceso_label": "Tipo de Proceso/Archivo",
+            "file_label": "Seleccionar archivo (CSV o XLSX)"
+        },
+        "subsecretaria": {
+            "disposicion_final": "Disposición Final"
         }
     },
     "forms": {

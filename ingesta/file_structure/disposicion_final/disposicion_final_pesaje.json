@@ -1,0 +1,17 @@
+{
+    "disposicion_final_pesaje": {
+        "nombre": "Disposición final - pesaje",
+        "file_type": "xlsx",
+        "file_start_row": 6,
+        "file_start_col": "B",
+        "file_end_col": "Z",
+        "header": [
+            "FECHA ENTRADA", "FECHA SALIDA", "CONSECUTIVO ENTRADA", "CONSECUTIVO SALIDA", "PLACA",
+            "NUMERO VEHICULO", "CONCESION", "MACRORUTA", "MICRORUTA", "ASE",
+            "SERVICIO", "ZONA DESCARGA", "PESO ENTRADA", "PESO SALIDA", "PESO RESIDUOS",
+            "PERSONAS ENTRADA", "PERSONAS SALIDA", "USUARIO ENTRADA", "USUARIO SALIDA",
+            "OBSERVACIONES ENTRADA", "OBSERVACIONES SALIDA", "OBSERVACIONES ALERTA TARA",
+            "OPCIONES", "IMAGEN ENTRADA", "IMAGEN SALIDA"
+        ]
+    }
+} 
