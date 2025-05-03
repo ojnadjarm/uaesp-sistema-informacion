@@ -99,7 +99,9 @@
             "upload_new": "Subir Nuevo Archivo",
             "view_details": "Ver Detalles",
             "delete": "Eliminar",
-            "confirm_delete": "¿Está seguro que desea eliminar este archivo?",
+            "confirm_delete": "Confirmar Eliminación",
+            "confirm_delete_message": "¿Está seguro que desea eliminar el archivo",
+            "cancel": "Cancelar",
             "no_files": "No hay archivos cargados"
         },
         "modules": {

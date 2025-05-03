@@ -160,7 +160,11 @@ def file_history_view(request):
         'TEMPLATE_NA': get_string('templates.na', 'ingesta'),
         'TEMPLATE_DASH': get_string('templates.dash', 'ingesta'),
         'TEMPLATE_NO_RECORDS': get_string('templates.no_records', 'ingesta'),
-        'TEMPLATE_NO_RECORDS_DESCRIPTION': get_string('templates.no_records_description', 'ingesta')
+        'TEMPLATE_NO_RECORDS_DESCRIPTION': get_string('templates.no_records_description', 'ingesta'),
+        'TEMPLATE_CONFIRM_DELETE': get_string('templates.confirm_delete', 'ingesta'),
+        'TEMPLATE_CONFIRM_DELETE_MESSAGE': get_string('templates.confirm_delete_message', 'ingesta'),
+        'TEMPLATE_CANCEL': get_string('templates.cancel', 'ingesta'),
+        'TEMPLATE_DELETE': get_string('templates.delete', 'ingesta')
     }
     return render(request, 'ingesta/file_history.html', context)
 
@@ -352,7 +356,7 @@ def delete_file(request, file_id):
         # Delete from database
         carga.delete()
         
-        messages.success(request, get_string('messages.file_deleted', 'ingesta'))
+        messages.success(request, get_string('success.file_deleted', 'ingesta'))
     except S3Error as e:
         messages.error(request, get_string('errors.minio_delete_error', 'ingesta').format(error=str(e)))
     except Exception as e:
