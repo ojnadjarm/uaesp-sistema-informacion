@@ -10,8 +10,8 @@ from ingesta.forms import UploadFileForm, PROCESS_TO_SUBSECRETARIA
 from ingesta.validators import validar_estructura_csv
 from ingesta.models import RegistroCarga
 from globalfunctions.string_manager import get_string
-from .base import get_template_context, handle_error
-from ingesta.minio_utils import get_minio_client, get_minio_bucket
+from coreview.base import get_template_context, handle_error
+from coreview.minio_utils import get_minio_client, get_minio_bucket
 
 minio_client = get_minio_client()
 MINIO_BUCKET = get_minio_bucket()

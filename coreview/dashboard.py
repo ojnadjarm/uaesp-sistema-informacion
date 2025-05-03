@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from ingesta.models import RegistroCarga
 from globalfunctions.string_manager import get_string
-from .base import get_template_context, handle_error
-from ingesta.minio_utils import get_minio_client
+from coreview.base import get_template_context, handle_error
+from coreview.minio_utils import get_minio_client
 
 @login_required
 def dashboard_view(request):
@@ -88,12 +88,12 @@ def dashboard_view(request):
             'TEMPLATE_MODULE_COMING_SOON_DESC': get_string('modules.coming_soon.description', 'ingesta')
         }
         context.update(get_template_context())
-        return render(request, 'ingesta/dashboard.html', context)
+        return render(request, 'coreview/dashboard.html', context)
 
     except Exception as e:
         print(get_string('errors.db_load', 'ingesta').format(error=e))
         return handle_error(
             request,
             get_string('errors.dashboard', 'ingesta'),
-            'ingesta/dashboard.html'
+            'coreview/dashboard.html'
         ) 

@@ -4,7 +4,6 @@ All views have been moved to their respective modules in the views directory.
 """
 
 from .views import (
-    dashboard_view,
     file_history_view,
     upload_file_view,
     download_file,
@@ -12,7 +11,6 @@ from .views import (
 )
 
 __all__ = [
-    'dashboard_view',
     'file_history_view',
     'upload_file_view',
     'download_file',
