@@ -1,19 +1,15 @@
 import io
 import pandas as pd
+from io import StringIO
 from .forms import PROCESO_DATA
-from .messages import (
-    FILE_EMPTY, FILE_FORMAT_ERROR, FILE_ENCODING_ERROR, FILE_UNEXPECTED_ERROR,
-    FILE_HEADERS_MISMATCH, FILE_MISSING_COLUMNS, FILE_EXTRA_COLUMNS,
-    NO_PROCESS_STRUCTURE, PRINT_HEADERS_EXPECTED, PRINT_HEADERS_FOUND,
-    PRINT_UNEXPECTED_ERROR
-)
+from globalfunctions.string_manager import get_string
 
 def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     # Get process configuration from PROCESO_DATA
     proceso_config = PROCESO_DATA.get(subsecretaria, {}).get('procesos', {}).get(tipo_proceso, {})
     
     if not proceso_config:
-        return False, NO_PROCESS_STRUCTURE.format(process_type=tipo_proceso)
+        return False, get_string('errors.no_process_structure', 'ingesta').format(process_type=tipo_proceso)
 
     cabeceras_esperadas = proceso_config.get('cabeceras', None)
     file_type = proceso_config.get('file_type', 'csv')
@@ -22,17 +18,17 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     file_end_col = proceso_config.get('file_end_col', 'Z')
 
     if not cabeceras_esperadas:
-        return False, NO_PROCESS_STRUCTURE.format(process_type=tipo_proceso)
+        return False, get_string('errors.no_process_structure', 'ingesta').format(process_type=tipo_proceso)
 
     try:
         uploaded_file.seek(0)
         
         # Check if file type matches configuration
         if uploaded_file.name.lower().endswith('.xlsx') and file_type != 'xlsx':
-            return False, FILE_FORMAT_ERROR.format(error="File must be CSV")
+            return False, get_string('errors.file_format', 'ingesta').format(error="File must be CSV")
         elif uploaded_file.name.lower().endswith('.csv') and file_type != 'csv':
-            return False, FILE_FORMAT_ERROR.format(error="File must be XLSX")
-        
+            return False, get_string('errors.file_format', 'ingesta').format(error="File must be XLSX")
+
         # Read file based on configuration
         if file_type == 'xlsx':
             # Read XLSX file with configured start row and columns
@@ -48,17 +44,17 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         uploaded_file.seek(0)
 
         if df.empty:
-            return False, FILE_EMPTY
+            return False, get_string('errors.file_empty', 'ingesta')
 
         cabeceras_reales = df.columns.tolist()
         if cabeceras_reales != cabeceras_esperadas:
-            print(PRINT_HEADERS_EXPECTED.format(
+            print(get_string('messages.headers_expected', 'ingesta').format(
                 process_type=tipo_proceso,
                 headers=cabeceras_esperadas
             ))
-            print(PRINT_HEADERS_FOUND.format(headers=cabeceras_reales))
+            print(get_string('messages.headers_found', 'ingesta').format(headers=cabeceras_reales))
             
-            msg_error = FILE_HEADERS_MISMATCH.format(
+            msg_error = get_string('errors.headers_mismatch', 'ingesta').format(
                 expected_count=len(cabeceras_esperadas),
                 found_count=len(cabeceras_reales)
             )
@@ -67,11 +63,11 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
             sobran = set(cabeceras_reales) - set(cabeceras_esperadas)
 
             if faltan:
-                msg_error += FILE_MISSING_COLUMNS.format(
+                msg_error += get_string('errors.missing_columns', 'ingesta').format(
                     columns=', '.join(list(faltan)[:3]) + ('...' if len(faltan)>3 else '')
                 )
             if sobran:
-                msg_error += FILE_EXTRA_COLUMNS.format(
+                msg_error += get_string('errors.extra_columns', 'ingesta').format(
                     columns=', '.join(list(sobran)[:3]) + ('...' if len(sobran)>3 else '')
                 )
             return False, msg_error
@@ -79,11 +75,11 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         return True, None
 
     except pd.errors.EmptyDataError:
-        return False, FILE_EMPTY
+        return False, get_string('errors.file_empty', 'ingesta')
     except pd.errors.ParserError as e:
-        return False, FILE_FORMAT_ERROR.format(error=str(e))
+        return False, get_string('errors.file_format', 'ingesta').format(error=str(e))
     except UnicodeDecodeError:
-        return False, FILE_ENCODING_ERROR
+        return False, get_string('errors.file_encoding', 'ingesta')
     except Exception as e:
-        print(PRINT_UNEXPECTED_ERROR.format(error=e))
-        return False, FILE_UNEXPECTED_ERROR.format(error=str(e))
+        print(get_string('messages.general_error', 'ingesta').format(error=e))
+        return False, get_string('errors.file_unexpected', 'ingesta').format(error=str(e))

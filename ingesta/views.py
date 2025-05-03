@@ -10,28 +10,7 @@ from minio.error import S3Error
 from .forms import UploadFileForm
 from .validators import validar_estructura_csv
 from .models import RegistroCarga
-from .messages import (
-    FILE_EXTENSION_ERROR, MINIO_NOT_CONFIGURED, MINIO_UPLOAD_ERROR,
-    MINIO_BUCKET_CREATED, MINIO_UPLOAD_SUCCESS, DB_SAVE_ERROR,
-    DB_SAVE_SUCCESS, INVALID_FORM, DASHBOARD_ERROR, MINIO_INIT_SUCCESS,
-    MINIO_INIT_ERROR, DB_SAVE_PRINT, DB_LOAD_ERROR, PRINT_VALIDATING_FILE,
-    PRINT_VALIDATION_SUCCESS, PRINT_DB_ERROR, PRINT_MINIO_ERROR,
-    PRINT_GENERAL_ERROR, TEMPLATE_TITLE, TEMPLATE_NAVBAR_BRAND,
-    TEMPLATE_DASHBOARD, TEMPLATE_UPLOAD_FILE, TEMPLATE_LOAD_NEW_FILE,
-    TEMPLATE_NO_RECORDS, TEMPLATE_UPLOAD_TITLE, TEMPLATE_FILE_HELP,
-    TEMPLATE_UPLOAD_BUTTON, TEMPLATE_DASHBOARD_TITLE, TEMPLATE_DATE_TIME,
-    TEMPLATE_ORIGINAL_FILE, TEMPLATE_SUBSECRETARY, TEMPLATE_PROCESS_TYPE,
-    TEMPLATE_STATUS, TEMPLATE_MINIO_PATH, TEMPLATE_ERROR, TEMPLATE_NA,
-    TEMPLATE_DASH, TEMPLATE_DASHBOARD_WELCOME, TEMPLATE_DASHBOARD_DESCRIPTION,
-    TEMPLATE_TOTAL_FILES, TEMPLATE_SUCCESS_RATE, TEMPLATE_RECENT_UPLOADS,
-    TEMPLATE_ACTIVE_PROCESSES, TEMPLATE_QUICK_ACTIONS, TEMPLATE_VIEW_HISTORY,
-    TEMPLATE_SYSTEM_STATUS, TEMPLATE_ACTIVITY_OVERVIEW, TEMPLATE_FILE_HISTORY,
-    TEMPLATE_HISTORY_TITLE, TEMPLATE_HISTORY_DESCRIPTION, TEMPLATE_NO_RECORDS_DESCRIPTION,
-    TEMPLATE_MODULE_INGESTA, TEMPLATE_MODULE_INGESTA_DESC, TEMPLATE_MODULE_PRESUPUESTO,
-    TEMPLATE_MODULE_PRESUPUESTO_DESC, TEMPLATE_MODULE_PAA, TEMPLATE_MODULE_PAA_DESC,
-    TEMPLATE_MODULE_REPORTES, TEMPLATE_MODULE_REPORTES_DESC, TEMPLATE_MODULE_COMING_SOON,
-    TEMPLATE_MODULE_COMING_SOON_DESC
-)
+from globalfunctions.string_manager import get_string
 from django.http import HttpResponse, HttpResponseForbidden
 
 # --- Configuración Cliente MinIO ---
@@ -48,9 +27,9 @@ try:
         secret_key=MINIO_SECRET_KEY,
         secure=MINIO_USE_HTTPS
     )
-    print(MINIO_INIT_SUCCESS)
+    print(get_string('success.minio_init', 'ingesta'))
 except Exception as e:
-    print(MINIO_INIT_ERROR.format(error=e))
+    print(get_string('errors.minio_init', 'ingesta').format(error=e))
     minio_client = None
 
 # --- Vista para el Dashboard ---
@@ -80,25 +59,25 @@ def dashboard_view(request):
                 'name': 'MinIO Storage',
                 'description': 'Servicio de almacenamiento de archivos',
                 'status': 'active' if minio_client else 'error',
-                'status_display': TEMPLATE_ACTIVE if minio_client else TEMPLATE_ERROR
+                'status_display': get_string('templates.active', 'ingesta') if minio_client else get_string('templates.error', 'ingesta')
             },
             {
                 'name': 'Base de Datos',
                 'description': 'PostgreSQL Database',
                 'status': 'active',
-                'status_display': TEMPLATE_ACTIVE
+                'status_display': get_string('templates.active', 'ingesta')
             },
             {
                 'name': 'NiFi Pipeline',
                 'description': 'Procesamiento de datos',
                 'status': 'active' if active_processes > 0 else 'inactive',
-                'status_display': TEMPLATE_ACTIVE if active_processes > 0 else TEMPLATE_INACTIVE
+                'status_display': get_string('templates.active', 'ingesta') if active_processes > 0 else get_string('templates.inactive', 'ingesta')
             }
         ]
 
     except Exception as e:
-        print(DB_LOAD_ERROR.format(error=e))
-        messages.error(request, DASHBOARD_ERROR)
+        print(get_string('errors.db_load', 'ingesta').format(error=e))
+        messages.error(request, get_string('errors.dashboard', 'ingesta'))
         total_files = 0
         success_rate = 0
         recent_uploads = 0
@@ -113,38 +92,38 @@ def dashboard_view(request):
         'active_processes': active_processes,
         'recent_activity': recent_activity,
         'system_services': system_services,
-        'TEMPLATE_TITLE': TEMPLATE_TITLE,
-        'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
-        'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
-        'TEMPLATE_DASHBOARD_TITLE': TEMPLATE_DASHBOARD_TITLE,
-        'TEMPLATE_DASHBOARD_WELCOME': TEMPLATE_DASHBOARD_WELCOME,
-        'TEMPLATE_DASHBOARD_DESCRIPTION': TEMPLATE_DASHBOARD_DESCRIPTION,
-        'TEMPLATE_TOTAL_FILES': TEMPLATE_TOTAL_FILES,
-        'TEMPLATE_SUCCESS_RATE': TEMPLATE_SUCCESS_RATE,
-        'TEMPLATE_RECENT_UPLOADS': TEMPLATE_RECENT_UPLOADS,
-        'TEMPLATE_ACTIVE_PROCESSES': TEMPLATE_ACTIVE_PROCESSES,
-        'TEMPLATE_QUICK_ACTIONS': TEMPLATE_QUICK_ACTIONS,
-        'TEMPLATE_VIEW_HISTORY': TEMPLATE_VIEW_HISTORY,
-        'TEMPLATE_SYSTEM_STATUS': TEMPLATE_SYSTEM_STATUS,
-        'TEMPLATE_ACTIVITY_OVERVIEW': TEMPLATE_ACTIVITY_OVERVIEW,
-        'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
-        'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
-        'TEMPLATE_DATE_TIME': TEMPLATE_DATE_TIME,
-        'TEMPLATE_ORIGINAL_FILE': TEMPLATE_ORIGINAL_FILE,
-        'TEMPLATE_PROCESS_TYPE': TEMPLATE_PROCESS_TYPE,
-        'TEMPLATE_STATUS': TEMPLATE_STATUS,
-        'TEMPLATE_NO_RECORDS': TEMPLATE_NO_RECORDS,
-        'TEMPLATE_NO_RECORDS_DESCRIPTION': TEMPLATE_NO_RECORDS_DESCRIPTION,
-        'TEMPLATE_MODULE_INGESTA': TEMPLATE_MODULE_INGESTA,
-        'TEMPLATE_MODULE_INGESTA_DESC': TEMPLATE_MODULE_INGESTA_DESC,
-        'TEMPLATE_MODULE_PRESUPUESTO': TEMPLATE_MODULE_PRESUPUESTO,
-        'TEMPLATE_MODULE_PRESUPUESTO_DESC': TEMPLATE_MODULE_PRESUPUESTO_DESC,
-        'TEMPLATE_MODULE_PAA': TEMPLATE_MODULE_PAA,
-        'TEMPLATE_MODULE_PAA_DESC': TEMPLATE_MODULE_PAA_DESC,
-        'TEMPLATE_MODULE_REPORTES': TEMPLATE_MODULE_REPORTES,
-        'TEMPLATE_MODULE_REPORTES_DESC': TEMPLATE_MODULE_REPORTES_DESC,
-        'TEMPLATE_MODULE_COMING_SOON': TEMPLATE_MODULE_COMING_SOON,
-        'TEMPLATE_MODULE_COMING_SOON_DESC': TEMPLATE_MODULE_COMING_SOON_DESC
+        'TEMPLATE_TITLE': get_string('templates.title', 'ingesta'),
+        'TEMPLATE_NAVBAR_BRAND': get_string('templates.navbar_brand', 'ingesta'),
+        'TEMPLATE_DASHBOARD': get_string('templates.dashboard', 'ingesta'),
+        'TEMPLATE_DASHBOARD_TITLE': get_string('templates.dashboard_title', 'ingesta'),
+        'TEMPLATE_DASHBOARD_WELCOME': get_string('templates.dashboard_welcome', 'ingesta'),
+        'TEMPLATE_DASHBOARD_DESCRIPTION': get_string('templates.dashboard_description', 'ingesta'),
+        'TEMPLATE_TOTAL_FILES': get_string('templates.total_files', 'ingesta'),
+        'TEMPLATE_SUCCESS_RATE': get_string('templates.success_rate', 'ingesta'),
+        'TEMPLATE_RECENT_UPLOADS': get_string('templates.recent_uploads', 'ingesta'),
+        'TEMPLATE_ACTIVE_PROCESSES': get_string('templates.active_processes', 'ingesta'),
+        'TEMPLATE_QUICK_ACTIONS': get_string('templates.quick_actions', 'ingesta'),
+        'TEMPLATE_VIEW_HISTORY': get_string('templates.view_history', 'ingesta'),
+        'TEMPLATE_SYSTEM_STATUS': get_string('templates.system_status', 'ingesta'),
+        'TEMPLATE_ACTIVITY_OVERVIEW': get_string('templates.activity_overview', 'ingesta'),
+        'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
+        'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
+        'TEMPLATE_DATE_TIME': get_string('templates.date_time', 'ingesta'),
+        'TEMPLATE_ORIGINAL_FILE': get_string('templates.original_file', 'ingesta'),
+        'TEMPLATE_PROCESS_TYPE': get_string('templates.process_type', 'ingesta'),
+        'TEMPLATE_STATUS': get_string('templates.status', 'ingesta'),
+        'TEMPLATE_NO_RECORDS': get_string('templates.no_records', 'ingesta'),
+        'TEMPLATE_NO_RECORDS_DESCRIPTION': get_string('templates.no_records_description', 'ingesta'),
+        'TEMPLATE_MODULE_INGESTA': get_string('modules.ingesta.name', 'ingesta'),
+        'TEMPLATE_MODULE_INGESTA_DESC': get_string('modules.ingesta.description', 'ingesta'),
+        'TEMPLATE_MODULE_PRESUPUESTO': get_string('modules.presupuesto.name', 'ingesta'),
+        'TEMPLATE_MODULE_PRESUPUESTO_DESC': get_string('modules.presupuesto.description', 'ingesta'),
+        'TEMPLATE_MODULE_PAA': get_string('modules.paa.name', 'ingesta'),
+        'TEMPLATE_MODULE_PAA_DESC': get_string('modules.paa.description', 'ingesta'),
+        'TEMPLATE_MODULE_REPORTES': get_string('modules.reportes.name', 'ingesta'),
+        'TEMPLATE_MODULE_REPORTES_DESC': get_string('modules.reportes.description', 'ingesta'),
+        'TEMPLATE_MODULE_COMING_SOON': get_string('modules.coming_soon.name', 'ingesta'),
+        'TEMPLATE_MODULE_COMING_SOON_DESC': get_string('modules.coming_soon.description', 'ingesta')
     }
     return render(request, 'ingesta/dashboard.html', context)
 
@@ -157,31 +136,31 @@ def file_history_view(request):
     try:
         cargas = RegistroCarga.objects.all().order_by('-fecha_hora_carga')
     except Exception as e:
-        print(DB_LOAD_ERROR.format(error=e))
-        messages.error(request, DASHBOARD_ERROR)
+        print(get_string('errors.db_load', 'ingesta').format(error=e))
+        messages.error(request, get_string('errors.dashboard', 'ingesta'))
         cargas = []
 
     context = {
         'cargas': cargas,
-        'TEMPLATE_TITLE': TEMPLATE_TITLE,
-        'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
-        'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
-        'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
-        'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
-        'TEMPLATE_HISTORY_TITLE': TEMPLATE_HISTORY_TITLE,
-        'TEMPLATE_HISTORY_DESCRIPTION': TEMPLATE_HISTORY_DESCRIPTION,
-        'TEMPLATE_LOAD_NEW_FILE': TEMPLATE_LOAD_NEW_FILE,
-        'TEMPLATE_DATE_TIME': TEMPLATE_DATE_TIME,
-        'TEMPLATE_ORIGINAL_FILE': TEMPLATE_ORIGINAL_FILE,
-        'TEMPLATE_SUBSECRETARY': TEMPLATE_SUBSECRETARY,
-        'TEMPLATE_PROCESS_TYPE': TEMPLATE_PROCESS_TYPE,
-        'TEMPLATE_STATUS': TEMPLATE_STATUS,
-        'TEMPLATE_MINIO_PATH': TEMPLATE_MINIO_PATH,
-        'TEMPLATE_ERROR': TEMPLATE_ERROR,
-        'TEMPLATE_NA': TEMPLATE_NA,
-        'TEMPLATE_DASH': TEMPLATE_DASH,
-        'TEMPLATE_NO_RECORDS': TEMPLATE_NO_RECORDS,
-        'TEMPLATE_NO_RECORDS_DESCRIPTION': TEMPLATE_NO_RECORDS_DESCRIPTION
+        'TEMPLATE_TITLE': get_string('templates.title', 'ingesta'),
+        'TEMPLATE_NAVBAR_BRAND': get_string('templates.navbar_brand', 'ingesta'),
+        'TEMPLATE_DASHBOARD': get_string('templates.dashboard', 'ingesta'),
+        'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
+        'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
+        'TEMPLATE_HISTORY_TITLE': get_string('templates.history_title', 'ingesta'),
+        'TEMPLATE_HISTORY_DESCRIPTION': get_string('templates.history_description', 'ingesta'),
+        'TEMPLATE_LOAD_NEW_FILE': get_string('templates.load_new_file', 'ingesta'),
+        'TEMPLATE_DATE_TIME': get_string('templates.date_time', 'ingesta'),
+        'TEMPLATE_ORIGINAL_FILE': get_string('templates.original_file', 'ingesta'),
+        'TEMPLATE_SUBSECRETARY': get_string('templates.subsecretary', 'ingesta'),
+        'TEMPLATE_PROCESS_TYPE': get_string('templates.process_type', 'ingesta'),
+        'TEMPLATE_STATUS': get_string('templates.status', 'ingesta'),
+        'TEMPLATE_MINIO_PATH': get_string('templates.minio_path', 'ingesta'),
+        'TEMPLATE_ERROR': get_string('templates.error', 'ingesta'),
+        'TEMPLATE_NA': get_string('templates.na', 'ingesta'),
+        'TEMPLATE_DASH': get_string('templates.dash', 'ingesta'),
+        'TEMPLATE_NO_RECORDS': get_string('templates.no_records', 'ingesta'),
+        'TEMPLATE_NO_RECORDS_DESCRIPTION': get_string('templates.no_records_description', 'ingesta')
     }
     return render(request, 'ingesta/file_history.html', context)
 
@@ -196,21 +175,21 @@ def upload_file_view(request):
 
             # Validación básica de extensión
             if not (uploaded_file.name.lower().endswith('.csv') or uploaded_file.name.lower().endswith('.xlsx')):
-                messages.error(request, FILE_EXTENSION_ERROR)
+                messages.error(request, get_string('errors.file_extension', 'ingesta'))
                 return render(request, 'ingesta/upload_form.html', {
                     'form': form,
-                    'TEMPLATE_TITLE': TEMPLATE_TITLE,
-                    'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
-                    'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
-                    'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
-                    'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
-                    'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
-                    'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
-                    'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+                    'TEMPLATE_TITLE': get_string('templates.title', 'ingesta'),
+                    'TEMPLATE_NAVBAR_BRAND': get_string('templates.navbar_brand', 'ingesta'),
+                    'TEMPLATE_DASHBOARD': get_string('templates.dashboard', 'ingesta'),
+                    'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
+                    'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
+                    'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
+                    'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
+                    'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
                 })
 
             # Validación de estructura específica usando la función importada
-            print(PRINT_VALIDATING_FILE.format(
+            print(get_string('messages.validating_file', 'ingesta').format(
                 filename=uploaded_file.name,
                 process_type=tipo_proceso_seleccionado
             ))
@@ -220,30 +199,30 @@ def upload_file_view(request):
                 messages.error(request, error_validacion)
                 return render(request, 'ingesta/upload_form.html', {
                     'form': form,
-                    'TEMPLATE_TITLE': TEMPLATE_TITLE,
-                    'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
-                    'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
-                    'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
-                    'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
-                    'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
-                    'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
-                    'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+                    'TEMPLATE_TITLE': get_string('templates.title', 'ingesta'),
+                    'TEMPLATE_NAVBAR_BRAND': get_string('templates.navbar_brand', 'ingesta'),
+                    'TEMPLATE_DASHBOARD': get_string('templates.dashboard', 'ingesta'),
+                    'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
+                    'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
+                    'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
+                    'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
+                    'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
                 })
 
             # Si la validación es correcta, proceder
-            print(PRINT_VALIDATION_SUCCESS)
+            print(get_string('messages.validation_success', 'ingesta'))
             if not minio_client:
-                messages.error(request, MINIO_NOT_CONFIGURED)
+                messages.error(request, get_string('errors.minio_not_configured', 'ingesta'))
                 return render(request, 'ingesta/upload_form.html', {
                     'form': form,
-                    'TEMPLATE_TITLE': TEMPLATE_TITLE,
-                    'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
-                    'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
-                    'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
-                    'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
-                    'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
-                    'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
-                    'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+                    'TEMPLATE_TITLE': get_string('templates.title', 'ingesta'),
+                    'TEMPLATE_NAVBAR_BRAND': get_string('templates.navbar_brand', 'ingesta'),
+                    'TEMPLATE_DASHBOARD': get_string('templates.dashboard', 'ingesta'),
+                    'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
+                    'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
+                    'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
+                    'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
+                    'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
                 })
 
             # Definir nombre del objeto en MinIO
@@ -258,7 +237,7 @@ def upload_file_view(request):
                 found = minio_client.bucket_exists(MINIO_BUCKET)
                 if not found:
                     minio_client.make_bucket(MINIO_BUCKET)
-                    print(MINIO_BUCKET_CREATED.format(bucket=MINIO_BUCKET))
+                    print(get_string('messages.bucket_created', 'ingesta').format(bucket=MINIO_BUCKET))
 
                 # Volver al inicio del archivo antes de subir
                 uploaded_file.seek(0)
@@ -271,7 +250,7 @@ def upload_file_view(request):
                     length=uploaded_file.size,
                     content_type='text/csv' if original_filename.lower().endswith('.csv') else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
-                print(MINIO_UPLOAD_SUCCESS.format(object_name=object_name))
+                print(get_string('messages.upload_success', 'ingesta').format(object_name=object_name))
 
                 # Si la subida a MinIO fue exitosa, intentar guardar en BD
                 try:
@@ -283,45 +262,45 @@ def upload_file_view(request):
                         subsecretaria_origen=subsecretaria_origen,
                     )
                     registro.save()
-                    print(DB_SAVE_PRINT.format(id=registro.id))
-                    messages.success(request, DB_SAVE_SUCCESS.format(
+                    print(get_string('messages.db_save_print', 'ingesta').format(id=registro.id))
+                    messages.success(request, get_string('messages.db_save_success', 'ingesta').format(
                         filename=original_filename,
                         process_type=tipo_proceso_seleccionado
                     ))
 
                 except Exception as db_error:
-                    print(PRINT_DB_ERROR.format(error=db_error))
-                    messages.error(request, DB_SAVE_ERROR.format(
+                    print(get_string('messages.db_error', 'ingesta').format(error=db_error))
+                    messages.error(request, get_string('errors.db_save_error', 'ingesta').format(
                         filename=original_filename,
                         error=str(db_error)
                     ))
 
             except S3Error as minio_error:
-                print(PRINT_MINIO_ERROR.format(error=minio_error))
-                messages.error(request, MINIO_UPLOAD_ERROR.format(error=str(minio_error)))
+                print(get_string('messages.minio_error', 'ingesta').format(error=minio_error))
+                messages.error(request, get_string('errors.upload_error', 'ingesta').format(error=str(minio_error)))
             except Exception as general_error:
-                print(PRINT_GENERAL_ERROR.format(error=general_error))
+                print(get_string('messages.general_error', 'ingesta').format(error=general_error))
                 messages.error(request, str(general_error))
 
             if 'registro' in locals() and registro.pk:
                 return redirect('upload_file')
 
         else:
-            messages.error(request, INVALID_FORM)
+            messages.error(request, get_string('errors.invalid_form', 'ingesta'))
 
     else:
         form = UploadFileForm()
 
     return render(request, 'ingesta/upload_form.html', {
         'form': form,
-        'TEMPLATE_TITLE': TEMPLATE_TITLE,
-        'TEMPLATE_NAVBAR_BRAND': TEMPLATE_NAVBAR_BRAND,
-        'TEMPLATE_DASHBOARD': TEMPLATE_DASHBOARD,
-        'TEMPLATE_UPLOAD_FILE': TEMPLATE_UPLOAD_FILE,
-        'TEMPLATE_FILE_HISTORY': TEMPLATE_FILE_HISTORY,
-        'TEMPLATE_UPLOAD_TITLE': TEMPLATE_UPLOAD_TITLE,
-        'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
-        'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
+        'TEMPLATE_TITLE': get_string('templates.title', 'ingesta'),
+        'TEMPLATE_NAVBAR_BRAND': get_string('templates.navbar_brand', 'ingesta'),
+        'TEMPLATE_DASHBOARD': get_string('templates.dashboard', 'ingesta'),
+        'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
+        'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
+        'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
+        'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
+        'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
     })
 
 @login_required
@@ -332,7 +311,7 @@ def download_file(request, file_id):
     carga = get_object_or_404(RegistroCarga, id=file_id)
     
     if not carga.path_minio:
-        messages.error(request, "El archivo no está disponible para descarga.")
+        messages.error(request, get_string('errors.file_not_available', 'ingesta'))
         return redirect('file_history')
     
     try:
@@ -351,18 +330,17 @@ def download_file(request, file_id):
         
         return response_data
     except S3Error as e:
-        messages.error(request, f"Error al descargar el archivo: {str(e)}")
+        messages.error(request, get_string('errors.download_error', 'ingesta').format(error=str(e)))
         return redirect('file_history')
     except Exception as e:
-        messages.error(request, f"Error inesperado: {str(e)}")
+        messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
         return redirect('file_history')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def delete_file(request, file_id):
-
     if not request.user.is_superuser:
-        return HttpResponseForbidden("No tiene permisos para realizar esta acción.")
+        return HttpResponseForbidden(get_string('errors.no_permissions', 'ingesta'))
     
     carga = get_object_or_404(RegistroCarga, id=file_id)
     
@@ -374,10 +352,10 @@ def delete_file(request, file_id):
         # Delete from database
         carga.delete()
         
-        messages.success(request, "Archivo eliminado exitosamente.")
+        messages.success(request, get_string('messages.file_deleted', 'ingesta'))
     except S3Error as e:
-        messages.error(request, f"Error al eliminar el archivo de MinIO: {str(e)}")
+        messages.error(request, get_string('errors.minio_delete_error', 'ingesta').format(error=str(e)))
     except Exception as e:
-        messages.error(request, f"Error inesperado: {str(e)}")
+        messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
     
     return redirect('file_history')

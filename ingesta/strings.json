@@ -1,0 +1,140 @@
+{
+    "ingesta": {
+        "errors": {
+            "file_required": "El archivo es requerido",
+            "invalid_format": "Formato de archivo inválido",
+            "processing_error": "Error al procesar el archivo",
+            "file_extension": "Error: El archivo debe tener extensión .csv o .xlsx",
+            "minio_not_configured": "Error: Servicio MinIO no configurado",
+            "minio_connection": "Error al conectar con MinIO: {error}",
+            "minio_upload": "Error al subir archivo a MinIO: {error}",
+            "db_save": "Error al guardar en la base de datos",
+            "dashboard": "Error al cargar el dashboard",
+            "db_load": "Error al cargar datos de la base de datos",
+            "minio_init": "Error al inicializar MinIO: {error}",
+            "invalid_form": "Formulario inválido",
+            "file_not_available": "El archivo no está disponible para descarga",
+            "download_error": "Error al descargar el archivo: {error}",
+            "unexpected_error": "Error inesperado: {error}",
+            "no_permissions": "No tiene permisos para realizar esta acción",
+            "minio_delete_error": "Error al eliminar el archivo de MinIO: {error}",
+            "db_save_error": "ERROR CRÍTICO: El archivo '{filename}' se subió al almacenamiento pero falló al registrar en la base de datos. Por favor contacte al administrador. Error: {error}",
+            "file_empty": "El archivo está vacío o no tiene datos",
+            "file_format": "Error al procesar el archivo. Por favor verifique el formato: {error}",
+            "file_encoding": "Error de codificación. Asegúrese de que sea UTF-8 o compatible",
+            "file_unexpected": "Error inesperado validando el archivo: {error}",
+            "headers_mismatch": "Las columnas no coinciden. Esperadas: {expected_count}, Encontradas: {found_count}",
+            "missing_columns": "Columnas faltantes: {columns}",
+            "extra_columns": "Columnas adicionales: {columns}",
+            "no_process_structure": "No se ha definido una estructura para el tipo de proceso '{process_type}'"
+        },
+        "success": {
+            "file_uploaded": "Archivo subido exitosamente",
+            "processing_complete": "Procesamiento completado",
+            "minio_bucket_created": "Bucket '{bucket}' creado en MinIO",
+            "minio_initialized": "MinIO inicializado exitosamente",
+            "minio_uploaded": "Archivo '{filename}' subido exitosamente a MinIO",
+            "db_saved": "Archivo '{filename}' registrado exitosamente en la base de datos",
+            "minio_init": "Cliente MinIO inicializado correctamente",
+            "file_deleted": "Archivo eliminado exitosamente"
+        },
+        "messages": {
+            "validating_file": "Validando archivo '{filename}' para proceso: {process_type}",
+            "validation_success": "Archivo validado exitosamente. Procediendo a subir al servidor",
+            "headers_expected": "Encabezados esperados ({process_type}): {headers}",
+            "headers_found": "Encabezados encontrados: {headers}",
+            "uploading_minio": "Subiendo archivo a MinIO...",
+            "saving_db": "Guardando registro en base de datos...",
+            "bucket_created": "Bucket {bucket} creado exitosamente",
+            "upload_success": "Archivo {object_name} subido exitosamente",
+            "db_save_print": "Registro de carga guardado en BD (ID: {id})",
+            "db_save_success": "Archivo '{filename}' (Tipo: {process_type}) validado y subido exitosamente",
+            "db_error": "Error en base de datos: {error}",
+            "minio_error": "Error en MinIO: {error}",
+            "general_error": "Error general: {error}"
+        },
+        "templates": {
+            "title": "Sistema de Información UAESP",
+            "navbar_brand": "UAESP",
+            "dashboard": "Dashboard",
+            "upload_file": "Cargar Archivo",
+            "file_history": "Historial de Carga",
+            "load_new_file": "Cargar Nuevo Archivo",
+            "upload_title": "Cargar Archivo CSV",
+            "file_help": "Seleccione el archivo CSV correspondiente al proceso",
+            "upload_button": "Cargar Archivo",
+            "dashboard_title": "Panel de Control",
+            "dashboard_welcome": "Bienvenido al Sistema de Información UAESP",
+            "dashboard_description": "Gestión y monitoreo de carga de datos",
+            "total_files": "Archivos Procesados",
+            "success_rate": "Tasa de Éxito",
+            "recent_uploads": "Cargas Recientes (24h)",
+            "active_processes": "Procesos Activos",
+            "quick_actions": "Acciones Rápidas",
+            "view_history": "Ver Historial",
+            "system_status": "Estado del Sistema",
+            "activity_overview": "Resumen de Actividad",
+            "history_title": "Historial de Archivos Cargados",
+            "history_description": "Registro histórico de archivos procesados",
+            "no_records": "No hay registros de carga",
+            "no_records_description": "No se han encontrado registros de carga en el sistema",
+            "date_time": "Fecha/Hora",
+            "original_file": "Archivo Original",
+            "subsecretary": "Subsecretaría",
+            "process_type": "Tipo de Proceso",
+            "status": "Estado",
+            "minio_path": "Ruta en MinIO",
+            "error": "Error",
+            "na": "N/A",
+            "dash": "-",
+            "active": "Activo",
+            "inactive": "Inactivo",
+            "warning": "Advertencia",
+            "status_distribution": "Distribución de Estados",
+            "processing_trends": "Tendencias de Procesamiento",
+            "file_list": "Lista de Archivos",
+            "file_name": "Nombre del Archivo",
+            "upload_date": "Fecha de Carga",
+            "actions": "Acciones",
+            "upload_new": "Subir Nuevo Archivo",
+            "view_details": "Ver Detalles",
+            "delete": "Eliminar",
+            "confirm_delete": "¿Está seguro que desea eliminar este archivo?",
+            "no_files": "No hay archivos cargados"
+        },
+        "modules": {
+            "ingesta": {
+                "name": "Ingesta de Datos",
+                "description": "Gestión y monitoreo de carga de archivos"
+            },
+            "presupuesto": {
+                "name": "Presupuesto",
+                "description": "Gestión presupuestaria"
+            },
+            "paa": {
+                "name": "PAA",
+                "description": "Plan Anual de Adquisiciones"
+            },
+            "reportes": {
+                "name": "Reportes",
+                "description": "Generación de reportes"
+            },
+            "coming_soon": {
+                "name": "Próximamente",
+                "description": "Este módulo estará disponible próximamente"
+            }
+        }
+    },
+    "forms": {
+        "file_label": "Archivo",
+        "file_help": "Seleccione un archivo CSV o XLSX",
+        "subsecretary_label": "Subsecretaría de Origen",
+        "planning": "Subsecretaría de Planeación",
+        "management": "Subsecretaría de Gestión",
+        "operations": "Subsecretaría de Operaciones",
+        "process_type_label": "Tipo de Proceso",
+        "budget": "Presupuesto",
+        "paa": "PAA",
+        "reports": "Reportes"
+    }
+} 

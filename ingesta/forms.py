@@ -1,6 +1,7 @@
 # ingesta/forms.py
 from django import forms
 from .cabeceras import CABECERAS_PESAJE
+from globalfunctions.string_manager import get_string
 
 # Estructura de datos (como la definiste)
 PROCESO_DATA = {
