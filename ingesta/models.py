@@ -2,6 +2,9 @@ from django.db import models
 import uuid
 from datetime import datetime
 
+def get_current_timestamp():
+    return int(datetime.now().timestamp())
+
 class RegistroCarga(models.Model):
     ESTADOS = (
         ('RECIBIDO', 'Recibido en Django'),
@@ -72,8 +75,8 @@ class DisposicionFinal(models.Model):
     imagen_salida = models.URLField(max_length=500, blank=True, null=True)  # URL de la imagen de salida
 
     # Campos de auditoría y relación
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    fecha_creacion = models.BigIntegerField(default=get_current_timestamp)
+    fecha_actualizacion = models.BigIntegerField(default=get_current_timestamp)
     registro_carga = models.ForeignKey(RegistroCarga, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -86,6 +89,9 @@ class DisposicionFinal(models.Model):
         if self.fecha_salida and self.hora_salida:
             salida_datetime = datetime.combine(self.fecha_salida, self.hora_salida)
             self.epoch_salida = int(salida_datetime.timestamp())
+        
+        # Update fecha_actualizacion with current timestamp
+        self.fecha_actualizacion = int(datetime.now().timestamp())
         
         super().save(*args, **kwargs)
 

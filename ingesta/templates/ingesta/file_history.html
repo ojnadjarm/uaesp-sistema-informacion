@@ -33,8 +33,7 @@
                                     <th>{{ TEMPLATE_SUBSECRETARY }}</th>
                                     <th>{{ TEMPLATE_PROCESS_TYPE }}</th>
                                     <th>{{ TEMPLATE_STATUS }}</th>
-                                    <th>{{ TEMPLATE_MINIO_PATH }}</th>
-                                    <th class="pe-4">{{ TEMPLATE_ERROR }}</th>
+                                    <th class="pe-4">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,8 +53,19 @@
                                             {{ carga.get_estado_display }}
                                         </span>
                                     </td>
-                                    <td>{{ carga.path_minio|default:TEMPLATE_DASH }}</td>
-                                    <td class="pe-4">{{ carga.mensaje_error|default:"" }}</td>
+                                    <td class="pe-4">
+                                        {% if carga.path_minio %}
+                                        <a href="{% url 'download_file' carga.id %}" class="btn btn-sm btn-outline-primary" title="Descargar archivo">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if user.is_superuser %}
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar archivo" 
+                                                onclick="confirmDelete('{{ carga.id }}', '{{ carga.nombre_archivo_original }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -76,4 +86,34 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que desea eliminar el archivo "<span id="fileName"></span>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(id, fileName) {
+    document.getElementById('fileName').textContent = fileName;
+    document.getElementById('deleteForm').action = `/ingesta/delete_file/${id}/`;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
 {% endblock %} 

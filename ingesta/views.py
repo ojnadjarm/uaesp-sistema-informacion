@@ -1,10 +1,10 @@
 import os
 import uuid
 from datetime import datetime, timedelta
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
-from django.contrib.auth.decorators import login_required 
+from django.contrib.auth.decorators import login_required, user_passes_test
 from minio import Minio
 from minio.error import S3Error
 from .forms import UploadFileForm
@@ -32,6 +32,7 @@ from .messages import (
     TEMPLATE_MODULE_REPORTES, TEMPLATE_MODULE_REPORTES_DESC, TEMPLATE_MODULE_COMING_SOON,
     TEMPLATE_MODULE_COMING_SOON_DESC
 )
+from django.http import HttpResponse, HttpResponseForbidden
 
 # --- Configuración Cliente MinIO ---
 try:
@@ -322,3 +323,61 @@ def upload_file_view(request):
         'TEMPLATE_FILE_HELP': TEMPLATE_FILE_HELP,
         'TEMPLATE_UPLOAD_BUTTON': TEMPLATE_UPLOAD_BUTTON
     })
+
+@login_required
+def download_file(request, file_id):
+    """
+    Download a file from MinIO storage.
+    """
+    carga = get_object_or_404(RegistroCarga, id=file_id)
+    
+    if not carga.path_minio:
+        messages.error(request, "El archivo no está disponible para descarga.")
+        return redirect('file_history')
+    
+    try:
+        # Get the file from MinIO
+        response = minio_client.get_object(
+            MINIO_BUCKET,
+            carga.path_minio
+        )
+        
+        # Create the response
+        response_data = HttpResponse(
+            response.read(),
+            content_type='application/octet-stream'
+        )
+        response_data['Content-Disposition'] = f'attachment; filename="{carga.nombre_archivo_original}"'
+        
+        return response_data
+    except S3Error as e:
+        messages.error(request, f"Error al descargar el archivo: {str(e)}")
+        return redirect('file_history')
+    except Exception as e:
+        messages.error(request, f"Error inesperado: {str(e)}")
+        return redirect('file_history')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def delete_file(request, file_id):
+
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("No tiene permisos para realizar esta acción.")
+    
+    carga = get_object_or_404(RegistroCarga, id=file_id)
+    
+    try:
+        # Delete from MinIO if path exists
+        if carga.path_minio:
+            minio_client.remove_object(MINIO_BUCKET, carga.path_minio)
+        
+        # Delete from database
+        carga.delete()
+        
+        messages.success(request, "Archivo eliminado exitosamente.")
+    except S3Error as e:
+        messages.error(request, f"Error al eliminar el archivo de MinIO: {str(e)}")
+    except Exception as e:
+        messages.error(request, f"Error inesperado: {str(e)}")
+    
+    return redirect('file_history')
