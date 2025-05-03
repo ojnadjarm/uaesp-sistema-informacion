@@ -11,12 +11,11 @@
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar{% if not user.is_authenticated %} collapsed{% endif %}" id="sidebar">
         <div class="sidebar-header">
             <h5 class="mb-0">{{ TEMPLATE_NAVBAR_BRAND }}</h5>
         </div>
         <div class="sidebar-content">
-            {% if user.is_authenticated %}
             <div class="sidebar-top">
                 <ul class="nav flex-column">
                     <li class="nav-item">
@@ -49,22 +48,21 @@
                     </li>
                 </ul>
             </div>
-            {% endif %}
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content" id="mainContent">
+    <div class="main-content{% if not user.is_authenticated %} full-width expanded{% endif %}" id="mainContent">
         <!-- Topbar -->
         <div class="topbar d-flex align-items-center px-4">
+            {% if user.is_authenticated %}
             <button class="btn btn-link text-dark" id="sidebarToggle">
                 <i class="bi bi-list"></i>
             </button>
+            {% endif %}
             <div class="ms-auto">
                 {% if user.is_authenticated %}
                 <span class="text-muted">Hola, {{ user.username }}</span>
-                {% else %}
-                <a class="btn btn-link" href="{% url 'login' %}?next={{ request.path }}">Iniciar Sesión</a>
                 {% endif %}
             </div>
         </div>
