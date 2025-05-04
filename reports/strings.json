@@ -53,7 +53,8 @@
             "promedio_residuos_por_vehiculo": "Promedio de residuos por vehículo (toneladas)",
             "tipo_proceso": "Tipo de Proceso",
             "acumulado_anio": "Acumulado {year} (actualizado hasta {date})",
-            "per_capita": "Residuos por habitante (kg/hab)"
+            "per_capita": "Residuos por habitante (kg/hab)",
+            "promedio_toneladas_dia": "Promedio de toneladas por día"
         },
         "apps": {
             "name": "Reportes e Indicadores",

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, Count, Avg, Max
+from django.db.models import Sum, Count, Avg, Max, Min
 from datetime import datetime, timedelta
 from ingesta.models.disposicion.disposicion_final import DisposicionFinal
 from ingesta.models.core.registro_carga import RegistroCarga
@@ -36,16 +36,13 @@ def disposicion_final_dashboard(request):
     ).aggregate(
         total=Sum('peso_residuos')
     )['total'] or 0
-    total_vehiculos = disposiciones.values('placa').distinct().count()
+
     stats_by_concesion = disposiciones.values('concesion').annotate(
         total_residuos=Sum('peso_residuos')/1000,
         total_vehiculos=Count('placa', distinct=True),
         promedio_peso=Avg('peso_residuos')/1000
     )
 
-    promedio_residuos_por_vehiculo = disposiciones.values('placa').annotate(
-        total=Sum('peso_residuos')
-    ).aggregate(promedio=Avg('total'))['promedio'] or 0
     fecha_actual = disposiciones.aggregate(ultima=Max('fecha_entrada'))['ultima']
     fecha_actual_str = formats.date_format(fecha_actual, "DATE_FORMAT") if fecha_actual else "N/A"
     acumulado_texto = get_string('templates.acumulado_anio', 'reports').format(
@@ -57,22 +54,32 @@ def disposicion_final_dashboard(request):
     ).values('mes').annotate(
         total=Sum('peso_residuos')/1000
     ).order_by('mes')
+
+    # Calculate average tons per day.
+    lastupdate = fecha_actual
+    firstupdate = disposiciones.aggregate(first=Min('fecha_entrada'))['first']
+    if lastupdate and firstupdate:
+        promedio_kg_dia = total_residuos / ((lastupdate - firstupdate).days + 1)
+    else:
+        promedio_kg_dia = 0
+
+    # Get data from the query
     labels = [m['mes'].strftime('%b %Y') for m in mensual if m['mes']]
     data = [float(m['total']) for m in mensual]
-    if labels and data:
-        primer_mes = mensual[0]['mes']
-        mes_cero = (primer_mes.replace(day=1) - timedelta(days=1)).replace(day=1)
-        labels = [mes_cero.strftime('%b %Y')] + labels
-        data = [0] + data
+
+    # Always add January 1st as the first label with 0 ton
+    labels = ["Ene 1"] + labels
+    data = [0] + data
 
     poblacion_bogota = 7937898
     context = {
         'start_date': start_date,
         'end_date': end_date,
         'total_residuos': total_residuos/1000,
-        'total_vehiculos': total_vehiculos,
         'stats_by_concesion': stats_by_concesion,
         'per_capita': total_residuos/poblacion_bogota,
+        'promedio_toneladas_dia': promedio_kg_dia/1000,
+        'TEMPLATE_TONELADAS_DIA': get_string('templates.promedio_toneladas_dia', 'reports'),
         'TEMPLATE_DASHBOARD_TITLE': get_string('templates.disposicion_final', 'reports'),
         'TEMPLATE_DASHBOARD_DESCRIPTION': get_string('templates.disposicion_final_desc', 'reports'),
         'TEMPLATE_TOTAL_RESIDUOS': get_string('templates.total_residuos', 'reports'),

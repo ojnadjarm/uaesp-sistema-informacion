@@ -9,6 +9,7 @@ def main_dashboard(request):
     context = {
         'TEMPLATE_DASHBOARD_TITLE': get_string('templates.reports_title', 'reports'),
         'TEMPLATE_DASHBOARD_DESCRIPTION': get_string('templates.reports_description', 'reports'),
+        'HIDE_HEADER_FOOTER': not request.user.is_authenticated,
         'AREAS_MISIONALES': [
             {
                 'name': get_string('templates.disposicion_final', 'reports'),
@@ -38,4 +39,4 @@ def main_dashboard(request):
         ]
     }
     context.update(get_template_context())
-    return render(request, 'reports/main_dashboard.html', context) 
+    return render(request, 'reports/main_dashboard.html', context)

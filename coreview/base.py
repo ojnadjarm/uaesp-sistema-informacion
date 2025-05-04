@@ -24,4 +24,4 @@ def handle_error(request, error_message, template_name, context=None):
     messages.error(request, error_message)
     if context is None:
         context = get_template_context()
-    return render(request, template_name, context) 
+    return render(request, template_name, context)
