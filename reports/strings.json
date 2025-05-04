@@ -1,0 +1,63 @@
+{
+    "reports": {
+        "models": {
+            "report_name": "Nombre del Reporte",
+            "report_description": "Descripción",
+            "user": "Usuario",
+            "start_date": "Fecha Inicio",
+            "end_date": "Fecha Fin",
+            "subsecretaria": "Subsecretaría",
+            "tipo_proceso": "Tipo de Proceso",
+            "chart_line": "Línea",
+            "chart_bar": "Barras",
+            "chart_pie": "Torta",
+            "chart_table": "Tabla",
+            "chart_type": "Tipo de Visualización",
+            "report_config": "Configuración de Reporte",
+            "report_configs": "Configuraciones de Reportes",
+            "indicator_name": "Nombre del Indicador",
+            "indicator_description": "Descripción",
+            "indicator_formula": "Fórmula o Cálculo",
+            "indicator_unit": "Unidad de Medida",
+            "category_disposicion": "Disposición Final",
+            "category_pesaje": "Pesaje",
+            "category_general": "General",
+            "indicator_category": "Categoría",
+            "indicator": "Indicador",
+            "indicators": "Indicadores",
+            "acumulado_anio": "Acumulado {year} (actualizado hasta {date})"
+        },
+        "templates": {
+            "reports_title": "Reportes",
+            "reports_description": "Reportes y estadísticas avanzadas",
+            "disposicion_final": "Disposición Final",
+            "disposicion_final_desc": "Indicadores y reportes de disposición final.",
+            "rbl": "RBL",
+            "rbl_desc": "Indicadores y reportes de RBL.",
+            "aprovechamiento": "Aprovechamiento",
+            "aprovechamiento_desc": "Indicadores y reportes de aprovechamiento.",
+            "alumbrado": "Alumbrado",
+            "alumbrado_desc": "Indicadores y reportes de alumbrado.",
+            "funerarios": "Funerarios",
+            "funerarios_desc": "Indicadores y reportes de servicios funerarios.",
+            "total_residuos_ton": "Total Residuos (toneladas)",
+            "promedio_por_carga_ton": "Promedio por Carga (toneladas)",
+            "total_vehiculos": "Total Vehículos",
+            "total_cargas": "Total Cargas",
+            "total_residuos": "Total Residuos (Toneladas)",
+            "stats_concesion": "Estadísticas por Concesión",
+            "concesion": "Concesión",
+            "total_vehiculos_header": "Total Vehículos",
+            "cargas_por_tipo": "Cargas por Tipo de Proceso",
+            "total_cargas_header": "Total Cargas",
+            "promedio_residuos_por_vehiculo": "Promedio de residuos por vehículo (toneladas)",
+            "tipo_proceso": "Tipo de Proceso",
+            "acumulado_anio": "Acumulado {year} (actualizado hasta {date})",
+            "per_capita": "Residuos por habitante (kg/hab)"
+        },
+        "apps": {
+            "name": "Reportes e Indicadores",
+            "verbose_name": "Reportes e Indicadores"
+        }
+    }
+} 

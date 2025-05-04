@@ -19,14 +19,14 @@
             <div class="sidebar-top">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' and not request.resolver_match.app_name %}active{% endif %}" href="{% url 'dashboard' %}">
                             <i class="bi bi-speedometer2"></i>
                             {{ TEMPLATE_DASHBOARD }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'upload_file' %}active{% endif %}" href="{% url 'upload_file' %}">
-                            <i class="bi bi-upload"></i>
+                            <i class="bi bi-cloud-arrow-up"></i>
                             {{ TEMPLATE_UPLOAD_FILE }}
                         </a>
                     </li>
@@ -34,6 +34,12 @@
                         <a class="nav-link {% if request.resolver_match.url_name == 'file_history' %}active{% endif %}" href="{% url 'file_history' %}">
                             <i class="bi bi-clock-history"></i>
                             {{ TEMPLATE_FILE_HISTORY }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' and request.resolver_match.app_name == 'reports' %}active{% endif %}" href="{% url 'reports:dashboard' %}">
+                            <i class="bi bi-graph-up"></i>
+                            {{ TEMPLATE_REPORTS_TITLE }}
                         </a>
                     </li>
                 </ul>
@@ -54,6 +60,7 @@
     <!-- Main Content -->
     <div class="main-content{% if not user.is_authenticated %} full-width expanded{% endif %}" id="mainContent">
         <!-- Topbar -->
+        {% if not HIDE_HEADER_FOOTER %}
         <div class="topbar d-flex align-items-center px-4">
             {% if user.is_authenticated %}
             <button class="btn btn-link text-dark" id="sidebarToggle">
@@ -66,6 +73,7 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
         <!-- Content -->
         <div class="content-wrapper">
@@ -90,6 +98,7 @@
         </div>
 
         <!-- Footer -->
+        {% if not HIDE_HEADER_FOOTER %}
         <footer class="footer">
             <div class="container-fluid">
                 <div class="row">
@@ -99,6 +108,7 @@
                 </div>
             </div>
         </footer>
+        {% endif %}
     </div>
 
     <!-- Logout Form -->

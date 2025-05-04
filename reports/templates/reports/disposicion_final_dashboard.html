@@ -1,0 +1,81 @@
+{% extends "coreview/base.html" %}
+{% load static %}
+
+{% block title %}{{ TEMPLATE_DASHBOARD_TITLE }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid w-75">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-1">{{ TEMPLATE_DASHBOARD_TITLE }}</h1>
+            <p class="text-muted mb-0">{{ TEMPLATE_DASHBOARD_DESCRIPTION }}</p>
+            <p class="text-info mb-0">{{ TEMPLATE_ACUMULADO_ANIO }}</p>
+        </div>
+    </div>
+    <div class="row mb-4 align-items-stretch">
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-sm flex-fill h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h5 class="card-title text-center">{{ TEMPLATE_TOTAL_RESIDUOS }}</h5>
+                    <h2 class="mb-0 text-center">{{ total_residuos|floatformat:2 }} toneladas</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-sm flex-fill h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h5 class="card-title text-center">{{ TEMPLATE_PER_CAPITA }}</h5>
+                    <h2 class="mb-0 text-center">{{ per_capita|floatformat:2 }} kg/hab</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-sm flex-fill h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h5 class="card-title text-center">{{ TEMPLATE_PER_CAPITA }}</h5>
+                    <h2 class="mb-0 text-center">{{ per_capita|floatformat:2  }} kg/hab</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-center">
+            <div class="card shadow-sm w-75">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Evolución mensual de residuos (toneladas)</h5>
+                    <canvas id="graficoMensual"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.graficoMensualLabels = {{ grafico_mensual_labels_json|safe }};
+        window.graficoMensualData = {{ grafico_mensual_data_json|safe }};
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'reports/js/disposicion_final_chart.js' %}"></script>
+    <!-- Estadísticas por Concesión -->
+    <div class="row mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ TEMPLATE_CONCESION }}</th>
+                            <th>{{ TEMPLATE_TOTAL_RESIDUOS_KG }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in stats_by_concesion %}
+                        <tr>
+                            <td>{{ stat.concesion|default:"N/A" }}</td>
+                            <td>{{ stat.total_residuos|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
