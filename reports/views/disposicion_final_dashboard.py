@@ -8,6 +8,7 @@ from coreview.base import get_template_context
 from globalfunctions.string_manager import get_string
 from django.utils import formats
 from django.db.models.functions import TruncMonth
+from .main_dashboard import get_areas_misionales_context
 import json
 
 def get_bogota_concesiones():
@@ -92,7 +93,8 @@ def disposicion_final_dashboard(request):
         'grafico_mensual_data': data,
         'grafico_mensual_labels_json': json.dumps(labels),
         'grafico_mensual_data_json': json.dumps(data),
-        'HIDE_HEADER_FOOTER': not request.user.is_authenticated
+        'HIDE_HEADER_FOOTER': not request.user.is_authenticated,
     }
+    context.update(get_areas_misionales_context())
     context.update(get_template_context())
     return render(request, 'reports/disposicion_final_dashboard.html', context) 

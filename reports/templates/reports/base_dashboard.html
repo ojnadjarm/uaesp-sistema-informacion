@@ -1,0 +1,41 @@
+{% extends "coreview/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Navigation Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card-body">
+                <div class="row g-2 justify-content-center">
+                    <div class="col-auto">
+                        <a href="{% url 'reports:dashboard' %}" class="text-decoration-none">
+                            <div class="card h-100 shadow-sm" style="width: 150px;">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                    <i class="bi bi-house display-6 text-dark mb-2"></i>
+                                    <h6 class="card-title mb-0">Inicio</h6>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% for area in AREAS_MISIONALES %}
+                    <div class="col-auto">
+                        <a href="{% url area.url %}" class="text-decoration-none">
+                            <div class="card h-100 shadow-sm" style="width: 150px;">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                    <i class="bi {{ area.icon }} display-6 text-{{ area.color }} mb-2"></i>
+                                    <h6 class="card-title mb-0">{{ area.name }}</h6>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- Content Block -->
+    {% block dashboard_content %}{% endblock %}
+</div>
+{% endblock %} 
