@@ -1,6 +1,9 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from .base import TimeStampedModel, EstadoModel
 from datetime import datetime
+
+User = get_user_model()
 
 class RegistroCargaManager(models.Manager):
     def get_queryset(self):
@@ -24,6 +27,7 @@ class RegistroCarga(TimeStampedModel, EstadoModel):
     fecha_hora_carga = models.DateTimeField(auto_now_add=True)
     subsecretaria_origen = models.CharField(max_length=100, blank=True, null=True)
     tipo_proceso = models.CharField(max_length=50, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     objects = RegistroCargaManager()
 

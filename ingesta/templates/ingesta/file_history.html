@@ -33,6 +33,7 @@
                                     <th>{{ TEMPLATE_SUBSECRETARY }}</th>
                                     <th>{{ TEMPLATE_PROCESS_TYPE }}</th>
                                     <th>{{ TEMPLATE_STATUS }}</th>
+                                    <th>Usuario</th>
                                     <th class="pe-4">Acciones</th>
                                 </tr>
                             </thead>
@@ -53,6 +54,7 @@
                                             {{ carga.get_estado_display }}
                                         </span>
                                     </td>
+                                    <td>{{ carga.user.username|default:TEMPLATE_NA }}</td>
                                     <td class="pe-4">
                                         {% if carga.path_minio %}
                                         <a href="{% url 'download_file' carga.id %}" class="btn btn-sm btn-outline-primary" title="Descargar archivo">

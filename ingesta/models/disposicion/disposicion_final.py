@@ -77,6 +77,9 @@ class DisposicionFinal(TimeStampedModel):
     tpo_vehiculo = models.CharField(max_length=60, null=True, blank=True)
     novedades = models.CharField(max_length=60, null=True, blank=True)
 
+    # Proceso
+    tipo_proceso = models.CharField(max_length=60, null=True, blank=True)
+
     objects = DisposicionFinalManager()
 
     def save(self, *args, **kwargs):
