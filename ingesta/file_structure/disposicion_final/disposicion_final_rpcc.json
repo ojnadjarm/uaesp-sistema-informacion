@@ -1,8 +1,8 @@
 {
     "disposicion_final_rpcc": {
         "nombre": "Disposición final - pesaje rpcc",
-        "file_type": "csv",
-        "file_start_row": 0,
+        "file_type": "xlsx",
+        "file_start_row": 1,
         "file_start_col": "A",
         "file_end_col": "P",
         "header": [

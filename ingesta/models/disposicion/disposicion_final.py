@@ -59,17 +59,23 @@ class DisposicionFinal(TimeStampedModel):
     usuario_salida = models.CharField(max_length=30, null=True, blank=True)
     
     # Observaciones
-    observaciones_entrada = models.CharField(max_length=60, blank=True, null=True)
-    observaciones_salida = models.CharField(max_length=60, blank=True, null=True)
-    observaciones_alerta_tara = models.CharField(max_length=60, blank=True, null=True)
+    observaciones_entrada = models.CharField(max_length=500, blank=True, null=True)
+    observaciones_salida = models.CharField(max_length=500, blank=True, null=True)
+    observaciones_alerta_tara = models.CharField(max_length=500, blank=True, null=True)
     
     # Otros campos
-    opciones = models.CharField(max_length=60, blank=True, null=True)
+    opciones = models.CharField(max_length=500, blank=True, null=True)
     imagen_entrada = models.URLField(max_length=500, blank=True, null=True)
     imagen_salida = models.URLField(max_length=500, blank=True, null=True)
 
     # Relación con registro de carga
     registro_carga = models.ForeignKey(RegistroCarga, on_delete=models.SET_NULL, null=True, blank=True)
+
+    #equipo de pesaje
+    equipo_pesaje = models.CharField(max_length=60, null=True, blank=True)
+    ajuste_peso_salida = models.CharField(max_length=60, null=True, blank=True)
+    tpo_vehiculo = models.CharField(max_length=60, null=True, blank=True)
+    novedades = models.CharField(max_length=60, null=True, blank=True)
 
     objects = DisposicionFinalManager()
 
