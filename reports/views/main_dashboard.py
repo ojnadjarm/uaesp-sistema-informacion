@@ -7,6 +7,7 @@ def get_areas_misionales_context():
     Retorna el contexto común de áreas misionales para todos los dashboards.
     """
     return {
+        'TEMPLATE_HOME': get_string('templates.home', 'reports'),
         'AREAS_MISIONALES': [
             {
                 'name': get_string('templates.disposicion_final', 'reports'),
@@ -17,7 +18,7 @@ def get_areas_misionales_context():
             {
                 'name': get_string('templates.rbl', 'reports'),
                 'url': 'reports:rbl_dashboard',
-                'icon': 'bi-building-gear',
+                'icon': 'bi bi-suit-club',
                 'color': 'danger',
             },
             {

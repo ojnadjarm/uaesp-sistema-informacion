@@ -54,7 +54,9 @@
             "tipo_proceso": "Tipo de Proceso",
             "acumulado_anio": "Acumulado {year} (actualizado hasta {date})",
             "per_capita": "Residuos por habitante (kg/hab)",
-            "promedio_toneladas_dia": "Promedio de toneladas por día"
+            "promedio_toneladas_dia": "Promedio de toneladas por día",
+            "home": "Inicio",
+            "evolucion_mensual": "Evolución mensual de residuos (toneladas)"
         },
         "apps": {
             "name": "Reportes e Indicadores",

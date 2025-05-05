@@ -89,6 +89,7 @@ def disposicion_final_dashboard(request):
         'TEMPLATE_CONCESION': get_string('templates.concesion', 'reports'),
         'TEMPLATE_TOTAL_RESIDUOS_KG': get_string('templates.total_residuos_ton', 'reports'),
         'TEMPLATE_ACUMULADO_ANIO': acumulado_texto,
+        'TEMPLATE_EVOLUCION_MENSUAL': get_string('templates.evolucion_mensual', 'reports'),
         'grafico_mensual_labels': labels,
         'grafico_mensual_data': data,
         'grafico_mensual_labels_json': json.dumps(labels),
