@@ -12,6 +12,25 @@
             "PERSONAS ENTRADA", "PERSONAS SALIDA", "USUARIO ENTRADA", "USUARIO SALIDA",
             "OBSERVACIONES ENTRADA", "OBSERVACIONES SALIDA", "OBSERVACIONES ALERTA TARA",
             "OPCIONES", "IMAGEN ENTRADA", "IMAGEN SALIDA"
+        ],
+        "table_name": "DisposicionFinal",
+        "validation": [
+            {
+                "field": "FECHA ENTRADA",
+                "db_field": "fecha_entrada",
+                "type": "date",
+                "transform": {
+                    "function": "transform_date",
+                    "args": {
+                        "format": "yyyy-MM-dd"
+                    }
+                }
+            },
+            {
+                "field": "CONSECUTIVO ENTRADA",
+                "db_field": "consecutivo_entrada",
+                "type": "integer"
+            }
         ]
     }
 } 

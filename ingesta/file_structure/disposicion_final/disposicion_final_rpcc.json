@@ -10,6 +10,26 @@
             "PESO ENTRADA", "EQUIPO PESAJE", "FECHA SALIDA", "HORA SALIDA",
             "PESO SALIDA", "AJUSTE PESO SALIDA", "PESO NETO", "TPO VEHÍCULO",
             "PROYECTO", "SERVICIO", "OBSERVACIONES", "NOVEDADES"
+        ],
+        "table_name": "DisposicionFinal",
+        "validation": [
+            {
+                "field": "FECHA ENTRADA",
+                "db_field": "fecha_entrada",
+                "type": "date",
+                "transform": {
+                    "function": "split_text",
+                    "args": {
+                        "character": " ",
+                        "position": 0
+                    }
+                }
+            },
+            {
+                "field": "CONSECUTIVO",
+                "db_field": "consecutivo_entrada",
+                "type": "integer"
+            }
         ]
     }
 }

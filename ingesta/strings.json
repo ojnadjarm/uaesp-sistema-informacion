@@ -23,10 +23,11 @@
             "file_format": "Error al procesar el archivo. Por favor verifique el formato: {error}",
             "file_encoding": "Error de codificación. Asegúrese de que sea UTF-8 o compatible",
             "file_unexpected": "Error inesperado validando el archivo: {error}",
-            "headers_mismatch": "Las columnas no coinciden. Esperadas: {expected_count}, Encontradas: {found_count}",
-            "missing_columns": "Columnas faltantes: {columns}",
-            "extra_columns": "Columnas adicionales: {columns}",
-            "no_process_structure": "No se ha definido una estructura para el tipo de proceso '{process_type}'"
+            "headers_mismatch": "Las columnas no coinciden.",
+            "missing_columns": "Verifique que el archivo tenga las columnas esperadas",
+            "extra_columns": "Verifique que el archivo no tenga columnas adicionales",
+            "no_process_structure": "No se ha definido una estructura para el tipo de proceso '{process_type}'",
+            "file_has_existing_records": "El archivo tiene registros existentes en la base de datos"
         },
         "success": {
             "file_uploaded": "Archivo subido exitosamente",

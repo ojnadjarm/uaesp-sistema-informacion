@@ -7,12 +7,14 @@ from .models import (
     RegistroCarga,
     DisposicionFinal,
     TimeStampedModel,
-    EstadoModel
+    EstadoModel,
+    DisposicionFinalMensual
 )
 
 __all__ = [
     'RegistroCarga',
     'DisposicionFinal',
     'TimeStampedModel',
-    'EstadoModel'
+    'EstadoModel',
+    'DisposicionFinalMensual'
 ]

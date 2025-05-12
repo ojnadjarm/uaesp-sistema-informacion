@@ -112,4 +112,5 @@ class DisposicionFinal(TimeStampedModel):
             models.Index(fields=['placa']),
             models.Index(fields=['concesion']),
             models.Index(fields=['fecha_entrada']),
-        ] 
+        ]
+        unique_together = ['fecha_entrada', 'hora_entrada', 'consecutivo_entrada']

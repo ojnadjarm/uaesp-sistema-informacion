@@ -17,7 +17,7 @@
             <div class="card shadow-sm flex-fill h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
                     <h5 class="card-title text-center">{{ TEMPLATE_TOTAL_RESIDUOS }}</h5>
-                    <h2 class="mb-0 text-center">{{ total_residuos|floatformat:2 }}</h2>
+                    <h2 class="mb-0 text-center">{{ total_residuos }}</h2>
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@
             <div class="card shadow-sm flex-fill h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
                     <h5 class="card-title text-center">{{ TEMPLATE_PER_CAPITA }}</h5>
-                    <h2 class="mb-0 text-center">{{ per_capita|floatformat:2 }}</h2>
+                    <h2 class="mb-0 text-center">{{ per_capita }}</h2>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
             <div class="card shadow-sm flex-fill h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
                     <h5 class="card-title text-center">{{ TEMPLATE_TONELADAS_DIA }}</h5>
-                    <h2 class="mb-0 text-center">{{ promedio_toneladas_dia|floatformat:2  }}</h2>
+                    <h2 class="mb-0 text-center">{{ promedio_toneladas_dia }}</h2>
                 </div>
             </div>
         </div>
@@ -69,7 +69,7 @@
                         {% for stat in stats_by_concesion %}
                         <tr>
                             <td>{{ stat.concesion|default:"N/A" }}</td>
-                            <td>{{ stat.total_residuos|floatformat:2 }}</td>
+                            <td>{{ stat.total_residuos}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
