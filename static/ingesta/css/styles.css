@@ -1,19 +1,57 @@
 :root {
     --sidebar-width: 250px;
     --topbar-height: 60px;
-    --uaesp-primary: #30664A;    /* UAESP's dark green */
-    --uaesp-secondary: #468964;  /* UAESP's medium green */
-    --uaesp-accent: #D0FCDF;    /* UAESP's light mint green */
-    --uaesp-accent-2: #A0E0B9;  /* UAESP's medium mint green */
-    --uaesp-gold: #FFB717;      /* UAESP's gold */
-    --uaesp-text: #2C3E50;      /* Dark text color */
+
+    /* Brand palette */
+    --uaesp-primary: #30664A;      /* Dark green */
+    --uaesp-secondary: #468964;    /* Medium green */
+    --uaesp-accent: #D0FCDF;       /* Light mint */
+    --uaesp-accent-2: #A0E0B9;     /* Mid mint */
+    --uaesp-gold: #FFB717;         /* Institutional gold */
+
+    /* Semantic colors */
+    --success: #198754;
+    --info: #0dcaf0;
+    --warning: #ffc107;
+    --danger: #dc3545;
+
+    /* Neutrals */
+    --text-900: #1f2d3d;
+    --text-700: #2C3E50;          /* legacy text */
+    --text-500: #6c757d;
+    --gray-100: #f8f9fa;
+    --gray-200: #f1f3f5;
+    --gray-300: #e9ecef;
+    --gray-400: #dee2e6;
+    --gray-500: #ced4da;
+
+    /* Typography scale */
+    --fz-100: 0.75rem;   /* 12px */
+    --fz-200: 0.875rem;  /* 14px */
+    --fz-300: 1rem;      /* 16px */
+    --fz-400: 1.125rem;  /* 18px */
+    --fz-500: 1.25rem;   /* 20px */
+    --fz-600: 1.5rem;    /* 24px */
+    --fz-700: 1.75rem;   /* 28px */
+    --fz-800: 2rem;      /* 32px */
+    --fz-900: 2.25rem;   /* 36px */
 }
 
 body {
     min-height: 100vh;
-    background-color: #f8f9fa;
-    color: var(--uaesp-text);
+    background-color: var(--gray-100);
+    color: var(--text-700);
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
+
+/* Typography */
+h1, .display-1, .page-title { font-size: var(--fz-800); font-weight: 700; color: var(--text-900); }
+h2, .display-2 { font-size: var(--fz-700); font-weight: 600; color: var(--text-900); }
+h3, .display-3 { font-size: var(--fz-600); font-weight: 600; color: var(--text-900); }
+.lead { font-size: var(--fz-400); color: var(--text-500); }
+.small { font-size: var(--fz-200); }
 
 .sidebar {
     width: var(--sidebar-width);
@@ -183,14 +221,18 @@ body {
     box-shadow: 0 6px 15px rgba(0,0,0,0.1);
 }
 
+/* Card header – institutional flat green */
 .card-header {
-    background: linear-gradient(45deg, var(--uaesp-accent-2), var(--uaesp-accent));
-    border-bottom: none;
-    color: var(--uaesp-primary);
+    background: var(--uaesp-primary);
+    color: #fff;
     font-weight: 600;
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.25rem;
     border-radius: 1rem 1rem 0 0 !important;
 }
+.card-header .card-title { font-size: var(--fz-500); }
+
+/* Optional neutral header */
+.card-header-neutral { background: var(--gray-200); color: var(--text-900); }
 
 .card-body {
     padding: 1.5rem;
@@ -198,24 +240,27 @@ body {
 
 /* Button styles */
 .btn-primary {
-    background: linear-gradient(45deg, var(--uaesp-primary), var(--uaesp-secondary));
-    border: none;
-    padding: 0.625rem 1.25rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    background: var(--uaesp-primary);
+    border-color: var(--uaesp-primary);
+    padding: 0.625rem 1rem;
+    font-weight: 600;
+    border-radius: .6rem;
+    transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(45deg, var(--uaesp-secondary), var(--uaesp-primary));
+    background: var(--uaesp-secondary);
+    border-color: var(--uaesp-secondary);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(48, 102, 74, 0.2);
+    box-shadow: 0 6px 12px rgba(48,102,74,.18);
 }
 
 .btn-secondary {
     background-color: var(--uaesp-gold);
-    border: none;
+    border-color: var(--uaesp-gold);
     color: var(--uaesp-primary);
-    font-weight: 500;
+    font-weight: 600;
+    border-radius: .6rem;
 }
 
 .btn-secondary:hover {
@@ -261,19 +306,34 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* When a table is inside a card, keep square corners to blend with card
+   BUT allow specific exceptions */
+.card .table {
+    border-radius: 0 !important;
+    box-shadow: none;
+}
+
+/* Exceptions: keep rounded corners in general content areas
+   history table should keep rounded corners */
+.history-table.table { border-radius: 1rem !important; box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important; }
+
+/* Table header – institutional flat mint, no gradients */
 .table thead th {
-    background: linear-gradient(45deg, var(--uaesp-accent-2), var(--uaesp-accent));
+    background: var(--uaesp-accent-2);
     color: var(--uaesp-primary);
     font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.875rem;
-    letter-spacing: 0.5px;
-    padding: 1rem 1.5rem;
-    border: none;
+    text-transform: none;
+    font-size: var(--fz-300);
+    letter-spacing: 0.1px;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--gray-300);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .table tbody td {
-    padding: 1rem 1.5rem;
+    padding: 0.9rem 1.25rem;
     vertical-align: middle;
 }
 
@@ -281,12 +341,37 @@ body {
     background-color: rgba(208, 252, 223, 0.15);
 }
 
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--gray-200);
+}
+
+.table-responsive { max-height: 70vh; }
+
 /* Badge styles */
 .badge {
-    padding: 0.5em 1em;
-    font-weight: 500;
-    border-radius: 2rem;
+    padding: 0.35em 0.8em;
+    font-weight: 600;
+    border-radius: 1rem;
+    font-size: var(--fz-200);
 }
+
+/* Button sizing */
+.btn-lg { padding: .7rem 1.25rem; font-size: var(--fz-400); border-radius: .7rem; }
+.btn i { margin-right: .5rem; }
+
+/* Page hero */
+.page-hero { display:flex; align-items:center; gap:1rem; margin-bottom: .25rem; }
+.icon-circle { width: 44px; height: 44px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%;
+    background: linear-gradient(45deg, var(--uaesp-primary), var(--uaesp-secondary)); color:#fff; box-shadow: 0 6px 14px rgba(48,102,74,.25); }
+.page-hero h1 { margin:0; font-size: var(--fz-700); font-weight:700; color: var(--text-900); }
+.page-subtitle{ color: var(--text-500); }
+
+/* Module tile */
+.module-tile { border: 1px solid var(--gray-300); border-radius: 1rem; transition: transform .2s ease, box-shadow .2s ease; background:#fff; }
+.module-tile:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,.08); }
+.module-tile .tile-icon { width:48px; height:48px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background: rgba(48,102,74,.1); color: var(--uaesp-primary); }
+.module-tile .tile-title { font-size: var(--fz-400); font-weight: 600; color: var(--text-900); }
+.module-tile .tile-subtitle { font-size: var(--fz-200); color: var(--text-500); }
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -300,3 +385,69 @@ body {
         margin-left: 0;
     }
 } 
+
+/* --------------------------------------------
+   Modern additions and refinements
+---------------------------------------------*/
+
+/* Links */
+a { color: var(--uaesp-primary); text-decoration: none; }
+a:hover { color: var(--uaesp-secondary); text-decoration: underline; }
+
+/* Buttons - outline variants aligned to brand */
+.btn-outline-primary {
+    color: var(--uaesp-primary);
+    border-color: var(--uaesp-primary);
+}
+.btn-outline-primary:hover {
+    color: #fff;
+    background: linear-gradient(45deg, var(--uaesp-primary), var(--uaesp-secondary));
+    border-color: transparent;
+}
+.btn-outline-danger { border-color: var(--danger); color: var(--danger); }
+.btn-outline-danger:hover { background-color: var(--danger); color: #fff; }
+
+/* Soft buttons */
+.btn-soft-primary { background-color: rgba(48, 102, 74, 0.12); color: var(--uaesp-primary); border: 1px solid rgba(48,102,74,0.15); }
+.btn-soft-primary:hover { background-color: rgba(48,102,74,0.18); }
+
+/* Ghost buttons */
+.btn-ghost { background: transparent; border: 1px dashed var(--gray-400); color: var(--text-700); display:inline-flex; align-items:center; justify-content:center; }
+.btn-ghost:hover { border-color: var(--uaesp-primary); color: var(--uaesp-primary); }
+
+/* Center icon-only action buttons in tables */
+.table td .btn { display:inline-flex; align-items:center; justify-content:center; }
+.table td .btn i { margin:0; }
+
+/* Badges - soft */
+.badge-soft-success { background-color: rgba(25,135,84,.12); color: #146c43; }
+.badge-soft-danger { background-color: rgba(220,53,69,.12); color: #b02a37; }
+.badge-soft-warning { background-color: rgba(255,193,7,.15); color: #997404; }
+.badge-soft-info    { background-color: rgba(13,202,240,.12); color: #087990; }
+
+/* Chips */
+.chip {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .375rem .75rem; border-radius: 999px;
+    background-color: var(--gray-200); color: var(--text-700);
+}
+.chip .bi { font-size: 0.9rem; }
+
+/* Pagination */
+.pagination .page-link { color: var(--uaesp-primary); border-color: var(--gray-300); }
+.pagination .page-link:hover { color: #fff; background: linear-gradient(45deg, var(--uaesp-primary), var(--uaesp-secondary)); border-color: transparent; }
+.pagination .page-item.active .page-link { border-color: transparent; background: linear-gradient(45deg, var(--uaesp-primary), var(--uaesp-secondary)); }
+
+/* Sidebar icons spacing */
+.sidebar .nav-link i { margin-right: .6rem; font-size: 1.05rem; }
+
+/* Page section headers */
+.section-header { margin-bottom: 1rem; }
+.section-header h2 { font-weight: 600; color: var(--text-900); }
+.section-subtitle { color: var(--text-500); }
+
+/* Table subtle separators */
+.table tbody tr + tr td { border-top: 1px solid var(--gray-300); }
+
+/* Inputs rounded & focus */
+input.form-control, select.form-select, textarea.form-control { border-radius: .65rem; }

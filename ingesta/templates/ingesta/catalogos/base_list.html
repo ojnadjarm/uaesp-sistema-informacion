@@ -23,7 +23,7 @@
 
             <!-- Búsqueda -->
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light">
+                <div class="card-header">
                     <h6 class="mb-0">
                         <i class="bi bi-search me-2"></i>Buscar {{ TEMPLATE_TITLE }}
                     </h6>
@@ -58,10 +58,8 @@
 
             <!-- Lista de registros -->
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="bi bi-list-ul me-2"></i>{{ TEMPLATE_LIST }}
-                    </h5>
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="bi bi-list-ul me-2"></i>{{ TEMPLATE_LIST }}</h5>
                 </div>
                 <div class="card-body p-0">
                     {% if page_obj %}

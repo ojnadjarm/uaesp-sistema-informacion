@@ -3,6 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden
 from globalfunctions.string_manager import get_string
+import time
+
+# Cache-busting version for static assets (changes on server restart)
+STATIC_VERSION = str(int(time.time()))
 
 def get_template_context():
     """
@@ -14,7 +18,8 @@ def get_template_context():
         'TEMPLATE_DASHBOARD': get_string('templates.dashboard', 'ingesta'),
         'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
         'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
-        'TEMPLATE_REPORTS_TITLE': get_string('templates.reports_title', 'reports')
+        'TEMPLATE_REPORTS_TITLE': get_string('templates.reports_title', 'reports'),
+        'STATIC_VERSION': STATIC_VERSION,
     }
 
 def handle_error(request, error_message, template_name, context=None):
