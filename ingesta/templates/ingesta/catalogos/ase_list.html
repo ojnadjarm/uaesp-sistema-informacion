@@ -1,0 +1,9 @@
+{% extends 'ingesta/catalogos/base_list.html' %}
+
+{% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
+
+{% block content %}
+    {% with create_url='ingesta:ase_create' list_url='ingesta:ase_list' edit_url='ingesta:ase_edit' delete_url='ingesta:ase_delete' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}

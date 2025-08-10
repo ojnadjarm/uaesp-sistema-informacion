@@ -27,7 +27,13 @@
             "missing_columns": "Verifique que el archivo tenga las columnas esperadas",
             "extra_columns": "Verifique que el archivo no tenga columnas adicionales",
             "no_process_structure": "No se ha definido una estructura para el tipo de proceso '{process_type}'",
-            "file_has_existing_records": "El archivo tiene registros existentes en la base de datos"
+            "file_has_existing_records": "El archivo tiene registros existentes en la base de datos",
+            "invalid_concesion": "Concesión '{concesion}' no válida. Debe estar registrada en el catálogo oficial",
+            "invalid_ase": "ASE '{ase}' no válido. Debe estar registrado en el catálogo oficial",
+            "invalid_servicio": "Servicio '{servicio}' no válido. Debe estar registrado en el catálogo oficial",
+            "invalid_zona_descarga": "Zona de descarga '{zona}' no válida. Debe estar registrada en el catálogo oficial",
+            "catalog_validation_error": "Error en validación de catálogos: {error}",
+            "missing_catalog_data": "Faltan datos de catálogos requeridos"
         },
         "success": {
             "file_uploaded": "Archivo subido exitosamente",
@@ -37,7 +43,11 @@
             "minio_uploaded": "Archivo '{filename}' subido exitosamente a MinIO",
             "db_saved": "Archivo '{filename}' registrado exitosamente en la base de datos",
             "minio_init": "Cliente MinIO inicializado correctamente",
-            "file_deleted": "Archivo eliminado exitosamente"
+            "file_deleted": "Archivo eliminado exitosamente",
+            "catalog_saved": "Catálogo guardado exitosamente",
+            "catalog_updated": "Catálogo actualizado exitosamente",
+            "catalog_deleted": "Catálogo eliminado exitosamente",
+            "catalog_validation_success": "Validación de catálogos exitosa"
         },
         "messages": {
             "validating_file": "Validando archivo '{filename}' para proceso: {process_type}",
@@ -135,6 +145,78 @@
         },
         "subsecretaria": {
             "disposicion_final": "Disposición Final"
+        },
+        "catalogos": {
+            "title": "Catálogos del Sistema",
+            "description": "Gestión de catálogos oficiales",
+            "concesion": {
+                "title": "Concesiones",
+                "description": "Gestión de concesiones de servicios públicos",
+                "add": "Agregar Concesión",
+                "edit": "Editar Concesión",
+                "delete": "Eliminar Concesión",
+                "list": "Lista de Concesiones",
+                "no_records": "No hay concesiones registradas",
+                "codigo_label": "Código",
+                "nombre_label": "Nombre",
+                "descripcion_label": "Descripción",
+                "activo_label": "Activo",
+                "codigo_help": "Código único de la concesión",
+                "nombre_help": "Nombre oficial de la concesión",
+                "descripcion_help": "Descripción adicional de la concesión",
+                "activo_help": "Indica si la concesión está activa"
+            },
+            "ase": {
+                "title": "ASEs",
+                "description": "Gestión de empresas de servicios públicos",
+                "add": "Agregar ASE",
+                "edit": "Editar ASE",
+                "delete": "Eliminar ASE",
+                "list": "Lista de ASEs",
+                "no_records": "No hay ASEs registrados",
+                "codigo_label": "Código",
+                "nombre_label": "Nombre",
+                "descripcion_label": "Descripción",
+                "activo_label": "Activo",
+                "codigo_help": "Código único del ASE",
+                "nombre_help": "Nombre oficial del ASE",
+                "descripcion_help": "Descripción adicional del ASE",
+                "activo_help": "Indica si el ASE está activo"
+            },
+            "servicio": {
+                "title": "Servicios",
+                "description": "Gestión de tipos de servicios",
+                "add": "Agregar Servicio",
+                "edit": "Editar Servicio",
+                "delete": "Eliminar Servicio",
+                "list": "Lista de Servicios",
+                "no_records": "No hay servicios registrados",
+                "codigo_label": "Código",
+                "nombre_label": "Nombre",
+                "descripcion_label": "Descripción",
+                "activo_label": "Activo",
+                "codigo_help": "Código único del servicio",
+                "nombre_help": "Nombre oficial del servicio",
+                "descripcion_help": "Descripción adicional del servicio",
+                "activo_help": "Indica si el servicio está activo"
+            },
+            "zona_descarga": {
+                "title": "Zonas de Descarga",
+                "description": "Gestión de zonas de descarga",
+                "add": "Agregar Zona de Descarga",
+                "edit": "Editar Zona de Descarga",
+                "delete": "Eliminar Zona de Descarga",
+                "list": "Lista de Zonas de Descarga",
+                "no_records": "No hay zonas de descarga registradas",
+                "codigo_label": "Código",
+                "nombre_label": "Nombre",
+                "descripcion_label": "Descripción",
+                "activo_label": "Activo",
+                "codigo_help": "Código único de la zona",
+                "nombre_help": "Nombre oficial de la zona",
+                "descripcion_help": "Descripción adicional de la zona",
+                "activo_help": "Indica si la zona está activa"
+            }
         }
     },
     "forms": {

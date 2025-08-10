@@ -1,0 +1,201 @@
+{% extends 'coreview/base.html' %}
+{% load static %}
+
+{% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="bi bi-collection me-2 text-primary"></i>{{ TEMPLATE_TITLE }}
+                    </h1>
+                    <p class="text-muted mb-0">{{ TEMPLATE_DESCRIPTION }}</p>
+                </div>
+                <a href="{% url create_url %}" class="btn btn-primary btn-lg px-4">
+                    <i class="bi bi-plus-circle me-2"></i>{{ TEMPLATE_ADD }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+            <!-- Búsqueda -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-search me-2"></i>Buscar {{ TEMPLATE_TITLE }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="search" 
+                                       value="{{ search_query }}" 
+                                       placeholder="Buscar por código, nombre o descripción...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="bi bi-search me-1"></i>Buscar
+                            </button>
+                            {% if search_query %}
+                                <a href="{% url list_url %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Limpiar
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista de registros -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-list-ul me-2"></i>{{ TEMPLATE_LIST }}
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if page_obj %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">
+                                            <i class="bi bi-hash me-1"></i>Código
+                                        </th>
+                                        <th>
+                                            <i class="bi bi-tag me-1"></i>Nombre
+                                        </th>
+                                        <th>
+                                            <i class="bi bi-info-circle me-1"></i>Descripción
+                                        </th>
+                                        <th>
+                                            <i class="bi bi-toggle-on me-1"></i>Estado
+                                        </th>
+                                        <th class="pe-4 text-center">
+                                            <i class="bi bi-gear me-1"></i>Acciones
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in page_obj %}
+                                    <tr>
+                                        <td class="ps-4">
+                                            <span class="badge bg-primary fs-6">{{ item.codigo }}</span>
+                                        </td>
+                                        <td>
+                                            <strong>{{ item.nombre }}</strong>
+                                        </td>
+                                        <td>
+                                            {% if item.descripcion %}
+                                                <span class="text-muted">{{ item.descripcion|truncatechars:50 }}</span>
+                                            {% else %}
+                                                <span class="text-muted fst-italic">Sin descripción</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if item.activo %}
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle me-1"></i>Activo
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger">
+                                                    <i class="bi bi-x-circle me-1"></i>Inactivo
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="pe-4 text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url edit_url item.pk %}" 
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   title="Editar">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a href="{% url delete_url item.pk %}" 
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   title="Eliminar">
+                                                    <i class="bi bi-trash3"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if page_obj.has_other_pages %}
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">
+                                            <i class="fas fa-angle-double-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                            <i class="fas fa-angle-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                            <i class="fas fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                            <i class="fas fa-angle-double-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+
+                        <!-- Información de paginación -->
+                        <div class="text-center text-muted">
+                            Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+                        </div>
+
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                            <h5 class="text-muted">{{ TEMPLATE_NO_RECORDS }}</h5>
+                            <p class="text-muted">No se encontraron registros que coincidan con los criterios de búsqueda.</p>
+                            <a href="{% url create_url %}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Crear el primer registro
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

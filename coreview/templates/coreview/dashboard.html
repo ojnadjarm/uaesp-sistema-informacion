@@ -129,7 +129,7 @@
                             <div class="card border-left-warning h-100">
                                 <div class="card-body">
                                     <div class="col-md-12">
-                                        <a href="{% url 'upload_file' %}" class="btn w-100 py-3">
+                                        <a href="{% url 'ingesta:upload_file' %}" class="btn w-100 py-3">
                                             <i class="bi bi-upload mb-2 d-block h3"></i>
                                             {{ TEMPLATE_UPLOAD_FILE }}
                                         </a>
@@ -141,7 +141,7 @@
                             <div class="card border-left-success h-100">
                                 <div class="card-body">
                                     <div class="col-md-12">
-                                        <a href="{% url 'file_history' %}" class="btn w-100 py-3">
+                                        <a href="{% url 'ingesta:file_history' %}" class="btn w-100 py-3">
                                             <i class="bi bi-clock-history mb-2 d-block h3"></i>
                                             {{ TEMPLATE_VIEW_HISTORY }}
                                         </a>

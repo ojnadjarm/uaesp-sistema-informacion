@@ -1,0 +1,9 @@
+{% extends 'ingesta/catalogos/base_form.html' %}
+
+{% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
+
+{% block content %}
+    {% with back_url='ingesta:concesion_list' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
