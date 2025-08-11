@@ -5,8 +5,9 @@
     /* Brand palette */
     --uaesp-primary: #30664A;      /* Dark green */
     --uaesp-secondary: #468964;    /* Medium green */
-    --uaesp-accent: #D0FCDF;       /* Light mint */
-    --uaesp-accent-2: #A0E0B9;     /* Mid mint */
+    /* Refined analogous mint scale (accessible contrast) */
+    --uaesp-accent: #DDF6EA;       /* Light mint */
+    --uaesp-accent-2: #BFE8D2;     /* Mid mint for headers */
     --uaesp-gold: #FFB717;         /* Institutional gold */
 
     /* Semantic colors */
@@ -35,6 +36,8 @@
     --fz-700: 1.75rem;   /* 28px */
     --fz-800: 2rem;      /* 32px */
     --fz-900: 2.25rem;   /* 36px */
+
+    /* Component sizing (compact) */
 }
 
 body {
@@ -180,7 +183,7 @@ h3, .display-3 { font-size: var(--fz-600); font-weight: 600; color: var(--text-9
 }
 
 .footer {
-    background: linear-gradient(45deg, var(--uaesp-primary), var(--uaesp-secondary));
+    background: var(--uaesp-primary);
     color: white;
     padding: 1.5rem;
     margin-top: auto;
@@ -277,10 +280,7 @@ h3, .display-3 { font-size: var(--fz-600); font-weight: 600; color: var(--text-9
     padding: 1rem 1.5rem;
 }
 
-.alert-success {
-    background: linear-gradient(45deg, var(--uaesp-accent-2), var(--uaesp-accent));
-    color: var(--uaesp-primary);
-}
+.alert-success { background: var(--uaesp-accent); color: var(--uaesp-primary); }
 
 .alert-danger {
     background-color: #f8d7da;
@@ -332,6 +332,13 @@ h3, .display-3 { font-size: var(--fz-600); font-weight: 600; color: var(--text-9
     z-index: 1;
 }
 
+/* If a table lives inside a card, make its header neutral (not mint) */
+.card .table thead th {
+    background: #ffffff;
+    color: var(--text-900);
+    border-bottom: 1px solid var(--gray-300);
+}
+
 .table tbody td {
     padding: 0.9rem 1.25rem;
     vertical-align: middle;
@@ -370,8 +377,14 @@ h3, .display-3 { font-size: var(--fz-600); font-weight: 600; color: var(--text-9
 .module-tile { border: 1px solid var(--gray-300); border-radius: 1rem; transition: transform .2s ease, box-shadow .2s ease; background:#fff; }
 .module-tile:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,.08); }
 .module-tile .tile-icon { width:48px; height:48px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background: rgba(48,102,74,.1); color: var(--uaesp-primary); }
-.module-tile .tile-title { font-size: var(--fz-400); font-weight: 600; color: var(--text-900); }
-.module-tile .tile-subtitle { font-size: var(--fz-200); color: var(--text-500); }
+.module-tile .tile-title { font-size: var(--fz-400); font-weight: 600; color: var(--text-900); margin-left:.75rem; display:inline-flex; align-items:center; }
+.module-tile .tile-subtitle { display:none; }
+
+/* Action cards (for CTA blocks like Cargar/Historial) */
+.action-card { border: 1px solid var(--gray-300); border-radius: 1rem; background:#fff; height:100%; display:flex; align-items:center; justify-content:center; text-align:center; padding: 1.25rem; transition: transform .2s ease, box-shadow .2s ease; }
+.action-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,.08); }
+.action-card .action-icon { width: var(--icon-circle-size); height: var(--icon-circle-size); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background: var(--gray-200); color: var(--text-700); margin-bottom:.5rem; }
+.action-card .action-label { font-size: var(--fz-300); color: var(--text-900); font-weight: 600; }
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -432,6 +445,26 @@ a:hover { color: var(--uaesp-secondary); text-decoration: underline; }
     background-color: var(--gray-200); color: var(--text-700);
 }
 .chip .bi { font-size: 0.9rem; }
+
+/* KPI cards */
+.kpi-card { border-radius: 1rem; background:#fff; box-shadow: 0 6px 16px rgba(0,0,0,.06); padding: 1rem 1.25rem; display:flex; align-items:center; gap:1rem; }
+.kpi-card .kpi-icon { width:48px; height:48px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background: rgba(48,102,74,.1); color: var(--uaesp-primary); }
+.kpi-card .kpi-value { font-size: 1.75rem; font-weight: 700; color: var(--text-900); line-height:1; }
+.kpi-card .kpi-label { font-size: var(--fz-200); color: var(--text-500); }
+.kpi-card.success .kpi-icon { background: rgba(25,135,84,.12); color:#198754; }
+.kpi-card.info    .kpi-icon { background: rgba(13,202,240,.12); color:#087990; }
+.kpi-card.warn    .kpi-icon { background: rgba(255,193,7,.15); color:#997404; }
+
+/* Dense tables */
+.table-dense thead th { padding: .6rem .8rem; font-size: var(--fz-200); }
+.table-dense tbody td { padding: .55rem .8rem; font-size: var(--fz-200); }
+
+/* Status chips */
+.status-chip { display:inline-flex; align-items:center; gap:.4rem; border-radius:999px; padding:.25rem .6rem; font-size: var(--fz-200); font-weight:600; }
+.status-chip.success { background: rgba(25,135,84,.12); color:#146c43; }
+.status-chip.warn    { background: rgba(255,193,7,.15); color:#997404; }
+.status-chip.error   { background: rgba(220,53,69,.12); color:#b02a37; }
+.status-chip.info    { background: rgba(13,202,240,.12); color:#087990; }
 
 /* Pagination */
 .pagination .page-link { color: var(--uaesp-primary); border-color: var(--gray-300); }

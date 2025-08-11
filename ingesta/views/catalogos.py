@@ -100,13 +100,32 @@ def concesion_delete(request, pk):
         return redirect('ingesta:concesion_list')
     
     context = {
-        'concesion': concesion,
+        'item': concesion,
+        'back_url': 'ingesta:concesion_list',
         'TEMPLATE_TITLE': get_string('catalogos.concesion.delete', 'ingesta'),
         'TEMPLATE_DESCRIPTION': get_string('catalogos.concesion.description', 'ingesta'),
     }
     context.update(get_template_context())
     
     return render(request, 'ingesta/catalogos/concesion_confirm_delete.html', context)
+
+@login_required
+def concesion_toggle(request, pk):
+    """Activar/desactivar concesión."""
+    concesion = get_object_or_404(Concesion, pk=pk)
+    
+    if request.method == 'POST':
+        concesion.activo = not concesion.activo
+        concesion.save()
+        
+        if concesion.activo:
+            messages.success(request, get_string('success.catalog_activated', 'ingesta'))
+        else:
+            messages.success(request, get_string('success.catalog_deactivated', 'ingesta'))
+        
+        return redirect('ingesta:concesion_list')
+    
+    return redirect('ingesta:concesion_list')
 
 # ============================================================================
 # VISTAS PARA ASEs
@@ -199,13 +218,32 @@ def ase_delete(request, pk):
         return redirect('ingesta:ase_list')
     
     context = {
-        'ase': ase,
+        'item': ase,
+        'back_url': 'ingesta:ase_list',
         'TEMPLATE_TITLE': get_string('catalogos.ase.delete', 'ingesta'),
         'TEMPLATE_DESCRIPTION': get_string('catalogos.ase.description', 'ingesta'),
     }
     context.update(get_template_context())
     
     return render(request, 'ingesta/catalogos/ase_confirm_delete.html', context)
+
+@login_required
+def ase_toggle(request, pk):
+    """Activar/desactivar ASE."""
+    ase = get_object_or_404(ASE, pk=pk)
+    
+    if request.method == 'POST':
+        ase.activo = not ase.activo
+        ase.save()
+        
+        if ase.activo:
+            messages.success(request, get_string('success.catalog_activated', 'ingesta'))
+        else:
+            messages.success(request, get_string('success.catalog_deactivated', 'ingesta'))
+        
+        return redirect('ingesta:ase_list')
+    
+    return redirect('ingesta:ase_list')
 
 # ============================================================================
 # VISTAS PARA SERVICIOS
@@ -298,13 +336,32 @@ def servicio_delete(request, pk):
         return redirect('ingesta:servicio_list')
     
     context = {
-        'servicio': servicio,
+        'item': servicio,
+        'back_url': 'ingesta:servicio_list',
         'TEMPLATE_TITLE': get_string('catalogos.servicio.delete', 'ingesta'),
         'TEMPLATE_DESCRIPTION': get_string('catalogos.servicio.description', 'ingesta'),
     }
     context.update(get_template_context())
     
     return render(request, 'ingesta/catalogos/servicio_confirm_delete.html', context)
+
+@login_required
+def servicio_toggle(request, pk):
+    """Activar/desactivar servicio."""
+    servicio = get_object_or_404(Servicio, pk=pk)
+    
+    if request.method == 'POST':
+        servicio.activo = not servicio.activo
+        servicio.save()
+        
+        if servicio.activo:
+            messages.success(request, get_string('success.catalog_activated', 'ingesta'))
+        else:
+            messages.success(request, get_string('success.catalog_deactivated', 'ingesta'))
+        
+        return redirect('ingesta:servicio_list')
+    
+    return redirect('ingesta:servicio_list')
 
 # ============================================================================
 # VISTAS PARA ZONAS DE DESCARGA
@@ -397,10 +454,29 @@ def zona_descarga_delete(request, pk):
         return redirect('ingesta:zona_descarga_list')
     
     context = {
-        'zona': zona,
+        'item': zona,
+        'back_url': 'ingesta:zona_descarga_list',
         'TEMPLATE_TITLE': get_string('catalogos.zona_descarga.delete', 'ingesta'),
         'TEMPLATE_DESCRIPTION': get_string('catalogos.zona_descarga.description', 'ingesta'),
     }
     context.update(get_template_context())
     
     return render(request, 'ingesta/catalogos/zona_descarga_confirm_delete.html', context)
+
+@login_required
+def zona_descarga_toggle(request, pk):
+    """Activar/desactivar zona de descarga."""
+    zona = get_object_or_404(ZonaDescarga, pk=pk)
+    
+    if request.method == 'POST':
+        zona.activo = not zona.activo
+        zona.save()
+        
+        if zona.activo:
+            messages.success(request, get_string('success.catalog_activated', 'ingesta'))
+        else:
+            messages.success(request, get_string('success.catalog_deactivated', 'ingesta'))
+        
+        return redirect('ingesta:zona_descarga_list')
+    
+    return redirect('ingesta:zona_descarga_list')

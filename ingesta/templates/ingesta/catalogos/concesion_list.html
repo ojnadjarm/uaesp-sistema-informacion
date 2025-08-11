@@ -3,7 +3,7 @@
 {% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
 
 {% block content %}
-    {% with create_url='ingesta:concesion_create' list_url='ingesta:concesion_list' edit_url='ingesta:concesion_edit' delete_url='ingesta:concesion_delete' %}
+    {% with create_url='ingesta:concesion_create' list_url='ingesta:concesion_list' edit_url='ingesta:concesion_edit' delete_url='ingesta:concesion_delete' toggle_url='ingesta:concesion_toggle' %}
         {{ block.super }}
     {% endwith %}
 {% endblock %}

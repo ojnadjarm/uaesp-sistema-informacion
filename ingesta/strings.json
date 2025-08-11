@@ -47,6 +47,8 @@
             "catalog_saved": "Catálogo guardado exitosamente",
             "catalog_updated": "Catálogo actualizado exitosamente",
             "catalog_deleted": "Catálogo eliminado exitosamente",
+            "catalog_activated": "Catálogo activado exitosamente",
+            "catalog_deactivated": "Catálogo desactivado exitosamente",
             "catalog_validation_success": "Validación de catálogos exitosa"
         },
         "messages": {

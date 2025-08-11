@@ -3,7 +3,7 @@
 {% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
 
 {% block content %}
-    {% with create_url='ingesta:servicio_create' list_url='ingesta:servicio_list' edit_url='ingesta:servicio_edit' delete_url='ingesta:servicio_delete' %}
+    {% with create_url='ingesta:servicio_create' list_url='ingesta:servicio_list' edit_url='ingesta:servicio_edit' delete_url='ingesta:servicio_delete' toggle_url='ingesta:servicio_toggle' %}
         {{ block.super }}
     {% endwith %}
 {% endblock %}

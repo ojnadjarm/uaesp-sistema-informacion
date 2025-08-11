@@ -3,7 +3,7 @@
 {% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
 
 {% block content %}
-    {% with create_url='ingesta:ase_create' list_url='ingesta:ase_list' edit_url='ingesta:ase_edit' delete_url='ingesta:ase_delete' %}
+    {% with create_url='ingesta:ase_create' list_url='ingesta:ase_list' edit_url='ingesta:ase_edit' delete_url='ingesta:ase_delete' toggle_url='ingesta:ase_toggle' %}
         {{ block.super }}
     {% endwith %}
 {% endblock %}

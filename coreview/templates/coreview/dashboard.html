@@ -25,52 +25,32 @@
                         <div class="col-md-3">
                             <a href="#ingesta" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="tile-icon"><i class="bi bi-file-earmark-arrow-up"></i></span>
-                                        <div>
-                                            <div class="tile-title">{{ TEMPLATE_MODULE_INGESTA }}</div>
-                                            <div class="tile-subtitle">{{ TEMPLATE_MODULE_INGESTA_DESC }}</div>
-                                        </div>
-                                    </div>
+                                    <span class="tile-icon"><i class="bi bi-file-earmark-arrow-up"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_MODULE_INGESTA }}</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="#presupuesto" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="tile-icon"><i class="bi bi-cash-stack"></i></span>
-                                        <div>
-                                            <div class="tile-title">{{ TEMPLATE_MODULE_PRESUPUESTO }}</div>
-                                            <div class="tile-subtitle">{{ TEMPLATE_MODULE_PRESUPUESTO_DESC }}</div>
-                                        </div>
-                                    </div>
+                                    <span class="tile-icon"><i class="bi bi-cash-stack"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_MODULE_PRESUPUESTO }}</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="#paa" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="tile-icon"><i class="bi bi-calendar-check"></i></span>
-                                        <div>
-                                            <div class="tile-title">{{ TEMPLATE_MODULE_PAA }}</div>
-                                            <div class="tile-subtitle">{{ TEMPLATE_MODULE_PAA_DESC }}</div>
-                                        </div>
-                                    </div>
+                                    <span class="tile-icon"><i class="bi bi-calendar-check"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_MODULE_PAA }}</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="#reportes" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="tile-icon"><i class="bi bi-graph-up"></i></span>
-                                        <div>
-                                            <div class="tile-title">{{ TEMPLATE_MODULE_REPORTES }}</div>
-                                            <div class="tile-subtitle">{{ TEMPLATE_MODULE_REPORTES_DESC }}</div>
-                                        </div>
-                                    </div>
+                                    <span class="tile-icon"><i class="bi bi-graph-up"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_MODULE_REPORTES }}</div>
                                 </div>
                             </a>
                         </div>
@@ -89,60 +69,40 @@
                 </div>
                 <div class="card-body">
                     <!-- Statistics Cards -->
-                    <div class="row mb-4">
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary h-100">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-uppercase mb-1">{{ TEMPLATE_TOTAL_FILES }}</div>
-                                            <div class="h5 mb-0 font-weight-bold">{{ total_files }}</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="bi bi-file-text h1 text-muted"></i>
-                                        </div>
-                                    </div>
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card">
+                                <span class="kpi-icon"><i class="bi bi-file-text"></i></span>
+                                <div>
+                                    <div class="kpi-value">{{ total_files }}</div>
+                                    <div class="kpi-label">{{ TEMPLATE_TOTAL_FILES }}</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info h-100">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-uppercase mb-1">{{ TEMPLATE_RECENT_UPLOADS }}</div>
-                                            <div class="h5 mb-0 font-weight-bold">{{ recent_uploads }}</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="bi bi-clock-history h1 text-muted"></i>
-                                        </div>
-                                    </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card info">
+                                <span class="kpi-icon"><i class="bi bi-clock-history"></i></span>
+                                <div>
+                                    <div class="kpi-value">{{ recent_uploads }}</div>
+                                    <div class="kpi-label">{{ TEMPLATE_RECENT_UPLOADS }}</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning h-100">
-                                <div class="card-body">
-                                    <div class="col-md-12">
-                                        <a href="{% url 'ingesta:upload_file' %}" class="btn w-100 py-3">
-                                            <i class="bi bi-upload mb-2 d-block h3"></i>
-                                            {{ TEMPLATE_UPLOAD_FILE }}
-                                        </a>
-                                    </div>
+                        <div class="col-xl-3 col-md-6">
+                            <a href="{% url 'ingesta:upload_file' %}" class="text-decoration-none">
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-upload"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_UPLOAD_FILE }}</div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success h-100">
-                                <div class="card-body">
-                                    <div class="col-md-12">
-                                        <a href="{% url 'ingesta:file_history' %}" class="btn w-100 py-3">
-                                            <i class="bi bi-clock-history mb-2 d-block h3"></i>
-                                            {{ TEMPLATE_VIEW_HISTORY }}
-                                        </a>
-                                    </div>
+                        <div class="col-xl-3 col-md-6">
+                            <a href="{% url 'ingesta:file_history' %}" class="text-decoration-none">
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-clock-history"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_VIEW_HISTORY }}</div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -159,51 +119,41 @@
                     <div class="row g-3">
                         <div class="col-md-3">
                             <a href="{% url 'reports:disposicion_final_dashboard' %}" class="text-decoration-none">
-                                <div class="card h-100 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <i class="bi bi-trash display-6 text-primary mb-2"></i>
-                                        <h6 class="card-title mb-0">Disposición Final</h6>
-                                    </div>
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-trash"></i></span>
+                                    <div class="tile-title">Disposición Final</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="#" class="text-decoration-none">
-                                <div class="card h-100 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <i class="bi bi-recycle display-6 text-success mb-2"></i>
-                                        <h6 class="card-title mb-0">Aprovechamiento</h6>
-                                    </div>
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-recycle"></i></span>
+                                    <div class="tile-title">Aprovechamiento</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="#" class="text-decoration-none">
-                                <div class="card h-100 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <i class="bi bi-lightbulb display-6 text-warning mb-2"></i>
-                                        <h6 class="card-title mb-0">Alumbrado</h6>
-                                    </div>
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-lightbulb"></i></span>
+                                    <div class="tile-title">Alumbrado</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="#" class="text-decoration-none">
-                                <div class="card h-100 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <i class="bi bi-flower1 display-6 text-info mb-2"></i>
-                                        <h6 class="card-title mb-0">Funerarios</h6>
-                                    </div>
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-flower1"></i></span>
+                                    <div class="tile-title">Funerarios</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="#" class="text-decoration-none">
-                                <div class="card h-100 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <i class="bi bi bi-suit-club display-6 text-danger mb-2"></i>
-                                        <h6 class="card-title mb-0">RBL</h6>
-                                    </div>
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-suit-club"></i></span>
+                                    <div class="tile-title">RBL</div>
                                 </div>
                             </a>
                         </div>

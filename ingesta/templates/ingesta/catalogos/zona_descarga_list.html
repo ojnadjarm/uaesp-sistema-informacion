@@ -3,7 +3,7 @@
 {% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
 
 {% block content %}
-    {% with create_url='ingesta:zona_descarga_create' list_url='ingesta:zona_descarga_list' edit_url='ingesta:zona_descarga_edit' delete_url='ingesta:zona_descarga_delete' %}
+    {% with create_url='ingesta:zona_descarga_create' list_url='ingesta:zona_descarga_list' edit_url='ingesta:zona_descarga_edit' delete_url='ingesta:zona_descarga_delete' toggle_url='ingesta:zona_descarga_toggle' %}
         {{ block.super }}
     {% endwith %}
 {% endblock %}

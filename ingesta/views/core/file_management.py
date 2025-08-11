@@ -162,7 +162,7 @@ def upload_file_view(request):
                     except Exception as e:
                         print(f"Error al limpiar registro: {e}")
 
-            return redirect('upload_file')
+            return redirect('ingesta:upload_file')
 
         else:
             messages.error(request, get_string('errors.invalid_form', 'ingesta'))
@@ -192,8 +192,8 @@ def download_file(request, file_id):
     
     if not carga.path_minio:
         messages.error(request, get_string('errors.file_not_available', 'ingesta'))
-        return redirect('file_history')
-    
+        return redirect('ingesta:file_history')
+
     try:
         # Get the file from MinIO
         response = minio_client.get_object(
@@ -211,10 +211,10 @@ def download_file(request, file_id):
         return response_data
     except S3Error as e:
         messages.error(request, get_string('errors.download_error', 'ingesta').format(error=str(e)))
-        return redirect('file_history')
+        return redirect('ingesta:file_history')
     except Exception as e:
         messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
-        return redirect('file_history')
+        return redirect('ingesta:file_history')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -238,4 +238,4 @@ def delete_file(request, file_id):
     except Exception as e:
         messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
     
-    return redirect('file_history') 
+    return redirect('ingesta:file_history') 
