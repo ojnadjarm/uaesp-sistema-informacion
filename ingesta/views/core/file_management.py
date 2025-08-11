@@ -111,11 +111,11 @@ def upload_file_view(request):
                         
                         # Agregar información del reporte al inicio
                         from datetime import datetime
-                        csv_buffer.write("Reporte de Errores de Validación de Catálogos\n")
-                        csv_buffer.write(f"Archivo original: {original_filename}\n")
-                        csv_buffer.write(f"Fecha de validación: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                        csv_buffer.write(f"Total de filas con errores: {len(error_df)}\n")
-                        csv_buffer.write(f"Total de errores encontrados: {error_df['Cantidad_Errores'].sum()}\n")
+                        csv_buffer.write(get_string('errors.report_title', 'ingesta') + "\n")
+                        csv_buffer.write(get_string('errors.report_original_file', 'ingesta').format(filename=original_filename) + "\n")
+                        csv_buffer.write(get_string('errors.report_validation_date', 'ingesta').format(date=datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + "\n")
+                        csv_buffer.write(get_string('errors.report_total_rows_with_errors', 'ingesta').format(count=len(error_df)) + "\n")
+                        csv_buffer.write(get_string('errors.report_total_errors_found', 'ingesta').format(count=error_df['Cantidad de Errores'].sum()) + "\n")
                         csv_buffer.write("\n")
                         
                         # Escribir el DataFrame de errores con codificación UTF-8 explícita
@@ -131,7 +131,7 @@ def upload_file_view(request):
                         
                         # Guardar en la sesión
                         request.session['error_file_content'] = encoded_content
-                        request.session['error_file_name'] = f"errores_{original_filename.replace('.xlsx', '.csv').replace('.csv', '_errores.csv')}"
+                        request.session['error_file_name'] = f"{get_string('errors.error_file_name_prefix', 'ingesta')}{original_filename.replace('.xlsx', '.csv').replace('.csv', '_errores.csv')}"
                         request.session['has_validation_errors'] = True
                     messages.error(request, error_validacion)
                     # Redirigir en lugar de renderizar para evitar reenvío del formulario
@@ -139,7 +139,7 @@ def upload_file_view(request):
                 # Si es válido, continuar con el proceso
             else:
                 # Caso inesperado
-                messages.error(request, "Error inesperado en la validación del archivo")
+                messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error="validación del archivo"))
                 # Redirigir en lugar de renderizar para evitar reenvío del formulario
                 return redirect('ingesta:upload_file')
 
@@ -310,7 +310,7 @@ def download_error_file(request):
         del request.session['has_validation_errors']
         
         # Agregar mensaje de confirmación
-        messages.success(request, "Archivo de errores descargado exitosamente")
+        messages.success(request, get_string('success.error_file_downloaded', 'ingesta'))
         
         return response
         
@@ -327,10 +327,10 @@ def delete_file(request, file_id):
         # Delete from MinIO if path exists
         if carga.path_minio:
             minio_client.remove_object(MINIO_BUCKET, carga.path_minio)
-        
+
         # Delete from database
         carga.delete()
-        
+
         messages.success(request, get_string('success.file_deleted', 'ingesta'))
     except S3Error as e:
         messages.error(request, get_string('errors.minio_delete_error', 'ingesta').format(error=str(e)))

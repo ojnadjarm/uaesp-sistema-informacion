@@ -134,9 +134,9 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         
         # Check if file type matches configuration
         if uploaded_file.name.lower().endswith('.xlsx') and file_type != 'xlsx':
-            return False, get_string('errors.file_format', 'ingesta').format(error="File must be CSV")
+            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo debe ser de tipo CSV (.csv)")
         elif uploaded_file.name.lower().endswith('.csv') and file_type != 'csv':
-            return False, get_string('errors.file_format', 'ingesta').format(error="File must be XLSX")
+            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo debe ser de tipo Excel (.xlsx)")
 
         # Read file based on configuration
         if file_type == 'xlsx':

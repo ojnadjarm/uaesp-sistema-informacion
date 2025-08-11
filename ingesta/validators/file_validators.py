@@ -121,6 +121,20 @@ def validar_registros_existentes(df, proceso_config):
 
     return True, None
 
+def get_catalog_error_message(field, value, error_string_key):
+    """
+    Genera el mensaje de error apropiado para cada tipo de catálogo.
+    """
+    if 'concesion' in error_string_key:
+        return get_string(error_string_key, 'ingesta').format(concesion=value)
+    elif 'ase' in error_string_key:
+        return get_string(error_string_key, 'ingesta').format(ase=value)
+    elif 'zona' in error_string_key:
+        return get_string(error_string_key, 'ingesta').format(zona=value)
+    else:
+        # Fallback para otros tipos
+        return get_string(error_string_key, 'ingesta').format(value=value)
+
 def validar_catalogos_y_generar_log(df, proceso_config):
     """
     Valida los catálogos en el archivo y genera un DataFrame con los errores encontrados.
@@ -138,15 +152,19 @@ def validar_catalogos_y_generar_log(df, proceso_config):
     optional_fields = catalog_config.get('optional_fields', [])
     field_mapping = catalog_config.get('field_mapping', {})
     
-    # Mapeo de nombres de columnas a modelos
+    # Mapeo de nombres de columnas a modelos y strings de error
     catalog_mapping = {}
+    error_string_mapping = {}
     for column_name, model_name in field_mapping.items():
         if model_name == 'Concesion':
             catalog_mapping[column_name] = Concesion
+            error_string_mapping[column_name] = 'errors.invalid_concesion'
         elif model_name == 'ASE':
             catalog_mapping[column_name] = ASE
+            error_string_mapping[column_name] = 'errors.invalid_ase'
         elif model_name == 'ZonaDescarga':
             catalog_mapping[column_name] = ZonaDescarga
+            error_string_mapping[column_name] = 'errors.invalid_zona_descarga'
     
     # Validar que la configuración sea correcta
     if not catalog_mapping:
@@ -173,7 +191,7 @@ def validar_catalogos_y_generar_log(df, proceso_config):
                 value = str(row[field]).strip() if pd.notna(row[field]) else ''
                 
                 if not value:
-                    row_errors.append(f"{field.title()}: Campo requerido, no puede estar vacío")
+                    row_errors.append(f"{field.title()}: {get_string('errors.required_field_empty', 'ingesta')}")
                     total_errors += 1
                 else:
                     # Verificar si existe en el catálogo
@@ -183,18 +201,12 @@ def validar_catalogos_y_generar_log(df, proceso_config):
                         activo=True
                     ).exists()
                     if not exists:
-                        # Buscar sugerencias similares
-                        similar_items = model.objects.filter(
-                            nombre__icontains=value[:3],  # Buscar por los primeros 3 caracteres
-                            activo=True
-                        )[:3]  # Limitar a 3 sugerencias
-                        
-                        suggestions = [item.nombre for item in similar_items]
-                        suggestion_text = f" (Sugerencias: {', '.join(suggestions)})" if suggestions else ""
-                        
-                        row_errors.append(f"{field.title()}: '{value}' no existe en el catálogo oficial{suggestion_text}")
+                        # Usar el string correspondiente del archivo JSON
+                        error_string_key = error_string_mapping[field]
+                        error_message = get_catalog_error_message(field, value, error_string_key)
+                        row_errors.append(error_message)
                         total_errors += 1
-        
+
         # Validar campos opcionales
         for field in optional_fields:
             if field in df.columns:
@@ -208,24 +220,18 @@ def validar_catalogos_y_generar_log(df, proceso_config):
                     ).exists()
                     
                     if not exists:
-                        # Buscar sugerencias similares
-                        similar_items = model.objects.filter(
-                            nombre__icontains=value[:3],  # Buscar por los primeros 3 caracteres
-                            activo=True
-                        )[:3]  # Limitar a 3 sugerencias
-                        
-                        suggestions = [item.nombre for item in similar_items]
-                        suggestion_text = f" (Sugerencias: {', '.join(suggestions)})" if suggestions else ""
-                        
-                        row_errors.append(f"{field.title()}: '{value}' no existe en el catálogo oficial{suggestion_text}")
+                        # Usar el string correspondiente del archivo JSON
+                        error_string_key = error_string_mapping[field]
+                        error_message = get_catalog_error_message(field, value, error_string_key)
+                        row_errors.append(error_message)
                         total_errors += 1
 
         # Si hay errores en esta fila, agregarla al reporte
         if row_errors:
             error_row = {
-                'Fila_Original': row_number,
-                'Cantidad_Errores': len(row_errors),
-                'Errores': '; '.join(row_errors)
+                'Fila': row_number,
+                'Cantidad de Errores': len(row_errors),
+                'Descripción de Errores': '; '.join(row_errors)
             }
             error_rows.append(error_row)
     # Crear DataFrame de errores
@@ -262,9 +268,9 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         
         # Check if file type matches configuration
         if uploaded_file.name.lower().endswith('.xlsx') and file_type != 'xlsx':
-            return False, get_string('errors.file_format', 'ingesta').format(error="File must be CSV")
+            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo debe ser de tipo CSV (.csv)")
         elif uploaded_file.name.lower().endswith('.csv') and file_type != 'csv':
-            return False, get_string('errors.file_format', 'ingesta').format(error="File must be XLSX")
+            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo debe ser de tipo Excel (.xlsx)")
 
         # Read file based on configuration
         if file_type == 'xlsx':
@@ -325,9 +331,19 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     except pd.errors.EmptyDataError:
         return False, get_string('errors.file_empty', 'ingesta')
     except pd.errors.ParserError as e:
-        return False, get_string('errors.file_format', 'ingesta').format(error=str(e))
+        # Check for specific column-related errors
+        error_str = str(e)
+        if "out-of-bounds indices" in error_str or "usecols" in error_str:
+            return False, get_string('errors.file_structure_mismatch', 'ingesta')
+        else:
+            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo no tiene el formato esperado")
     except UnicodeDecodeError:
         return False, get_string('errors.file_encoding', 'ingesta')
     except Exception as e:
         print(get_string('messages.general_error', 'ingesta').format(error=e))
-        return False, get_string('errors.file_unexpected', 'ingesta').format(error=str(e))
+        # Provide a more user-friendly error message
+        error_str = str(e)
+        if "out-of-bounds" in error_str or "usecols" in error_str:
+            return False, get_string('errors.file_structure_mismatch', 'ingesta')
+        else:
+            return False, get_string('errors.file_unexpected', 'ingesta').format(error="El archivo no cumple con la estructura esperada")

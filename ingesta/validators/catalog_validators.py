@@ -31,7 +31,7 @@ class CatalogValidator:
             raise ValidationError(
                 get_string('errors.catalog_validation_error', 'ingesta').format(error=str(e))
             )
-    
+
     @staticmethod
     def validate_ase(value):
         """
