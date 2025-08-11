@@ -33,7 +33,11 @@
             "invalid_servicio": "Servicio '{servicio}' no válido. Debe estar registrado en el catálogo oficial",
             "invalid_zona_descarga": "Zona de descarga '{zona}' no válida. Debe estar registrada en el catálogo oficial",
             "catalog_validation_error": "Error en validación de catálogos: {error}",
-            "missing_catalog_data": "Faltan datos de catálogos requeridos"
+            "missing_catalog_data": "Faltan datos de catálogos requeridos",
+            "catalog_validation_errors_found": "Se encontraron {error_count} errores de validación en {row_count} filas. Se ha generado un archivo de errores que puede descargar para revisar los detalles.",
+            "download_error_file": "Descargar Archivo de Errores",
+            "no_error_file_available": "No hay archivo de errores disponible para descargar.",
+            "error_file_download_error": "Error al descargar el archivo de errores: {error}"
         },
         "success": {
             "file_uploaded": "Archivo subido exitosamente",
@@ -149,8 +153,8 @@
             "disposicion_final": "Disposición Final"
         },
         "catalogos": {
-            "title": "Catálogos del Sistema",
-            "description": "Gestión de catálogos oficiales",
+            "title": "Tablas de Referencia",
+            "description": "Gestión de Tablas de Referencia",
             "concesion": {
                 "title": "Concesiones",
                 "description": "Gestión de concesiones de servicios públicos",

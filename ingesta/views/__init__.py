@@ -1,6 +1,6 @@
 from coreview.base import get_template_context, handle_error
 from coreview.dashboard import dashboard_view
-from .core.file_management import file_history_view, upload_file_view, download_file, delete_file
+from .core.file_management import file_history_view, upload_file_view, download_file, download_error_file, delete_file
 
 __all__ = [
     'get_template_context',
@@ -9,5 +9,6 @@ __all__ = [
     'file_history_view',
     'upload_file_view',
     'download_file',
+    'download_error_file',
     'delete_file'
 ] 

@@ -47,6 +47,43 @@
                             {{ TEMPLATE_REPORTS_TITLE }}
                         </a>
                     </li>
+                    {% if user.is_staff or user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#catalogosSubmenu" aria-expanded="false" aria-controls="catalogosSubmenu">
+                            <i class="bi bi-database"></i>
+                            {{ TEMPLATE_CATALOGOS_TITLE }}
+                            <i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <div class="collapse" id="catalogosSubmenu">
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'ingesta:concesion_list' %}">
+                                        <i class="bi bi-building"></i>
+                                        {{ TEMPLATE_CATALOGOS_CONCESION }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'ingesta:ase_list' %}">
+                                        <i class="bi bi-geo-alt"></i>
+                                        {{ TEMPLATE_CATALOGOS_ASE }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'ingesta:servicio_list' %}">
+                                        <i class="bi bi-tools"></i>
+                                        {{ TEMPLATE_CATALOGOS_SERVICIO }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'ingesta:zona_descarga_list' %}">
+                                        <i class="bi bi-trash3"></i>
+                                        {{ TEMPLATE_CATALOGOS_ZONA_DESCARGA }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="sidebar-bottom">

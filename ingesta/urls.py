@@ -8,6 +8,7 @@ urlpatterns = [
     path('historial/', views.file_history_view, name='file_history'),
     path('cargar/', views.upload_file_view, name='upload_file'),
     path('download_file/<int:file_id>/', views.download_file, name='download_file'),
+    path('download_error_file/', views.download_error_file, name='download_error_file'),
     path('delete_file/<int:file_id>/', views.delete_file, name='delete_file'),
     
     # URLs para catálogos

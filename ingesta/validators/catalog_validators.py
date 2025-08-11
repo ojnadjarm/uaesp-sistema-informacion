@@ -144,7 +144,7 @@ class CatalogValidator:
                 errors.append(f"Zona de descarga: {e.message}")
         
         return errors
-    
+
     @staticmethod
     def get_catalog_choices(model_class):
         """

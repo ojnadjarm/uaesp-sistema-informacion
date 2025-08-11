@@ -30,6 +30,9 @@
                 "db_field": "consecutivo_entrada",
                 "type": "integer"
             }
-        ]
+        ],
+        "catalog_validation": {
+            "enabled": false
+        }
     }
 }

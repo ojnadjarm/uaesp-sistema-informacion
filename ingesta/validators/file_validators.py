@@ -7,6 +7,7 @@ from django.db.models import Q
 from ingesta.models import DisposicionFinal
 from django.apps import apps
 from datetime import datetime
+from ingesta.validators.catalog_validators import CatalogValidator
 
 def transform_value(value, transform_config):
     """
@@ -58,7 +59,8 @@ def transform_value(value, transform_config):
 
 def validar_registros_existentes(df, proceso_config):
     """
-    Validates if any records already exist in the database based on unique fields.
+    Validates if any records already exist in the database by checking just one record.
+    Since files come from interventoria and cover full months, checking one record is sufficient.
     Returns (bool, str) tuple: (is_valid, error_message)
     """
     # Get table name from config
@@ -77,14 +79,21 @@ def validar_registros_existentes(df, proceso_config):
     if not validation_fields:
         return True, None
 
-    # Transform values according to configuration
-    transformed_df = df.copy()
+    # Transform values according to configuration for the first row only
+    if df.empty:
+        return True, None
+    
+    first_row = df.iloc[0]
+    transformed_row = {}
+    
     for field_config in validation_fields:
         field_name = field_config['field']
         field_type = field_config.get('type')
         transform_config = field_config.get('transform')
         
-        if field_name in transformed_df.columns:
+        if field_name in first_row and pd.notna(first_row[field_name]):
+            value = first_row[field_name]
+            
             # Apply transformation based on field type if no specific transform is provided
             if not transform_config and field_type:
                 if field_type == 'date':
@@ -93,25 +102,144 @@ def validar_registros_existentes(df, proceso_config):
                     transform_config = {'function': 'transform_integer'}
             
             if transform_config:
-                transformed_df[field_name] = transformed_df[field_name].apply(
-                    lambda x: transform_value(x, transform_config)
-                )
-
-    # Check each row's combination of fields against the database
-    for _, row in transformed_df.iterrows():
-        query = Q()
-        for field_config in validation_fields:
-            field_name = field_config['field']
-            db_field = field_config.get('db_field', field_name.lower().replace(' ', '_'))
+                value = transform_value(value, transform_config)
             
-            if field_name in row and pd.notna(row[field_name]):
-                query &= Q(**{db_field: row[field_name]})
+            transformed_row[field_name] = value
 
-        # If we have a valid query and records exist, return False
-        if query and model.objects.filter(query).exists():
-            return False, get_string('errors.file_has_existing_records', 'ingesta')
+    # Check if this combination of fields already exists in the database
+    query = Q()
+    for field_config in validation_fields:
+        field_name = field_config['field']
+        db_field = field_config.get('db_field', field_name.lower().replace(' ', '_'))
+        
+        if field_name in transformed_row:
+            query &= Q(**{db_field: transformed_row[field_name]})
+
+    # If we have a valid query and records exist, return False
+    if query and model.objects.filter(query).exists():
+        return False, get_string('errors.file_has_existing_records', 'ingesta')
 
     return True, None
+
+def validar_catalogos_y_generar_log(df, proceso_config):
+    """
+    Valida los catálogos en el archivo y genera un DataFrame con los errores encontrados.
+    Returns (error_message, error_dataframe) tuple.
+    """
+    from ingesta.models import Concesion, ASE, ZonaDescarga
+    
+    # Verificar si la validación de catálogos está habilitada para este proceso
+    catalog_config = proceso_config.get('catalog_validation', {})
+    if not catalog_config.get('enabled', False):
+        return None, None
+    
+    # Obtener configuración específica del proceso
+    required_fields = catalog_config.get('required_fields', [])
+    optional_fields = catalog_config.get('optional_fields', [])
+    field_mapping = catalog_config.get('field_mapping', {})
+    
+    # Mapeo de nombres de columnas a modelos
+    catalog_mapping = {}
+    for column_name, model_name in field_mapping.items():
+        if model_name == 'Concesion':
+            catalog_mapping[column_name] = Concesion
+        elif model_name == 'ASE':
+            catalog_mapping[column_name] = ASE
+        elif model_name == 'ZonaDescarga':
+            catalog_mapping[column_name] = ZonaDescarga
+    
+    # Validar que la configuración sea correcta
+    if not catalog_mapping:
+        print("Advertencia: No se encontró mapeo de catálogos válido en la configuración")
+        return None, None
+    
+    error_rows = []
+    total_errors = 0
+    
+    # Obtener la configuración del archivo para calcular el número de fila correcto
+    file_start_row = proceso_config.get('file_start_row', 1)
+    
+    for index, row in df.iterrows():
+        row_errors = []
+        # Calcular el número de fila real en el archivo original
+        # file_start_row es la fila donde empiezan los datos (1-based)
+        # index es el índice del DataFrame (0-based)
+        # Sumamos 1 para convertir a 1-based
+        row_number = file_start_row + index + 1
+        
+        # Validar campos requeridos
+        for field in required_fields:
+            if field in df.columns:
+                value = str(row[field]).strip() if pd.notna(row[field]) else ''
+                
+                if not value:
+                    row_errors.append(f"{field.title()}: Campo requerido, no puede estar vacío")
+                    total_errors += 1
+                else:
+                    # Verificar si existe en el catálogo
+                    model = catalog_mapping[field]
+                    exists = model.objects.filter(
+                        nombre__iexact=value,
+                        activo=True
+                    ).exists()
+                    if not exists:
+                        # Buscar sugerencias similares
+                        similar_items = model.objects.filter(
+                            nombre__icontains=value[:3],  # Buscar por los primeros 3 caracteres
+                            activo=True
+                        )[:3]  # Limitar a 3 sugerencias
+                        
+                        suggestions = [item.nombre for item in similar_items]
+                        suggestion_text = f" (Sugerencias: {', '.join(suggestions)})" if suggestions else ""
+                        
+                        row_errors.append(f"{field.title()}: '{value}' no existe en el catálogo oficial{suggestion_text}")
+                        total_errors += 1
+        
+        # Validar campos opcionales
+        for field in optional_fields:
+            if field in df.columns:
+                value = str(row[field]).strip() if pd.notna(row[field]) else ''
+                
+                if value:  # Solo validar si no está vacío
+                    model = catalog_mapping[field]
+                    exists = model.objects.filter(
+                        nombre__iexact=value,
+                        activo=True
+                    ).exists()
+                    
+                    if not exists:
+                        # Buscar sugerencias similares
+                        similar_items = model.objects.filter(
+                            nombre__icontains=value[:3],  # Buscar por los primeros 3 caracteres
+                            activo=True
+                        )[:3]  # Limitar a 3 sugerencias
+                        
+                        suggestions = [item.nombre for item in similar_items]
+                        suggestion_text = f" (Sugerencias: {', '.join(suggestions)})" if suggestions else ""
+                        
+                        row_errors.append(f"{field.title()}: '{value}' no existe en el catálogo oficial{suggestion_text}")
+                        total_errors += 1
+
+        # Si hay errores en esta fila, agregarla al reporte
+        if row_errors:
+            error_row = {
+                'Fila_Original': row_number,
+                'Cantidad_Errores': len(row_errors),
+                'Errores': '; '.join(row_errors)
+            }
+            error_rows.append(error_row)
+    # Crear DataFrame de errores
+    error_df = pd.DataFrame(error_rows) if error_rows else pd.DataFrame()
+    
+    # Generar mensaje de error
+    if total_errors > 0:
+        error_message = get_string('errors.catalog_validation_errors_found', 'ingesta').format(
+            error_count=total_errors,
+            row_count=len(error_rows)
+        )
+        return error_message, error_df
+    
+    return None, None
 
 def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     # Get process configuration from PROCESO_DATA
@@ -185,6 +313,12 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         is_valid, error_msg = validar_registros_existentes(df, proceso_config)
         if not is_valid:
             return False, error_msg
+
+        # Validate catalog values and generate error report
+        catalog_errors, error_df = validar_catalogos_y_generar_log(df, proceso_config)
+
+        if catalog_errors:
+            return False, catalog_errors, error_df
 
         return True, None
 

@@ -116,7 +116,7 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Datos Maestros</h5>
+                    <h5 class="card-title mb-0">{{ TEMPLATE_CATALOGOS_TITLE }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
@@ -124,7 +124,7 @@
                             <a href="{% url 'ingesta:concesion_list' %}" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
                                     <span class="tile-icon"><i class="bi bi-building"></i></span>
-                                    <div class="tile-title">Concesiones</div>
+                                    <div class="tile-title">{{ TEMPLATE_CATALOGOS_CONCESION }}</div>
                                 </div>
                             </a>
                         </div>
@@ -132,7 +132,7 @@
                             <a href="{% url 'ingesta:ase_list' %}" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
                                     <span class="tile-icon"><i class="bi bi-geo-alt"></i></span>
-                                    <div class="tile-title">ASEs</div>
+                                    <div class="tile-title">{{ TEMPLATE_CATALOGOS_ASE }}</div>
                                 </div>
                             </a>
                         </div>
@@ -140,7 +140,7 @@
                             <a href="{% url 'ingesta:servicio_list' %}" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
                                     <span class="tile-icon"><i class="bi bi-tools"></i></span>
-                                    <div class="tile-title">Servicios</div>
+                                    <div class="tile-title">{{ TEMPLATE_CATALOGOS_SERVICIO }}</div>
                                 </div>
                             </a>
                         </div>
@@ -148,7 +148,7 @@
                             <a href="{% url 'ingesta:zona_descarga_list' %}" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
                                     <span class="tile-icon"><i class="bi bi-trash3"></i></span>
-                                    <div class="tile-title">Zonas de Descarga</div>
+                                    <div class="tile-title">{{ TEMPLATE_CATALOGOS_ZONA_DESCARGA }}</div>
                                 </div>
                             </a>
                         </div>

@@ -31,6 +31,16 @@
                 "db_field": "consecutivo_entrada",
                 "type": "integer"
             }
-        ]
+        ],
+        "catalog_validation": {
+            "enabled": true,
+            "required_fields": ["CONCESION", "ZONA DESCARGA"],
+            "optional_fields": ["ASE"],
+            "field_mapping": {
+                "CONCESION": "Concesion",
+                "ASE": "ASE",
+                "ZONA DESCARGA": "ZonaDescarga"
+            }
+        }
     }
 } 

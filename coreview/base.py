@@ -19,6 +19,12 @@ def get_template_context():
         'TEMPLATE_UPLOAD_FILE': get_string('templates.upload_file', 'ingesta'),
         'TEMPLATE_FILE_HISTORY': get_string('templates.file_history', 'ingesta'),
         'TEMPLATE_REPORTS_TITLE': get_string('templates.reports_title', 'reports'),
+        'TEMPLATE_CATALOGOS_TITLE': get_string('catalogos.title', 'ingesta'),
+        'TEMPLATE_CATALOGOS_DESCRIPTION': get_string('catalogos.description', 'ingesta'),
+        'TEMPLATE_CATALOGOS_CONCESION': get_string('catalogos.concesion.title', 'ingesta'),
+        'TEMPLATE_CATALOGOS_ASE': get_string('catalogos.ase.title', 'ingesta'),
+        'TEMPLATE_CATALOGOS_SERVICIO': get_string('catalogos.servicio.title', 'ingesta'),
+        'TEMPLATE_CATALOGOS_ZONA_DESCARGA': get_string('catalogos.zona_descarga.title', 'ingesta'),
         'STATIC_VERSION': STATIC_VERSION,
     }
 

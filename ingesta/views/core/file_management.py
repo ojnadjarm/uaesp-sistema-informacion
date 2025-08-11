@@ -87,17 +87,68 @@ def upload_file_view(request):
                 filename=original_filename,
                 process_type=tipo_proceso_seleccionado
             ))
-            es_valido, error_validacion = validar_estructura_csv(uploaded_file, subsecretaria_origen, tipo_proceso_seleccionado)
+            validation_result = validar_estructura_csv(uploaded_file, subsecretaria_origen, tipo_proceso_seleccionado)
 
-            if not es_valido:
-                messages.error(request, error_validacion)
-                return render_upload_form(request, form)
+            # Verificar si es un error simple (2 elementos)
+            if len(validation_result) == 2:
+                es_valido, error_validacion = validation_result
+                if not es_valido:
+                    messages.error(request, error_validacion)
+                    # Redirigir en lugar de renderizar para evitar reenvío del formulario
+                    return redirect('ingesta:upload_file')
+                # Si es válido, continuar con el proceso
+            # Verificar si es un error con archivo de errores (3 elementos)
+            elif len(validation_result) == 3:
+                es_valido, error_validacion, error_df = validation_result
+                if not es_valido:
+                    # Guardar el DataFrame de errores en la sesión para descarga
+                    if error_df is not None and not error_df.empty:
+                        import base64
+                        import io
+                        
+                        # Crear el archivo CSV en memoria
+                        csv_buffer = io.StringIO()
+                        
+                        # Agregar información del reporte al inicio
+                        from datetime import datetime
+                        csv_buffer.write("Reporte de Errores de Validación de Catálogos\n")
+                        csv_buffer.write(f"Archivo original: {original_filename}\n")
+                        csv_buffer.write(f"Fecha de validación: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                        csv_buffer.write(f"Total de filas con errores: {len(error_df)}\n")
+                        csv_buffer.write(f"Total de errores encontrados: {error_df['Cantidad_Errores'].sum()}\n")
+                        csv_buffer.write("\n")
+                        
+                        # Escribir el DataFrame de errores con codificación UTF-8 explícita
+                        error_df.to_csv(csv_buffer, index=False, sep=';', encoding='utf-8')
+                        csv_content = csv_buffer.getvalue()
+                        csv_buffer.close()
+                        
+                        # Agregar BOM UTF-8 al inicio para compatibilidad con Excel
+                        csv_content = '\ufeff' + csv_content
+                        
+                        # Codificar el contenido en base64
+                        encoded_content = base64.b64encode(csv_content.encode('utf-8')).decode('utf-8')
+                        
+                        # Guardar en la sesión
+                        request.session['error_file_content'] = encoded_content
+                        request.session['error_file_name'] = f"errores_{original_filename.replace('.xlsx', '.csv').replace('.csv', '_errores.csv')}"
+                        request.session['has_validation_errors'] = True
+                    messages.error(request, error_validacion)
+                    # Redirigir en lugar de renderizar para evitar reenvío del formulario
+                    return redirect('ingesta:upload_file')
+                # Si es válido, continuar con el proceso
+            else:
+                # Caso inesperado
+                messages.error(request, "Error inesperado en la validación del archivo")
+                # Redirigir en lugar de renderizar para evitar reenvío del formulario
+                return redirect('ingesta:upload_file')
 
             # Si la validación es correcta, proceder
             print(get_string('messages.validation_success', 'ingesta'))
             if not minio_client:
                 messages.error(request, get_string('errors.minio_not_configured', 'ingesta'))
-                return render_upload_form(request, form)
+                # Redirigir en lugar de renderizar para evitar reenvío del formulario
+                return redirect('ingesta:upload_file')
 
             try:
                 with transaction.atomic():
@@ -167,9 +218,18 @@ def upload_file_view(request):
 
         else:
             messages.error(request, get_string('errors.invalid_form', 'ingesta'))
-            return render_upload_form(request, form)
+            # Redirigir en lugar de renderizar para evitar reenvío del formulario
+            return redirect('ingesta:upload_file')
 
     else:
+        # Solo limpiar errores si no hay errores activos (GET request normal)
+        # Si hay errores activos, mantenerlos para mostrar el botón de descarga
+        if not request.session.get('has_validation_errors', False):
+            if 'error_file_content' in request.session:
+                del request.session['error_file_content']
+            if 'error_file_name' in request.session:
+                del request.session['error_file_name']
+            
         form = UploadFileForm()
         return render_upload_form(request, form)
 
@@ -179,7 +239,8 @@ def render_upload_form(request, form):
         'form': form,
         'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
         'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
-        'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta')
+        'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta'),
+        'TEMPLATE_DOWNLOAD_ERROR_FILE': get_string('errors.download_error_file', 'ingesta')
     }
     context.update(get_template_context())
     return render(request, 'ingesta/upload_form.html', context)
@@ -216,6 +277,46 @@ def download_file(request, file_id):
     except Exception as e:
         messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
         return redirect('ingesta:file_history')
+
+@login_required
+def download_error_file(request):
+    """
+    Download the error file from session if it exists and belongs to the current user.
+    """
+    if ('error_file_content' not in request.session or 
+        'error_file_name' not in request.session or 
+        'has_validation_errors' not in request.session):
+        messages.error(request, get_string('errors.no_error_file_available', 'ingesta'))
+        return redirect('ingesta:upload_file')
+    
+    try:
+        import base64
+        
+        # Obtener contenido del archivo de la sesión
+        encoded_content = request.session['error_file_content']
+        filename = request.session['error_file_name']
+        
+        # Decodificar contenido
+        file_content = base64.b64decode(encoded_content)
+        
+        # Crear respuesta HTTP con codificación UTF-8 explícita
+        response = HttpResponse(file_content, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response['Content-Encoding'] = 'utf-8'
+        
+        # Limpiar la sesión después de descargar
+        del request.session['error_file_content']
+        del request.session['error_file_name']
+        del request.session['has_validation_errors']
+        
+        # Agregar mensaje de confirmación
+        messages.success(request, "Archivo de errores descargado exitosamente")
+        
+        return response
+        
+    except Exception as e:
+        messages.error(request, get_string('errors.error_file_download_error', 'ingesta').format(error=str(e)))
+        return redirect('ingesta:upload_file')
 
 @admin_required
 def delete_file(request, file_id):

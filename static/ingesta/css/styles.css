@@ -474,6 +474,96 @@ a:hover { color: var(--uaesp-secondary); text-decoration: underline; }
 /* Sidebar icons spacing */
 .sidebar .nav-link i { margin-right: .6rem; font-size: 1.05rem; }
 
+/* Submenu styles for catalogos */
+.sidebar .nav-link[data-bs-toggle="collapse"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar .nav-link[data-bs-toggle="collapse"] .bi-chevron-down {
+    transition: transform 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.sidebar .nav-link[data-bs-toggle="collapse"][aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Override Bootstrap focus/active states for sidebar */
+.sidebar .nav-link:focus,
+.sidebar .nav-link:active,
+.sidebar .nav-link:focus-visible {
+    color: rgba(255,255,255,0.85) !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.sidebar .nav-link:hover:focus,
+.sidebar .nav-link:hover:active {
+    color: white !important;
+    background-color: rgba(255,255,255,0.1) !important;
+}
+
+.sidebar .nav-link.active:focus,
+.sidebar .nav-link.active:active {
+    color: white !important;
+    background-color: rgba(255,255,255,0.15) !important;
+}
+
+/* Submenu container */
+.sidebar .collapse {
+    background-color: rgba(0,0,0,0.1);
+    margin: 0 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.sidebar .collapse .nav-link {
+    padding: 0.5rem 1rem;
+    margin: 0.125rem 0;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    border-left: 2px solid transparent;
+}
+
+.sidebar .collapse .nav-link:hover {
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+    border-left-color: var(--uaesp-accent);
+}
+
+.sidebar .collapse .nav-link.active {
+    color: white;
+    background-color: rgba(255,255,255,0.15);
+    border-left-color: var(--uaesp-accent);
+}
+
+/* Override Bootstrap focus/active states for submenu */
+.sidebar .collapse .nav-link:focus,
+.sidebar .collapse .nav-link:active,
+.sidebar .collapse .nav-link:focus-visible {
+    color: rgba(255,255,255,0.8) !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-left-color: transparent !important;
+}
+
+.sidebar .collapse .nav-link:hover:focus,
+.sidebar .collapse .nav-link:hover:active {
+    color: white !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    border-left-color: var(--uaesp-accent) !important;
+}
+
+.sidebar .collapse .nav-link.active:focus,
+.sidebar .collapse .nav-link.active:active {
+    color: white !important;
+    background-color: rgba(255,255,255,0.15) !important;
+    border-left-color: var(--uaesp-accent) !important;
+}
+
 /* Page section headers */
 .section-header { margin-bottom: 1rem; }
 .section-header h2 { font-weight: 600; color: var(--text-900); }

@@ -85,7 +85,13 @@ def dashboard_view(request):
             'TEMPLATE_MODULE_REPORTES': get_string('modules.reportes.name', 'ingesta'),
             'TEMPLATE_MODULE_REPORTES_DESC': get_string('modules.reportes.description', 'ingesta'),
             'TEMPLATE_MODULE_COMING_SOON': get_string('modules.coming_soon.name', 'ingesta'),
-            'TEMPLATE_MODULE_COMING_SOON_DESC': get_string('modules.coming_soon.description', 'ingesta')
+            'TEMPLATE_MODULE_COMING_SOON_DESC': get_string('modules.coming_soon.description', 'ingesta'),
+            'TEMPLATE_CATALOGOS_TITLE': get_string('catalogos.title', 'ingesta'),
+            'TEMPLATE_CATALOGOS_DESCRIPTION': get_string('catalogos.description', 'ingesta'),
+            'TEMPLATE_CATALOGOS_CONCESION': get_string('catalogos.concesion.title', 'ingesta'),
+            'TEMPLATE_CATALOGOS_ASE': get_string('catalogos.ase.title', 'ingesta'),
+            'TEMPLATE_CATALOGOS_SERVICIO': get_string('catalogos.servicio.title', 'ingesta'),
+            'TEMPLATE_CATALOGOS_ZONA_DESCARGA': get_string('catalogos.zona_descarga.title', 'ingesta')
         }
         context.update(get_template_context())
         return render(request, 'coreview/dashboard.html', context)
