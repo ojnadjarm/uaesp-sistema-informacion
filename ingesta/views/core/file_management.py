@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from ingesta.decorators import admin_required
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden
 from minio.error import S3Error
@@ -216,11 +217,8 @@ def download_file(request, file_id):
         messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
         return redirect('ingesta:file_history')
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
+@admin_required
 def delete_file(request, file_id):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden(get_string('errors.no_permissions', 'ingesta'))
     
     carga = get_object_or_404(RegistroCarga, id=file_id)
     

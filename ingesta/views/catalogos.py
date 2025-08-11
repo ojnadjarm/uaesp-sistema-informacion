@@ -8,12 +8,13 @@ from ingesta.models import Concesion, ASE, Servicio, ZonaDescarga
 from ingesta.forms import ConcesionForm, ASEForm, ServicioForm, ZonaDescargaForm
 from globalfunctions.string_manager import get_string
 from coreview.base import get_template_context
+from ingesta.decorators import admin_required
 
 # ============================================================================
 # VISTAS PARA CONCESIONES
 # ============================================================================
 
-@login_required
+@admin_required
 def concesion_list(request):
     """Lista de concesiones con búsqueda y paginación."""
     search_query = request.GET.get('search', '')
@@ -44,7 +45,7 @@ def concesion_list(request):
     
     return render(request, 'ingesta/catalogos/concesion_list.html', context)
 
-@login_required
+@admin_required
 def concesion_create(request):
     """Crear nueva concesión."""
     if request.method == 'POST':
@@ -65,7 +66,7 @@ def concesion_create(request):
     
     return render(request, 'ingesta/catalogos/concesion_form.html', context)
 
-@login_required
+@admin_required
 def concesion_edit(request, pk):
     """Editar concesión existente."""
     concesion = get_object_or_404(Concesion, pk=pk)
@@ -89,7 +90,7 @@ def concesion_edit(request, pk):
     
     return render(request, 'ingesta/catalogos/concesion_form.html', context)
 
-@login_required
+@admin_required
 def concesion_delete(request, pk):
     """Eliminar concesión."""
     concesion = get_object_or_404(Concesion, pk=pk)
@@ -109,7 +110,7 @@ def concesion_delete(request, pk):
     
     return render(request, 'ingesta/catalogos/concesion_confirm_delete.html', context)
 
-@login_required
+@admin_required
 def concesion_toggle(request, pk):
     """Activar/desactivar concesión."""
     concesion = get_object_or_404(Concesion, pk=pk)
@@ -131,7 +132,7 @@ def concesion_toggle(request, pk):
 # VISTAS PARA ASEs
 # ============================================================================
 
-@login_required
+@admin_required
 def ase_list(request):
     """Lista de ASEs con búsqueda y paginación."""
     search_query = request.GET.get('search', '')
@@ -162,7 +163,7 @@ def ase_list(request):
     
     return render(request, 'ingesta/catalogos/ase_list.html', context)
 
-@login_required
+@admin_required
 def ase_create(request):
     """Crear nuevo ASE."""
     if request.method == 'POST':
@@ -183,7 +184,7 @@ def ase_create(request):
     
     return render(request, 'ingesta/catalogos/ase_form.html', context)
 
-@login_required
+@admin_required
 def ase_edit(request, pk):
     """Editar ASE existente."""
     ase = get_object_or_404(ASE, pk=pk)
@@ -207,7 +208,7 @@ def ase_edit(request, pk):
     
     return render(request, 'ingesta/catalogos/ase_form.html', context)
 
-@login_required
+@admin_required
 def ase_delete(request, pk):
     """Eliminar ASE."""
     ase = get_object_or_404(ASE, pk=pk)
@@ -227,7 +228,7 @@ def ase_delete(request, pk):
     
     return render(request, 'ingesta/catalogos/ase_confirm_delete.html', context)
 
-@login_required
+@admin_required
 def ase_toggle(request, pk):
     """Activar/desactivar ASE."""
     ase = get_object_or_404(ASE, pk=pk)
@@ -249,7 +250,7 @@ def ase_toggle(request, pk):
 # VISTAS PARA SERVICIOS
 # ============================================================================
 
-@login_required
+@admin_required
 def servicio_list(request):
     """Lista de servicios con búsqueda y paginación."""
     search_query = request.GET.get('search', '')
@@ -280,7 +281,7 @@ def servicio_list(request):
     
     return render(request, 'ingesta/catalogos/servicio_list.html', context)
 
-@login_required
+@admin_required
 def servicio_create(request):
     """Crear nuevo servicio."""
     if request.method == 'POST':
@@ -301,7 +302,7 @@ def servicio_create(request):
     
     return render(request, 'ingesta/catalogos/servicio_form.html', context)
 
-@login_required
+@admin_required
 def servicio_edit(request, pk):
     """Editar servicio existente."""
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -325,7 +326,7 @@ def servicio_edit(request, pk):
     
     return render(request, 'ingesta/catalogos/servicio_form.html', context)
 
-@login_required
+@admin_required
 def servicio_delete(request, pk):
     """Eliminar servicio."""
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -345,7 +346,7 @@ def servicio_delete(request, pk):
     
     return render(request, 'ingesta/catalogos/servicio_confirm_delete.html', context)
 
-@login_required
+@admin_required
 def servicio_toggle(request, pk):
     """Activar/desactivar servicio."""
     servicio = get_object_or_404(Servicio, pk=pk)
@@ -367,7 +368,7 @@ def servicio_toggle(request, pk):
 # VISTAS PARA ZONAS DE DESCARGA
 # ============================================================================
 
-@login_required
+@admin_required
 def zona_descarga_list(request):
     """Lista de zonas de descarga con búsqueda y paginación."""
     search_query = request.GET.get('search', '')
@@ -398,7 +399,7 @@ def zona_descarga_list(request):
     
     return render(request, 'ingesta/catalogos/zona_descarga_list.html', context)
 
-@login_required
+@admin_required
 def zona_descarga_create(request):
     """Crear nueva zona de descarga."""
     if request.method == 'POST':
@@ -419,7 +420,7 @@ def zona_descarga_create(request):
     
     return render(request, 'ingesta/catalogos/zona_descarga_form.html', context)
 
-@login_required
+@admin_required
 def zona_descarga_edit(request, pk):
     """Editar zona de descarga existente."""
     zona = get_object_or_404(ZonaDescarga, pk=pk)
@@ -443,7 +444,7 @@ def zona_descarga_edit(request, pk):
     
     return render(request, 'ingesta/catalogos/zona_descarga_form.html', context)
 
-@login_required
+@admin_required
 def zona_descarga_delete(request, pk):
     """Eliminar zona de descarga."""
     zona = get_object_or_404(ZonaDescarga, pk=pk)
@@ -463,7 +464,7 @@ def zona_descarga_delete(request, pk):
     
     return render(request, 'ingesta/catalogos/zona_descarga_confirm_delete.html', context)
 
-@login_required
+@admin_required
 def zona_descarga_toggle(request, pk):
     """Activar/desactivar zona de descarga."""
     zona = get_object_or_404(ZonaDescarga, pk=pk)
