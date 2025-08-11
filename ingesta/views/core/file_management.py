@@ -82,6 +82,9 @@ def upload_file_view(request):
             # Sanitizar nombre del archivo
             original_filename = sanitize_filename(uploaded_file.name)
 
+            # Agregar mensaje de procesamiento inicial
+            messages.info(request, get_string('errors.processing_file', 'ingesta').format(filename=original_filename))
+            
             # Validación de estructura específica
             print(get_string('messages.validating_file', 'ingesta').format(
                 filename=original_filename,
@@ -171,6 +174,9 @@ def upload_file_view(request):
                         minio_client.make_bucket(MINIO_BUCKET)
                         print(get_string('messages.bucket_created', 'ingesta').format(bucket=MINIO_BUCKET))
 
+                    # Agregar mensaje de subida a almacenamiento
+                    messages.info(request, get_string('errors.uploading_to_storage', 'ingesta'))
+                    
                     # Volver al inicio del archivo antes de subir
                     uploaded_file.seek(0)
 
@@ -190,6 +196,8 @@ def upload_file_view(request):
                     registro.save()
                     print(get_string('messages.db_save_print', 'ingesta').format(id=registro.id))
 
+                    # Agregar mensaje de procesamiento completado
+                    messages.success(request, get_string('errors.processing_complete', 'ingesta'))
                     messages.success(request, get_string('messages.db_save_success', 'ingesta').format(
                         filename=original_filename,
                         process_type=tipo_proceso_seleccionado

@@ -45,7 +45,11 @@
             "report_total_rows_with_errors": "Total de filas con errores: {count}",
             "report_total_errors_found": "Total de errores encontrados: {count}",
             "required_field_empty": "Campo requerido, no puede estar vacío",
-            "error_file_name_prefix": "errores_"
+            "error_file_name_prefix": "errores_",
+            "processing_file": "⏳ Procesando archivo '{filename}'...",
+            "uploading_to_storage": "📤 Guardando archivo en el sistema de almacenamiento...",
+            "saving_to_database": "💾 Registrando archivo en la base de datos...",
+            "processing_complete": "✅ Procesamiento completado exitosamente"
         },
         "success": {
             "file_uploaded": "✅ Archivo subido correctamente",
