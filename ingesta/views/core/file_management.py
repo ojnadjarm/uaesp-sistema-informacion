@@ -74,16 +74,13 @@ def upload_file_view(request):
             tipo_proceso_seleccionado = form.cleaned_data['tipo_proceso']
             subsecretaria_origen = PROCESS_TO_SUBSECRETARIA.get(tipo_proceso_seleccionado)
 
+            # Sanitizar nombre del archivo
+            original_filename = sanitize_filename(uploaded_file.name)
+
             # Validación básica de extensión
             if not (uploaded_file.name.lower().endswith('.csv') or uploaded_file.name.lower().endswith('.xlsx')):
                 messages.error(request, get_string('errors.file_extension', 'ingesta'))
                 return render_upload_form(request, form)
-
-            # Sanitizar nombre del archivo
-            original_filename = sanitize_filename(uploaded_file.name)
-
-            # Agregar mensaje de procesamiento inicial
-            messages.info(request, get_string('errors.processing_file', 'ingesta').format(filename=original_filename))
             
             # Validación de estructura específica
             print(get_string('messages.validating_file', 'ingesta').format(

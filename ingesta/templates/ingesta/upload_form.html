@@ -44,11 +44,10 @@
                             <div class="form-text">{{ TEMPLATE_FILE_HELP }}</div>
                         </div>
                         <div class="mt-5 text-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <button type="submit" class="btn btn-primary btn-lg px-5" id="uploadBtn">
                                 <i class="bi bi-upload me-2"></i> {{ TEMPLATE_UPLOAD_BUTTON }}
                             </button>
                         </div>
-                        
                         <!-- Botón de descarga de errores (solo visible si hay errores específicos del usuario) -->
                         {% if request.session.has_validation_errors and request.session.error_file_content %}
                         <div class="mt-3 text-center">
@@ -63,8 +62,30 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de procesamiento -->
+<div class="modal fade" id="processingModal" tabindex="-1" aria-labelledby="processingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="processingModalLabel">
+                    <i class="bi bi-hourglass-split text-primary me-2"></i>Procesando archivo
+                </h5>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Procesando...</span>
+                    </div>
+                </div>
+                <p class="mb-0" id="processingMessage">Iniciando procesamiento del archivo...</p>
+                <small class="text-muted">Por favor, no cierre esta ventana mientras se procesa el archivo.</small>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-// Form validation
+// Form validation and processing modal
 (function () {
     'use strict'
     var forms = document.querySelectorAll('.needs-validation')
@@ -73,11 +94,33 @@
             if (!form.checkValidity()) {
                 event.preventDefault()
                 event.stopPropagation()
+            } else {
+                // Si el formulario es válido, mostrar modal de procesamiento
+                event.preventDefault()
+                showProcessingModal(form)
             }
             form.classList.add('was-validated')
         }, false)
     })
 })()
+
+// Función para mostrar el modal de procesamiento
+function showProcessingModal(form) {
+    const fileInput = form.querySelector('input[type="file"]')
+    const fileName = fileInput.files[0] ? fileInput.files[0].name : 'archivo'
+    
+    // Actualizar mensaje con el nombre del archivo
+    document.getElementById('processingMessage').textContent = `Procesando: ${fileName}`
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('processingModal'))
+    modal.show()
+    
+    // Enviar formulario después de mostrar el modal
+    setTimeout(() => {
+        form.submit()
+    }, 500)
+}
 
 // Add Bootstrap classes to form elements
 document.addEventListener('DOMContentLoaded', function() {
