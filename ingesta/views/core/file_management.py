@@ -329,6 +329,16 @@ def delete_file(request, file_id):
     carga = get_object_or_404(RegistroCarga, id=file_id)
     
     try:
+        # Delete related evidences from MinIO
+        for ev in getattr(carga, 'evidencias', []).all():
+            try:
+                if ev.path_minio:
+                    minio_client.remove_object(MINIO_BUCKET, ev.path_minio)
+            except S3Error as e:
+                messages.error(request, get_string('errors.minio_delete_error', 'ingesta').format(error=str(e)))
+            except Exception as e:
+                messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
+
         # Delete from MinIO if path exists
         if carga.path_minio:
             minio_client.remove_object(MINIO_BUCKET, carga.path_minio)

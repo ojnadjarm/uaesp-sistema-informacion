@@ -2,7 +2,7 @@
 # Este archivo ahora solo importa desde el módulo forms
 from .forms import (
     ConcesionForm, ASEForm, ServicioForm, ZonaDescargaForm,
-    UploadFileForm, PROCESS_TO_SUBSECRETARIA
+    UploadFileForm, PROCESS_TO_SUBSECRETARIA, EvidenceUploadForm
 )
 
 __all__ = [
@@ -11,5 +11,6 @@ __all__ = [
     'ServicioForm', 
     'ZonaDescargaForm',
     'UploadFileForm',
-    'PROCESS_TO_SUBSECRETARIA'
+    'PROCESS_TO_SUBSECRETARIA',
+    'EvidenceUploadForm'
 ]

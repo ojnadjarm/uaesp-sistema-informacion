@@ -10,6 +10,10 @@ urlpatterns = [
     path('download_file/<int:file_id>/', views.download_file, name='download_file'),
     path('download_error_file/', views.download_error_file, name='download_error_file'),
     path('delete_file/<int:file_id>/', views.delete_file, name='delete_file'),
+    # Evidencias
+    path('evidencias/<int:file_id>/', views.evidence_list_view, name='evidence_list'),
+    path('evidencias/download/<int:evidence_id>/', views.download_evidence, name='download_evidence'),
+    path('evidencias/delete/<int:evidence_id>/', views.delete_evidence, name='delete_evidence'),
     
     # URLs para catálogos
     # Concesiones

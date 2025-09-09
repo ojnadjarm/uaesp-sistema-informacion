@@ -1,0 +1,105 @@
+{% extends "coreview/base.html" %}
+{% load static %}
+
+{% block title %}{{ TEMPLATE_EVIDENCE_TITLE }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-1">{{ TEMPLATE_EVIDENCE_TITLE }}</h1>
+                <p class="text-muted mb-0">{{ TEMPLATE_EVIDENCE_DESCRIPTION }}</p>
+                <p class="mb-0"><strong>Archivo:</strong> {{ registro.nombre_archivo_original }} (ID {{ registro.id }})</p>
+            </div>
+            <div>
+                <a href="{% url 'ingesta:file_history' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al historial
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <span class="fw-bold"><i class="bi bi-plus-square me-2"></i>Subir nuevas evidencias</span>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            {{ form.descripcion.label_tag }}
+                            {{ form.descripcion }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.files.label_tag }}
+                            {{ form.files }}
+                            {% if form.files.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.files.errors %}<span>{{ error }}</span>{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload me-1"></i> Subir
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-card-checklist me-2"></i>Evidencias existentes</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if evidencias %}
+                    <table class="table table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Fecha</th>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th class="pe-4">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ev in evidencias %}
+                            <tr>
+                                <td class="ps-4">{{ ev.fecha_hora_subida|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ ev.nombre_archivo_original }}</td>
+                                <td>{{ ev.user.username|default:"-" }}</td>
+                                <td class="pe-4">
+                                    <a href="{% url 'ingesta:download_evidence' ev.id %}" class="btn btn-sm btn-outline-primary" title="Descargar evidencia">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    {% if user.is_staff or user.is_superuser %}
+                                    <a href="{% url 'ingesta:delete_evidence' ev.id %}" class="btn btn-sm btn-outline-danger" title="Eliminar evidencia">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">No hay evidencias registradas aún.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

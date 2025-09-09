@@ -51,6 +51,9 @@
                         <i class="bi bi-download"></i>
                     </a>
                     {% endif %}
+                    <a href="{% url 'ingesta:evidence_list' carga.id %}" class="btn btn-sm btn-outline-secondary" title="Evidencias">
+                        <i class="bi bi-card-checklist"></i>
+                    </a>
                     {% if user.is_staff or user.is_superuser %}
                     <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar archivo" 
                             onclick="confirmDelete('{{ carga.id }}', '{{ carga.nombre_archivo_original }}')">
