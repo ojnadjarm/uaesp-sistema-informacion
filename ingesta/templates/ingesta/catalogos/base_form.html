@@ -78,25 +78,53 @@
                             </div>
                         </div>
                         
-                        <div class="mb-4">
-                            <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">
-                                <i class="bi bi-info-circle me-1"></i>{{ form.descripcion.label }}
-                            </label>
-                            {{ form.descripcion }}
-                            {% if form.descripcion.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.descripcion.errors %}
-                                        <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
-                                    {% endfor %}
+                        {% if form.categoria %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.categoria.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-collection me-1"></i>{{ form.categoria.label }}
+                                    </label>
+                                    {{ form.categoria }}
+                                    {% if form.categoria.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.categoria.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.categoria.help_text %}
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle me-1"></i>{{ form.categoria.help_text }}
+                                        </div>
+                                    {% endif %}
                                 </div>
-                            {% endif %}
-                            {% if form.descripcion.help_text %}
-                                <div class="form-text">
-                                    <i class="bi bi-info-circle me-1"></i>{{ form.descripcion.help_text }}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        {{ form.activo }}
+                                        <label class="form-check-label fw-bold" for="{{ form.activo.id_for_label }}">
+                                            <i class="bi bi-toggle-on me-1"></i>{{ form.activo.label }}
+                                        </label>
+                                        {% if form.activo.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.activo.errors %}
+                                                    <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.activo.help_text %}
+                                            <div class="form-text">
+                                                <i class="bi bi-info-circle me-1"></i>{{ form.activo.help_text }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            {% endif %}
+                            </div>
                         </div>
-                        
+                        {% else %}
                         <div class="mb-4">
                             <div class="form-check">
                                 {{ form.activo }}
@@ -117,6 +145,27 @@
                                 {% endif %}
                             </div>
                         </div>
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-info-circle me-1"></i>{{ form.descripcion.label }}
+                            </label>
+                            {{ form.descripcion }}
+                            {% if form.descripcion.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.descripcion.errors %}
+                                        <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.descripcion.help_text %}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>{{ form.descripcion.help_text }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
                         
                         <hr class="my-4">
                         <div class="d-flex justify-content-between">

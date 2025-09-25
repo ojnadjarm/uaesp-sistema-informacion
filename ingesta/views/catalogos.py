@@ -26,6 +26,7 @@ def concesion_list(request):
         concesiones = concesiones.filter(
             Q(codigo__icontains=search_query) |
             Q(nombre__icontains=search_query) |
+            Q(categoria__icontains=search_query) |
             Q(descripcion__icontains=search_query)
         )
     
@@ -262,6 +263,7 @@ def servicio_list(request):
         servicios = servicios.filter(
             Q(codigo__icontains=search_query) |
             Q(nombre__icontains=search_query) |
+            Q(categoria__icontains=search_query) |
             Q(descripcion__icontains=search_query)
         )
     
@@ -380,6 +382,7 @@ def zona_descarga_list(request):
         zonas = zonas.filter(
             Q(codigo__icontains=search_query) |
             Q(nombre__icontains=search_query) |
+            Q(categoria__icontains=search_query) |
             Q(descripcion__icontains=search_query)
         )
     

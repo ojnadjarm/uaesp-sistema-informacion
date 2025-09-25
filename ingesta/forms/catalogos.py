@@ -7,7 +7,7 @@ class ConcesionForm(forms.ModelForm):
     
     class Meta:
         model = Concesion
-        fields = ['codigo', 'nombre', 'descripcion', 'activo']
+        fields = ['codigo', 'nombre', 'descripcion', 'categoria', 'activo']
         widgets = {
             'codigo': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -24,6 +24,11 @@ class ConcesionForm(forms.ModelForm):
                 'rows': '3',
                 'placeholder': 'Descripción adicional de la concesión'
             }),
+            'categoria': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: BOGOTÁ, CUNDINAMARCA, PIDJ',
+                'maxlength': '100'
+            }),
             'activo': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             })
@@ -32,12 +37,14 @@ class ConcesionForm(forms.ModelForm):
             'codigo': get_string('catalogos.concesion.codigo_label', 'ingesta'),
             'nombre': get_string('catalogos.concesion.nombre_label', 'ingesta'),
             'descripcion': get_string('catalogos.concesion.descripcion_label', 'ingesta'),
+            'categoria': get_string('catalogos.concesion.categoria_label', 'ingesta'),
             'activo': get_string('catalogos.concesion.activo_label', 'ingesta'),
         }
         help_texts = {
             'codigo': get_string('catalogos.concesion.codigo_help', 'ingesta'),
             'nombre': get_string('catalogos.concesion.nombre_help', 'ingesta'),
             'descripcion': get_string('catalogos.concesion.descripcion_help', 'ingesta'),
+            'categoria': get_string('catalogos.concesion.categoria_help', 'ingesta'),
             'activo': get_string('catalogos.concesion.activo_help', 'ingesta'),
         }
     
@@ -121,7 +128,7 @@ class ServicioForm(forms.ModelForm):
     
     class Meta:
         model = Servicio
-        fields = ['codigo', 'nombre', 'descripcion', 'activo']
+        fields = ['codigo', 'nombre', 'descripcion', 'categoria', 'activo']
         widgets = {
             'codigo': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -138,6 +145,11 @@ class ServicioForm(forms.ModelForm):
                 'rows': '3',
                 'placeholder': 'Descripción adicional del servicio'
             }),
+            'categoria': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: SERVICIO TARIFA ASEO, MATERIAL APROVECHAMIENTO',
+                'maxlength': '100'
+            }),
             'activo': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             })
@@ -146,12 +158,14 @@ class ServicioForm(forms.ModelForm):
             'codigo': get_string('catalogos.servicio.codigo_label', 'ingesta'),
             'nombre': get_string('catalogos.servicio.nombre_label', 'ingesta'),
             'descripcion': get_string('catalogos.servicio.descripcion_label', 'ingesta'),
+            'categoria': get_string('catalogos.servicio.categoria_label', 'ingesta'),
             'activo': get_string('catalogos.servicio.activo_label', 'ingesta'),
         }
         help_texts = {
             'codigo': get_string('catalogos.servicio.codigo_help', 'ingesta'),
             'nombre': get_string('catalogos.servicio.nombre_help', 'ingesta'),
             'descripcion': get_string('catalogos.servicio.descripcion_help', 'ingesta'),
+            'categoria': get_string('catalogos.servicio.categoria_help', 'ingesta'),
             'activo': get_string('catalogos.servicio.activo_help', 'ingesta'),
         }
     
@@ -178,7 +192,7 @@ class ZonaDescargaForm(forms.ModelForm):
     
     class Meta:
         model = ZonaDescarga
-        fields = ['codigo', 'nombre', 'descripcion', 'activo']
+        fields = ['codigo', 'nombre', 'descripcion', 'categoria', 'activo']
         widgets = {
             'codigo': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -195,6 +209,11 @@ class ZonaDescargaForm(forms.ModelForm):
                 'rows': '3',
                 'placeholder': 'Descripción adicional de la zona'
             }),
+            'categoria': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: PIDJ, NO APLICA',
+                'maxlength': '100'
+            }),
             'activo': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             })
@@ -203,12 +222,14 @@ class ZonaDescargaForm(forms.ModelForm):
             'codigo': get_string('catalogos.zona_descarga.codigo_label', 'ingesta'),
             'nombre': get_string('catalogos.zona_descarga.nombre_label', 'ingesta'),
             'descripcion': get_string('catalogos.zona_descarga.descripcion_label', 'ingesta'),
+            'categoria': get_string('catalogos.zona_descarga.categoria_label', 'ingesta'),
             'activo': get_string('catalogos.zona_descarga.activo_label', 'ingesta'),
         }
         help_texts = {
             'codigo': get_string('catalogos.zona_descarga.codigo_help', 'ingesta'),
             'nombre': get_string('catalogos.zona_descarga.nombre_help', 'ingesta'),
             'descripcion': get_string('catalogos.zona_descarga.descripcion_help', 'ingesta'),
+            'categoria': get_string('catalogos.zona_descarga.categoria_help', 'ingesta'),
             'activo': get_string('catalogos.zona_descarga.activo_help', 'ingesta'),
         }
     

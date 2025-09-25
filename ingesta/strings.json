@@ -179,10 +179,12 @@
                 "codigo_label": "Código",
                 "nombre_label": "Nombre de la Concesión",
                 "descripcion_label": "Descripción",
+                "categoria_label": "Categoría",
                 "activo_label": "Activo",
                 "codigo_help": "Código único que identifica la concesión",
                 "nombre_help": "Nombre oficial de la empresa concesionaria",
                 "descripcion_help": "Información adicional sobre la concesión",
+                "categoria_help": "Categoría de la concesión según origen del residuo (BOGOTÁ, CUNDINAMARCA, PIDJ, etc.)",
                 "activo_help": "Indica si la concesión está activa en el sistema"
             },
             "ase": {
@@ -213,10 +215,12 @@
                 "codigo_label": "Código",
                 "nombre_label": "Nombre del Servicio",
                 "descripcion_label": "Descripción",
+                "categoria_label": "Categoría",
                 "activo_label": "Activo",
                 "codigo_help": "Código único que identifica el tipo de servicio",
                 "nombre_help": "Nombre del tipo de servicio público",
                 "descripcion_help": "Información adicional sobre el servicio",
+                "categoria_help": "Categoría del servicio según tipo de procesamiento (SERVICIO TARIFA ASEO, MATERIAL APROVECHAMIENTO, etc.)",
                 "activo_help": "Indica si el servicio está activo en el sistema"
             },
             "zona_descarga": {
@@ -230,10 +234,12 @@
                 "codigo_label": "Código",
                 "nombre_label": "Nombre de la Zona",
                 "descripcion_label": "Descripción",
+                "categoria_label": "Categoría",
                 "activo_label": "Activo",
                 "codigo_help": "Código único que identifica la zona de descarga",
                 "nombre_help": "Nombre oficial de la zona de descarga",
                 "descripcion_help": "Información adicional sobre la zona de descarga",
+                "categoria_help": "Categoría de la zona de descarga según destino final (PIDJ, NO APLICA, etc.)",
                 "activo_help": "Indica si la zona de descarga está activa en el sistema"
             }
         }
