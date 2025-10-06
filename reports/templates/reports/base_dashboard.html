@@ -2,38 +2,175 @@
 {% load static %}
 
 {% block content %}
+<style>
+/* Enhanced navigation styling */
+.nav-container {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.nav-item {
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+}
+
+.nav-item:hover {
+    transform: translateY(-3px);
+}
+
+.nav-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: none;
+    width: 140px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--uaesp-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.nav-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.nav-card:hover::before {
+    transform: scaleX(1);
+}
+
+.nav-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.nav-icon.text-primary { 
+    color: var(--uaesp-primary) !important; 
+    background: rgba(48, 102, 74, 0.1);
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+.nav-icon.text-danger { 
+    color: #dc3545 !important; 
+    background: rgba(220, 53, 69, 0.1);
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+.nav-icon.text-success { 
+    color: #198754 !important; 
+    background: rgba(25, 135, 84, 0.1);
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+.nav-icon.text-warning { 
+    color: #ffc107 !important; 
+    background: rgba(255, 193, 7, 0.1);
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+.nav-icon.text-info { 
+    color: #0dcaf0 !important; 
+    background: rgba(13, 202, 240, 0.1);
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+.nav-icon.text-dark { 
+    color: #343a40 !important; 
+    background: rgba(52, 58, 64, 0.1);
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.nav-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--uaesp-primary);
+    text-align: center;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0 0.5rem;
+}
+</style>
+
 <div class="container-fluid">
-    <!-- Navigation Bar -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card-body">
-                <div class="row g-2 justify-content-center">
-                    <div class="col-auto">
-                        <a href="{% url 'reports:dashboard' %}" class="text-decoration-none">
-                            <div class="card h-100 shadow-sm" style="width: 150px;">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                    <i class="bi bi-house display-6 text-dark mb-2"></i>
-                                    <h6 class="card-title mb-0">{{ TEMPLATE_HOME }}</h6>
-                                </div>
-                            </div>
-                        </a>
+    <!-- Enhanced Navigation Bar -->
+    <div>
+        <div class="row g-3 justify-content-center align-items-center">
+            <!-- Home Button -->
+            <div class="col-auto">
+                <a href="{% url 'reports:dashboard' %}" class="nav-item">
+                    <div class="nav-card">
+                        <i class="bi bi-house nav-icon text-dark"></i>
+                        <h6 class="nav-title">{{ TEMPLATE_HOME }}</h6>
                     </div>
-                    {% for area in AREAS_MISIONALES %}
-                    <div class="col-auto">
-                        <a href="{% url area.url %}" class="text-decoration-none">
-                            <div class="card h-100 shadow-sm" style="width: 150px;">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                    <i class="bi {{ area.icon }} display-6 text-{{ area.color }} mb-2"></i>
-                                    <h6 class="card-title mb-0">{{ area.name }}</h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
+                </a>
             </div>
+            
+            <!-- Mission Areas -->
+            {% for area in AREAS_MISIONALES %}
+            <div class="col-auto">
+                <a href="{% url area.url %}" class="nav-item">
+                    <div class="nav-card">
+                        <i class="bi {{ area.icon }} nav-icon text-{{ area.color }}"></i>
+                        <h6 class="nav-title">{{ area.name }}</h6>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
         </div>
     </div>
+    
     <!-- Content Block -->
     {% block dashboard_content %}{% endblock %}
 </div>

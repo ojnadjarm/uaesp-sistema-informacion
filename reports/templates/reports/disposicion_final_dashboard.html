@@ -4,54 +4,289 @@
 {% block title %}{{ TEMPLATE_DASHBOARD_TITLE }}{% endblock %}
 
 {% block dashboard_content %}
-<div class="container-fluid w-75">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h3 mb-1">{{ TEMPLATE_DASHBOARD_TITLE }}</h1>
-            <p class="text-muted mb-0">{{ TEMPLATE_DASHBOARD_DESCRIPTION }}</p>
-            <p class="text-info mb-0">{{ TEMPLATE_ACUMULADO_ANIO }}</p>
-            {% if user.is_authenticated %}
-            <div class="mt-3">
-                <a href="{% url 'reports:disposicion_final_reportes' %}" class="btn btn-outline-primary">
-                    <i class="bi bi-tools"></i> Constructor de Reportes Personalizados
-                </a>
+<style>
+/* Enhanced styling for presentation */
+.page-hero {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--uaesp-primary), var(--uaesp-secondary));
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.icon-circle i {
+    font-size: 2rem;
+    color: white;
+}
+
+.page-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--uaesp-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.page-subtitle {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+.kpi-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 0.8rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: none;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--uaesp-primary);
+    border-radius: 1rem 1rem 0 0;
+}
+
+.kpi-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    min-height: 60px;
+    background: #000000;
+    border-radius: 50%;
+    margin: 0;
+}
+
+.kpi-icon i {
+    font-size: 1.5rem !important;
+    color: black;
+}
+
+.kpi-value {
+    font-size: 1rem !important;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.stats-table-container {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.table-modern {
+    border: none;
+}
+
+.table-modern thead th {
+    background: var(--uaesp-primary);
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+
+.table-modern tbody tr {
+    border-bottom: 1px solid #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+    background-color: rgba(48, 102, 74, 0.05);
+}
+
+.table-modern tbody td {
+    padding: 1rem;
+    border: none;
+    font-weight: 500;
+}
+
+.action-button {
+    background: linear-gradient(135deg, var(--uaesp-primary), var(--uaesp-secondary));
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(48, 102, 74, 0.3);
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(48, 102, 74, 0.4);
+    color: white;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.8rem;
+    }
+    
+    .kpi-value {
+        font-size: 2rem !important;
+    }
+    
+    .kpi-label {
+        font-size: 0.8rem;
+    }
+    
+    .kpi-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .kpi-icon i {
+        font-size: 1.3rem;
+    }
+    
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .icon-circle i {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .kpi-card {
+        padding: 1.25rem;
+    }
+    
+    .kpi-value {
+        font-size: 1.6rem !important;
+    }
+    
+    .kpi-label {
+        font-size: 0.75rem;
+    }
+    
+    .kpi-icon {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .kpi-icon i {
+        font-size: 1.2rem;
+    }
+    
+    .page-title {
+        font-size: 1.6rem;
+    }
+    
+    .page-subtitle {
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<div class="container-fluid mt-5">
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-8 col-md-12 mb-3 mb-lg-0">
+            <div class="d-flex align-items-center flex-wrap">
+                <div class="icon-circle me-3 me-md-4 mb-2 mb-md-0">
+                    <i class="bi bi-trash"></i>
+                </div>
+                <div>
+                    <h1 class="page-title mb-2">{{ TEMPLATE_DASHBOARD_TITLE }}</h1>
+                    <p class="page-subtitle mb-0">{{ TEMPLATE_DASHBOARD_DESCRIPTION }}</p>
+                </div>
             </div>
+        </div>
+        <div class="col-lg-4 col-md-12 text-lg-end text-center">
+            {% if user.is_authenticated %}
+            <a href="{% url 'reports:disposicion_final_reportes' %}" class="btn action-button btn-lg">
+                <i class="bi bi-tools me-2"></i>Constructor de Reportes Personalizados
+            </a>
             {% endif %}
         </div>
     </div>
-    <div class="row mb-4 align-items-stretch">
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-sm flex-fill h-100">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <h5 class="card-title text-center">{{ TEMPLATE_TOTAL_RESIDUOS }}</h5>
-                    <h2 class="mb-0 text-center">{{ total_residuos }}</h2>
+    
+    <!-- Enhanced KPI Cards Section -->
+    <div class="row mb-5">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-trash3"></i>
                 </div>
+                <div class="kpi-value">{{ total_residuos }} Tn</div>
             </div>
         </div>
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-sm flex-fill h-100">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <h5 class="card-title text-center">{{ TEMPLATE_PER_CAPITA }}</h5>
-                    <h2 class="mb-0 text-center">{{ per_capita }}</h2>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-people"></i>
                 </div>
+                <div class="kpi-value">{{ per_capita }} Kg/hab</div>
             </div>
         </div>
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-sm flex-fill h-100">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <h5 class="card-title text-center">{{ TEMPLATE_TONELADAS_DIA }}</h5>
-                    <h2 class="mb-0 text-center">{{ promedio_toneladas_dia }}</h2>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-calendar-day"></i>
                 </div>
+                <div class="kpi-value">{{ promedio_toneladas_dia }} Tn/dia</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-calendar-date"></i>
+                </div>
+                <div class="kpi-value">{{ TEMPLATE_ACUMULADO_ANIO }}</div>
             </div>
         </div>
     </div>
-    <div class="row mb-4">
-        <div class="col-12 d-flex justify-content-center">
-            <div class="card shadow-sm w-75">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">{{ TEMPLATE_EVOLUCION_MENSUAL }}</h5>
-                    <canvas id="graficoMensual"></canvas>
-                </div>
+    <!-- Chart Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="chart-container">
+                <h4 class="mb-4 text-center" style="color: var(--uaesp-primary); font-weight: 600;">
+                    <i class="bi bi-graph-up me-2"></i>{{ TEMPLATE_EVOLUCION_MENSUAL }}
+                </h4>
+                <canvas id="graficoMensual"></canvas>
             </div>
         </div>
     </div>
@@ -62,25 +297,65 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'reports/js/disposicion_final_chart.js' %}"></script>
     <!-- Estadísticas por Concesión -->
-    <div class="row mb-4">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>{{ TEMPLATE_CONCESION }}</th>
-                            <th>{{ TEMPLATE_TOTAL_RESIDUOS_KG }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for stat in stats_by_concesion %}
-                        <tr>
-                            <td>{{ stat.concesion|default:"N/A" }}</td>
-                            <td>{{ stat.total_residuos}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="stats-table-container">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-8">
+                        <h4 class="mb-0" style="color: var(--uaesp-primary); font-weight: 600;">
+                            <i class="bi bi-building me-2"></i>{{ TEMPLATE_STATS_CONCESION }}
+                        </h4>
+                        <p class="text-muted mb-0 mt-1">Desglose por concesionario principal</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <span class="badge" style="background: var(--uaesp-primary); color: white;">
+                                <i class="bi bi-check-circle me-1"></i>{{ stats_by_concesion|length }} Concesiones
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-modern">
+                        <thead>
+                            <tr>
+                                <th style="border-top-left-radius: 0.75rem; width: 60%;">{{ TEMPLATE_CONCESION }}</th>
+                                <th style="border-top-right-radius: 0.75rem; width: 40%;">{{ TEMPLATE_TOTAL_RESIDUOS_KG }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in stats_by_concesion %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--uaesp-primary);">
+                                                <span class="text-white fw-bold">{{ forloop.counter }}</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <strong>{{ stat.concesion|default:"N/A" }}</strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge" style="background: var(--uaesp-primary); color: white; font-size: 1rem; padding: 0.75rem 1.25rem;">{{ stat.total_residuos }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Summary Footer -->
+                <div class="row mt-4 pt-3" style="border-top: 1px solid #e9ecef;">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>{{ TEMPLATE_ACUMULADO_ANIO }}
+                        </small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

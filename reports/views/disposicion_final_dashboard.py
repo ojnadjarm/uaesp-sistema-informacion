@@ -52,13 +52,11 @@ def disposicion_final_dashboard(request):
 
     stats_by_concesion = mensual_data.values('concesion').annotate(
         total_residuos=Sum('peso_residuos')/1000,
-        promedio_peso=Avg('peso_residuos')/1000
     ).order_by('total_residuos').reverse()
 
     # Format stats with thousand separators
     for stat in stats_by_concesion:
         stat['total_residuos'] = intcomma(round(stat['total_residuos'], 2))
-        stat['promedio_peso'] = intcomma(round(stat['promedio_peso'], 2))
 
     # Format dates for display
     fecha_actual_str = formats.date_format(last_date, "DATE_FORMAT") if last_date else "N/A"

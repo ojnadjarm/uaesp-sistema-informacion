@@ -13,31 +13,26 @@ def get_areas_misionales_context():
                 'name': get_string('templates.disposicion_final', 'reports'),
                 'url': 'reports:disposicion_final_dashboard',
                 'icon': 'bi-trash',
-                'color': 'primary',
             },
             {
                 'name': get_string('templates.rbl', 'reports'),
                 'url': 'reports:rbl_dashboard',
                 'icon': 'bi bi-suit-club',
-                'color': 'danger',
             },
             {
                 'name': get_string('templates.aprovechamiento', 'reports'),
                 'url': 'reports:aprovechamiento_dashboard',
                 'icon': 'bi-recycle',
-                'color': 'success',
             },
             {
                 'name': get_string('templates.alumbrado', 'reports'),
                 'url': 'reports:alumbrado_dashboard',
                 'icon': 'bi-lightbulb',
-                'color': 'warning',
             },
             {
                 'name': get_string('templates.funerarios', 'reports'),
                 'url': 'reports:funerarios_dashboard',
                 'icon': 'bi-flower1',
-                'color': 'info',
             },
         ]
     }

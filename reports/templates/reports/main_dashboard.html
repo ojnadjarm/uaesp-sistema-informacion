@@ -4,22 +4,151 @@
 {% block title %}{{ TEMPLATE_DASHBOARD_TITLE }}{% endblock %}
 
 {% block content %}
+<style>
+/* Enhanced styling to match coreview dashboard */
+.page-hero {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--uaesp-primary), var(--uaesp-secondary));
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.icon-circle i {
+    font-size: 2rem;
+    color: white;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--uaesp-primary);
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.module-tile {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: none;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.module-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--uaesp-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.module-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.module-tile:hover::before {
+    transform: scaleX(1);
+}
+
+.module-tile:hover .tile-icon {
+    transform: scale(1.05);
+}
+
+.tile-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.tile-icon.text-primary { 
+    background: var(--uaesp-primary); 
+    box-shadow: 0 4px 15px rgba(48, 102, 74, 0.3);
+}
+.tile-icon.text-danger { 
+    background: #dc3545; 
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+.tile-icon.text-success { 
+    background: #198754; 
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+}
+.tile-icon.text-warning { 
+    background: #ffc107; 
+    color: #000; 
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+.tile-icon.text-info { 
+    background: #0dcaf0; 
+    box-shadow: 0 4px 15px rgba(13, 202, 240, 0.3);
+}
+
+.tile-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    line-height: 1.2;
+}
+</style>
+
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h3 mb-1">{{ TEMPLATE_DASHBOARD_TITLE }}</h1>
-            <p class="text-muted mb-0">{{ TEMPLATE_DASHBOARD_DESCRIPTION }}</p>
+    <!-- Welcome Header -->
+    <div class="page-hero">
+        <div class="icon-circle">
+            <i class="bi bi-graph-up"></i>
         </div>
+        <h1 class="page-title">{{ TEMPLATE_DASHBOARD_TITLE }}</h1>
+        <p class="page-subtitle">{{ TEMPLATE_DASHBOARD_DESCRIPTION }}</p>
     </div>
-    <div class="row">
+
+    <!-- Module Navigation -->
+    <div class="row g-4 mb-5">
         {% for area in AREAS_MISIONALES %}
-        <div class="col-md-4 mb-4">
+        <div class="col-lg-2 col-md-4 col-sm-6">
             <a href="{% url area.url %}" class="text-decoration-none">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                        <i class="bi {{ area.icon }} display-4 text-{{ area.color }} mb-3"></i>
-                        <h5 class="card-title text-center">{{ area.name }}</h5>
+                <div class="module-tile">
+                    <div class="tile-icon text-{{ area.color }}">
+                        <i class="bi {{ area.icon }}"></i>
                     </div>
+                    <div class="tile-title">{{ area.name }}</div>
                 </div>
             </a>
         </div>
