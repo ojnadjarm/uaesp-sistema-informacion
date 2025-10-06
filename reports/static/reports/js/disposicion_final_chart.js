@@ -1,28 +1,61 @@
 document.addEventListener('DOMContentLoaded', function() {
-    if (typeof window.graficoMensualLabels !== 'undefined' && typeof window.graficoMensualData !== 'undefined') {
-        const ctx = document.getElementById('graficoMensual').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: window.graficoMensualLabels,
-                datasets: [{
-                    label: 'Residuos (toneladas)',
-                    data: window.graficoMensualData,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
+    console.log('Chart script loaded');
+    console.log('Labels:', window.graficoMensualLabels);
+    console.log('Datasets:', window.graficoMensualDatasets);
+    
+    if (typeof window.graficoMensualLabels !== 'undefined' && typeof window.graficoMensualDatasets !== 'undefined') {
+        const canvas = document.getElementById('graficoMensual');
+        if (canvas) {
+            console.log('Canvas found, creating chart');
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: window.graficoMensualLabels,
+                    datasets: window.graficoMensualDatasets
                 },
-                scales: {
-                    y: { beginAtZero: true }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { 
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Toneladas'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Mes'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            console.error('Canvas element not found');
+        }
+    } else {
+        console.error('Chart data not available');
+        console.log('Labels type:', typeof window.graficoMensualLabels);
+        console.log('Datasets type:', typeof window.graficoMensualDatasets);
     }
 });

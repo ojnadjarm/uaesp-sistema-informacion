@@ -292,7 +292,9 @@
     </div>
     <script>
         window.graficoMensualLabels = {{ grafico_mensual_labels_json|safe }};
-        window.graficoMensualData = {{ grafico_mensual_data_json|safe }};
+        window.graficoMensualDatasets = {{ grafico_mensual_datasets_json|safe }};
+        console.log('Template debug - Labels:', window.graficoMensualLabels);
+        console.log('Template debug - Datasets:', window.graficoMensualDatasets);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'reports/js/disposicion_final_chart.js' %}"></script>
