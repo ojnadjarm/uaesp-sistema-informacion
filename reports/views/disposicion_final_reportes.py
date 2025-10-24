@@ -59,60 +59,96 @@ def disposicion_final_reportes(request):
         ]
         
         # Get available concesiones
-        cursor.execute("SELECT DISTINCT \"nombre\" FROM ingesta_concesion")
+        cursor.execute("SELECT DISTINCT \"nombre\" FROM ingesta_concesion ORDER BY \"nombre\"")
         concesiones_options = [row[0] for row in cursor.fetchall()]
         
         # Get available servicios
-        cursor.execute("SELECT DISTINCT \"nombre\" FROM ingesta_servicio")
+        cursor.execute("SELECT DISTINCT \"nombre\" FROM ingesta_servicio ORDER BY \"nombre\"")
         servicios_options = [row[0] for row in cursor.fetchall()]
         
         # Get available zonas
-        cursor.execute("SELECT DISTINCT \"nombre\" FROM ingesta_zonadescarga")
+        cursor.execute("SELECT DISTINCT \"nombre\" FROM ingesta_zonadescarga ORDER BY \"nombre\"")
         zonas_options = [row[0] for row in cursor.fetchall()]
         
         # Get available categorias
-        cursor.execute("SELECT DISTINCT \"categoria\" FROM ingesta_servicio")
+        cursor.execute("SELECT DISTINCT \"categoria\" FROM ingesta_servicio WHERE \"categoria\" IS NOT NULL ORDER BY \"categoria\"")
         categorias_options = [row[0] for row in cursor.fetchall()]
         
         # Get available origenes
-        cursor.execute("SELECT DISTINCT \"ORIGEN DEL RESIDUO\" FROM disposicion_final_detallada WHERE \"ORIGEN DEL RESIDUO\" IS NOT NULL ORDER BY \"ORIGEN DEL RESIDUO\"")
+        cursor.execute("SELECT DISTINCT \"categoria\" FROM ingesta_concesion WHERE \"categoria\" IS NOT NULL ORDER BY \"categoria\"")
         origenes_options = [row[0] for row in cursor.fetchall()]
     
-    # Build query with filters
-    query = "SELECT * FROM disposicion_final_detallada WHERE 1=1"
+    # Build direct query to base tables (much faster than using the view)
+    query = """
+    SELECT
+        EXTRACT(YEAR FROM df.fecha_entrada) AS "AÑO",
+        EXTRACT(MONTH FROM df.fecha_entrada) AS "MES",
+        EXTRACT(DAY FROM df.fecha_entrada) AS "DÍA",
+        ROUND(df.peso_residuos / 1000.0, 2) AS "PESO RESIDUOS TON",
+        df.fecha_entrada AS "FECHA ENTRADA",
+        df.fecha_salida AS "FECHA SALIDA",
+        df.consecutivo_entrada AS "CONSECUTIVO ENTRADA",
+        df.consecutivo_salida AS "CONSECUTIVO SALIDA",
+        df.placa AS "PLACA",
+        df.numero_vehiculo AS "NUMERO VEHICULO",
+        UPPER(TRIM(df.concesion)) AS "CONCESION",
+        df.macroruta AS "MACRORUTA",
+        df.microruta AS "MICRORUTA",
+        UPPER(TRIM(df.ase)) AS "ASE",
+        UPPER(TRIM(df.servicio)) AS "SERVICIO",
+        UPPER(TRIM(df.zona_descarga)) AS "ZONA DESCARGA",
+        df.peso_entrada AS "PESO ENTRADA",
+        df.peso_salida AS "PESO SALIDA",
+        df.peso_residuos AS "PESO RESIDUOS",
+        s.categoria AS "CATEGORIA DEL SERVICIO",
+        c.categoria AS "ORIGEN DEL RESIDUO",
+        CASE
+            WHEN zd.categoria = 'PIDJ' THEN 'PIDJ'
+            ELSE NULL
+        END AS "DISPUESTOS PIDJ"
+    FROM
+        ingesta_disposicionfinal df
+    LEFT JOIN
+        ingesta_concesion c ON UPPER(TRIM(df.concesion)) = UPPER(TRIM(c.nombre))
+    LEFT JOIN
+        ingesta_servicio s ON UPPER(TRIM(df.servicio)) = UPPER(TRIM(s.nombre))
+    LEFT JOIN
+        ingesta_zonadescarga zd ON UPPER(TRIM(df.zona_descarga)) = UPPER(TRIM(zd.nombre))
+    LEFT JOIN
+        ingesta_ase a ON UPPER(TRIM(df.ase)) = UPPER(TRIM(a.nombre))
+    WHERE
+        df.fecha_entrada IS NOT NULL
+    """
     params = []
     
-    # Date range filters
-    query += " AND \"AÑO\" >= %s AND \"AÑO\" <= %s"
-    params.extend([start_year, end_year])
-    
-    query += " AND \"MES\" >= %s AND \"MES\" <= %s"
-    params.extend([start_month, end_month])
+    # Date range filters - use direct date comparison instead of extracted year/month
+    query += " AND df.fecha_entrada >= %s AND df.fecha_entrada <= %s"
+    params.extend([f"{start_year}-{start_month.zfill(2)}-01", f"{end_year}-{end_month.zfill(2)}-31"])
     
     # Multi-select filters - only apply if selections are made
     if concesiones and len(concesiones) > 0:
         placeholders = ','.join(['%s'] * len(concesiones))
-        query += f" AND \"CONCESION\" IN ({placeholders})"
-        params.extend(concesiones)
+        query += f" AND UPPER(TRIM(df.concesion)) IN ({placeholders})"
+        params.extend([concesion.upper().strip() for concesion in concesiones])
     
     if servicios and len(servicios) > 0:
         placeholders = ','.join(['%s'] * len(servicios))
-        query += f" AND \"SERVICIO\" IN ({placeholders})"
-        params.extend(servicios)
+        query += f" AND UPPER(TRIM(df.servicio)) IN ({placeholders})"
+        params.extend([servicio.upper().strip() for servicio in servicios])
     
     if zonas and len(zonas) > 0:
         placeholders = ','.join(['%s'] * len(zonas))
-        query += f" AND \"ZONA DESCARGA\" IN ({placeholders})"
-        params.extend(zonas)
+        query += f" AND UPPER(TRIM(df.zona_descarga)) IN ({placeholders})"
+        params.extend([zona.upper().strip() for zona in zonas])
     
     if categorias and len(categorias) > 0:
         placeholders = ','.join(['%s'] * len(categorias))
-        query += f" AND \"CATEGORIA DEL SERVICIO\" IN ({placeholders})"
+        query += f" AND s.categoria IN ({placeholders})"
         params.extend(categorias)
     
     if origenes and len(origenes) > 0:
         placeholders = ','.join(['%s'] * len(origenes))
-        query += f" AND \"ORIGEN DEL RESIDUO\" IN ({placeholders})"
+        query += f" AND c.categoria IN ({placeholders})"
         params.extend(origenes)
     
     if dispuestos_pidj and len(dispuestos_pidj) > 0:
@@ -120,14 +156,14 @@ def disposicion_final_reportes(request):
         pidj_conditions = []
         for value in dispuestos_pidj:
             if value == 'PIDJ':
-                pidj_conditions.append("\"DISPUESTOS PIDJ\" = 'PIDJ'")
+                pidj_conditions.append("zd.categoria = 'PIDJ'")
             elif value == 'No Aplica':
-                pidj_conditions.append("\"DISPUESTOS PIDJ\" <> 'PIDJ'")
+                pidj_conditions.append("(zd.categoria IS NULL OR zd.categoria <> 'PIDJ')")
         
         if pidj_conditions:
             query += " AND (" + " OR ".join(pidj_conditions) + ")"
     
-    query += " ORDER BY \"FECHA ENTRADA\" DESC"
+    query += " ORDER BY df.fecha_entrada DESC"
     
     # Execute query and get results
     with connection.cursor() as cursor:
@@ -198,41 +234,77 @@ def export_report_csv(request):
     origenes = request.GET.getlist('origenes')
     dispuestos_pidj = request.GET.getlist('dispuestos_pidj')
     
-    # Build the same query
-    query = "SELECT * FROM disposicion_final_detallada WHERE 1=1"
+    # Build the same direct query as the main view
+    query = """
+    SELECT
+        EXTRACT(YEAR FROM df.fecha_entrada) AS "AÑO",
+        EXTRACT(MONTH FROM df.fecha_entrada) AS "MES",
+        EXTRACT(DAY FROM df.fecha_entrada) AS "DÍA",
+        ROUND(df.peso_residuos / 1000.0, 2) AS "PESO RESIDUOS TON",
+        df.fecha_entrada AS "FECHA ENTRADA",
+        df.fecha_salida AS "FECHA SALIDA",
+        df.consecutivo_entrada AS "CONSECUTIVO ENTRADA",
+        df.consecutivo_salida AS "CONSECUTIVO SALIDA",
+        df.placa AS "PLACA",
+        df.numero_vehiculo AS "NUMERO VEHICULO",
+        UPPER(TRIM(df.concesion)) AS "CONCESION",
+        df.macroruta AS "MACRORUTA",
+        df.microruta AS "MICRORUTA",
+        UPPER(TRIM(df.ase)) AS "ASE",
+        UPPER(TRIM(df.servicio)) AS "SERVICIO",
+        UPPER(TRIM(df.zona_descarga)) AS "ZONA DESCARGA",
+        df.peso_entrada AS "PESO ENTRADA",
+        df.peso_salida AS "PESO SALIDA",
+        df.peso_residuos AS "PESO RESIDUOS",
+        s.categoria AS "CATEGORIA DEL SERVICIO",
+        c.categoria AS "ORIGEN DEL RESIDUO",
+        CASE
+            WHEN zd.categoria = 'PIDJ' THEN 'PIDJ'
+            ELSE NULL
+        END AS "DISPUESTOS PIDJ"
+    FROM
+        ingesta_disposicionfinal df
+    LEFT JOIN
+        ingesta_concesion c ON UPPER(TRIM(df.concesion)) = UPPER(TRIM(c.nombre))
+    LEFT JOIN
+        ingesta_servicio s ON UPPER(TRIM(df.servicio)) = UPPER(TRIM(s.nombre))
+    LEFT JOIN
+        ingesta_zonadescarga zd ON UPPER(TRIM(df.zona_descarga)) = UPPER(TRIM(zd.nombre))
+    LEFT JOIN
+        ingesta_ase a ON UPPER(TRIM(df.ase)) = UPPER(TRIM(a.nombre))
+    WHERE
+        df.fecha_entrada IS NOT NULL
+    """
     params = []
     
-    # Date range filters
-    query += " AND \"AÑO\" >= %s AND \"AÑO\" <= %s"
-    params.extend([start_year, end_year])
-    
-    query += " AND \"MES\" >= %s AND \"MES\" <= %s"
-    params.extend([start_month, end_month])
+    # Date range filters - use direct date comparison instead of extracted year/month
+    query += " AND df.fecha_entrada >= %s AND df.fecha_entrada <= %s"
+    params.extend([f"{start_year}-{start_month.zfill(2)}-01", f"{end_year}-{end_month.zfill(2)}-31"])
     
     # Multi-select filters - only apply if selections are made
     if concesiones and len(concesiones) > 0:
         placeholders = ','.join(['%s'] * len(concesiones))
-        query += f" AND \"CONCESION\" IN ({placeholders})"
-        params.extend(concesiones)
+        query += f" AND UPPER(TRIM(df.concesion)) IN ({placeholders})"
+        params.extend([concesion.upper().strip() for concesion in concesiones])
     
     if servicios and len(servicios) > 0:
         placeholders = ','.join(['%s'] * len(servicios))
-        query += f" AND \"SERVICIO\" IN ({placeholders})"
-        params.extend(servicios)
+        query += f" AND UPPER(TRIM(df.servicio)) IN ({placeholders})"
+        params.extend([servicio.upper().strip() for servicio in servicios])
     
     if zonas and len(zonas) > 0:
         placeholders = ','.join(['%s'] * len(zonas))
-        query += f" AND \"ZONA DESCARGA\" IN ({placeholders})"
-        params.extend(zonas)
+        query += f" AND UPPER(TRIM(df.zona_descarga)) IN ({placeholders})"
+        params.extend([zona.upper().strip() for zona in zonas])
     
     if categorias and len(categorias) > 0:
         placeholders = ','.join(['%s'] * len(categorias))
-        query += f" AND \"CATEGORIA DEL SERVICIO\" IN ({placeholders})"
+        query += f" AND s.categoria IN ({placeholders})"
         params.extend(categorias)
     
     if origenes and len(origenes) > 0:
         placeholders = ','.join(['%s'] * len(origenes))
-        query += f" AND \"ORIGEN DEL RESIDUO\" IN ({placeholders})"
+        query += f" AND c.categoria IN ({placeholders})"
         params.extend(origenes)
     
     if dispuestos_pidj and len(dispuestos_pidj) > 0:
@@ -240,14 +312,14 @@ def export_report_csv(request):
         pidj_conditions = []
         for value in dispuestos_pidj:
             if value == 'PIDJ':
-                pidj_conditions.append("\"DISPUESTOS PIDJ\" = 'PIDJ'")
-            elif value == 'NON_PIDJ':
-                pidj_conditions.append("\"DISPUESTOS PIDJ\" IS NULL")
+                pidj_conditions.append("zd.categoria = 'PIDJ'")
+            elif value == 'No Aplica':
+                pidj_conditions.append("(zd.categoria IS NULL OR zd.categoria <> 'PIDJ')")
         
         if pidj_conditions:
             query += " AND (" + " OR ".join(pidj_conditions) + ")"
     
-    query += " ORDER BY \"FECHA ENTRADA\" DESC"
+    query += " ORDER BY df.fecha_entrada DESC"
     
     # Execute query
     with connection.cursor() as cursor:
