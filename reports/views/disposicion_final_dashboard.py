@@ -7,11 +7,24 @@ from ingesta.models.disposicion.disposicion_final_mensual import DisposicionFina
 from ingesta.models.core.registro_carga import RegistroCarga
 from coreview.base import get_template_context
 from globalfunctions.string_manager import get_string
-from django.utils import formats
-from django.db.models.functions import TruncMonth
 from .main_dashboard import get_areas_misionales_context
 import json
 from django.contrib.humanize.templatetags.humanize import intcomma
+
+MONTH_ABBREVIATIONS = {
+    1: 'Ene',
+    2: 'Feb',
+    3: 'Mar',
+    4: 'Abr',
+    5: 'May',
+    6: 'Jun',
+    7: 'Jul',
+    8: 'Ago',
+    9: 'Sep',
+    10: 'Oct',
+    11: 'Nov',
+    12: 'Dic',
+}
 
 def get_bogota_concesiones():
     concesiones = [
@@ -61,7 +74,7 @@ def disposicion_final_dashboard(request):
         stat['total_residuos'] = intcomma(round(stat['total_residuos'], 2))
 
     # Format dates for display
-    fecha_actual_str = formats.date_format(last_date, "DATE_FORMAT") if last_date else "N/A"
+    fecha_actual_str = last_date.strftime('%d/%m/%Y') if last_date else get_string('templates.not_available', 'reports')
 
     acumulado_texto = get_string('templates.acumulado_anio', 'reports').format(
         year=year,
@@ -83,7 +96,7 @@ def disposicion_final_dashboard(request):
     concesiones = get_bogota_concesiones()
     
     # Create chart data structure - add "Ene 1" at the beginning
-    labels = ["Ene 1"] + [f"{datetime(year, month, 1).strftime('%b')}" for month in months]
+    labels = ["Ene 1"] + [MONTH_ABBREVIATIONS.get(month, str(month)) for month in months]
     
     # Create datasets for each concession
     chart_datasets = []

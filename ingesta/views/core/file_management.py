@@ -1,32 +1,59 @@
-import os
-import uuid
+import re
 from datetime import datetime
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
-from ingesta.decorators import admin_required
+
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from minio.error import S3Error
-from ingesta.forms import UploadFileForm, PROCESS_TO_SUBSECRETARIA
-from ingesta.validators import validar_estructura_csv
-from ingesta.models import RegistroCarga
-from globalfunctions.string_manager import get_string
+
+from accounts.models import UserProfile
+from accounts.utils import role_required, user_allowed_subsecretarias
 from coreview.base import get_template_context, handle_error
 from coreview.minio_utils import get_minio_client, get_minio_bucket
-from django.db import transaction
-from django.core.exceptions import ValidationError
-import re
+from globalfunctions.string_manager import get_string
+from ingesta.decorators import admin_required
+from ingesta.forms import PROCESS_TO_SUBSECRETARIA, UploadFileForm
+from ingesta.models import RegistroCarga
+from ingesta.validators import validar_estructura_csv
 
 minio_client = get_minio_client()
 MINIO_BUCKET = get_minio_bucket()
 
-@login_required
+def _get_allowed_subsecretarias(user):
+    allowed = user_allowed_subsecretarias(user)
+    if allowed is None:
+        return None
+    return set(allowed)
+
+
+def _filter_cargas_for_user(user, queryset):
+    allowed = _get_allowed_subsecretarias(user)
+    if allowed is None:
+        return queryset
+    if not allowed:
+        return queryset.none()
+    return queryset.filter(subsecretaria_origen__in=allowed)
+
+
+def _ensure_registro_access(user, registro):
+    allowed = _get_allowed_subsecretarias(user)
+    if allowed is None:
+        return True
+    return registro.subsecretaria_origen in allowed
+
+
+@role_required([UserProfile.ROLE_ADMIN, UserProfile.ROLE_DATA_INGESTOR])
 def file_history_view(request):
     """
     Muestra una lista completa de las cargas de archivos registradas.
     """
     try:
-        cargas = RegistroCarga.objects.all().order_by('-fecha_hora_carga')
+        cargas = _filter_cargas_for_user(
+            request.user,
+            RegistroCarga.objects.all().order_by('-fecha_hora_carga'),
+        )
         context = {
             'cargas': cargas,
             'TEMPLATE_HISTORY_TITLE': get_string('templates.history_title', 'ingesta'),
@@ -66,14 +93,23 @@ def sanitize_filename(filename):
     # Limitar longitud
     return filename[:255]
 
-@login_required
+@role_required([UserProfile.ROLE_ADMIN, UserProfile.ROLE_DATA_INGESTOR])
 def upload_file_view(request):
+    allowed_subsecretarias = _get_allowed_subsecretarias(request.user)
+    form_kwargs = {}
+    if allowed_subsecretarias is not None:
+        form_kwargs['allowed_subsecretarias'] = list(allowed_subsecretarias)
+
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadFileForm(request.POST, request.FILES, **form_kwargs)
         if form.is_valid():
             uploaded_file = form.cleaned_data['file']
             tipo_proceso_seleccionado = form.cleaned_data['tipo_proceso']
             subsecretaria_origen = PROCESS_TO_SUBSECRETARIA.get(tipo_proceso_seleccionado)
+
+            if allowed_subsecretarias is not None and subsecretaria_origen not in allowed_subsecretarias:
+                messages.error(request, get_string('errors.no_permissions', 'ingesta'))
+                return redirect('ingesta:upload_file')
 
             # Sanitizar nombre del archivo
             original_filename = sanitize_filename(uploaded_file.name)
@@ -236,7 +272,7 @@ def upload_file_view(request):
             if 'error_file_name' in request.session:
                 del request.session['error_file_name']
             
-        form = UploadFileForm()
+        form = UploadFileForm(**form_kwargs)
         return render_upload_form(request, form)
 
 def render_upload_form(request, form):
@@ -257,12 +293,15 @@ def render_upload_form(request, form):
     context.update(get_template_context())
     return render(request, 'ingesta/upload_form.html', context)
 
-@login_required
+@role_required([UserProfile.ROLE_ADMIN, UserProfile.ROLE_DATA_INGESTOR])
 def download_file(request, file_id):
     """
     Download a file from MinIO storage.
     """
     carga = get_object_or_404(RegistroCarga, id=file_id)
+
+    if not _ensure_registro_access(request.user, carga):
+        raise PermissionDenied
     
     if not carga.path_minio:
         messages.error(request, get_string('errors.file_not_available', 'ingesta'))
@@ -290,7 +329,7 @@ def download_file(request, file_id):
         messages.error(request, get_string('errors.unexpected_error', 'ingesta').format(error=str(e)))
         return redirect('ingesta:file_history')
 
-@login_required
+@role_required([UserProfile.ROLE_ADMIN, UserProfile.ROLE_DATA_INGESTOR])
 def download_error_file(request):
     """
     Download the error file from session if it exists and belongs to the current user.

@@ -1,7 +1,10 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
-from django.contrib import messages
+
+from accounts.models import UserProfile
+from accounts.utils import user_has_role
 from globalfunctions.string_manager import get_string
 
 def admin_required(view_func):
@@ -10,7 +13,7 @@ def admin_required(view_func):
     Si no tiene permisos, redirige con mensaje de error.
     """
     def check_admin(user):
-        return user.is_authenticated and (user.is_staff or user.is_superuser)
+        return user_has_role(user, {UserProfile.ROLE_ADMIN})
     
     decorated_view = user_passes_test(check_admin, login_url=None)(view_func)
     
@@ -28,7 +31,7 @@ def admin_required_api(view_func):
     Si no tiene permisos, retorna 403 Forbidden.
     """
     def check_admin(user):
-        return user.is_authenticated and (user.is_staff or user.is_superuser)
+        return user_has_role(user, {UserProfile.ROLE_ADMIN})
     
     def wrapper(request, *args, **kwargs):
         if not check_admin(request.user):

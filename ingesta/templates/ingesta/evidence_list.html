@@ -82,7 +82,7 @@
                                     <a href="{% url 'ingesta:download_evidence' ev.id %}" class="btn btn-sm btn-outline-primary" title="Descargar evidencia">
                                         <i class="bi bi-download"></i>
                                     </a>
-                                    {% if user.is_staff or user.is_superuser %}
+                                    {% if IS_ADMIN %}
                                     <a href="{% url 'ingesta:delete_evidence' ev.id %}" class="btn btn-sm btn-outline-danger" title="Eliminar evidencia">
                                         <i class="bi bi-trash"></i>
                                     </a>

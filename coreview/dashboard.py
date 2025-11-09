@@ -1,11 +1,14 @@
 from datetime import timedelta
-from django.shortcuts import render
+
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from django.utils import timezone
-from ingesta.models import RegistroCarga
-from globalfunctions.string_manager import get_string
+
+from accounts.utils import get_user_role, user_allowed_subsecretarias
 from coreview.base import get_template_context, handle_error
 from coreview.minio_utils import get_minio_client
+from globalfunctions.string_manager import get_string
+from ingesta.models import RegistroCarga
 
 @login_required
 def dashboard_view(request):
@@ -14,19 +17,27 @@ def dashboard_view(request):
     """
     try:
         minio_client = get_minio_client()
+        allowed_subsecretarias = user_allowed_subsecretarias(request.user)
+        registros_qs = RegistroCarga.objects.all()
+        if allowed_subsecretarias is not None:
+            if allowed_subsecretarias:
+                registros_qs = registros_qs.filter(subsecretaria_origen__in=allowed_subsecretarias)
+            else:
+                registros_qs = RegistroCarga.objects.none()
+
         # Get statistics
-        total_files = RegistroCarga.objects.count()
-        completed_files = RegistroCarga.objects.filter(estado='COMPLETADO').count()
+        total_files = registros_qs.count()
+        completed_files = registros_qs.filter(estado='COMPLETADO').count()
         success_rate = round((completed_files / total_files * 100) if total_files > 0 else 0)
-        recent_uploads = RegistroCarga.objects.filter(
+        recent_uploads = registros_qs.filter(
             fecha_hora_carga__gte=timezone.now() - timedelta(hours=24)
         ).count()
-        active_processes = RegistroCarga.objects.filter(
+        active_processes = registros_qs.filter(
             estado__in=['EN_MINIO', 'PROCESANDO_NIFI']
         ).count()
 
         # Get recent activity
-        recent_activity = RegistroCarga.objects.all().order_by('-fecha_hora_carga')[:5]
+        recent_activity = registros_qs.order_by('-fecha_hora_carga')[:5]
 
         # System services status
         system_services = [
@@ -91,7 +102,8 @@ def dashboard_view(request):
             'TEMPLATE_CATALOGOS_CONCESION': get_string('catalogos.concesion.title', 'ingesta'),
             'TEMPLATE_CATALOGOS_ASE': get_string('catalogos.ase.title', 'ingesta'),
             'TEMPLATE_CATALOGOS_SERVICIO': get_string('catalogos.servicio.title', 'ingesta'),
-            'TEMPLATE_CATALOGOS_ZONA_DESCARGA': get_string('catalogos.zona_descarga.title', 'ingesta')
+            'TEMPLATE_CATALOGOS_ZONA_DESCARGA': get_string('catalogos.zona_descarga.title', 'ingesta'),
+            'USER_ROLE': get_user_role(request.user),
         }
         context.update(get_template_context())
         return render(request, 'coreview/dashboard.html', context)

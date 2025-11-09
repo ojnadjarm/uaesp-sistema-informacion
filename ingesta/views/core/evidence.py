@@ -1,15 +1,19 @@
-import uuid
 import re
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
+import uuid
+
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from minio.error import S3Error
-from coreview.minio_utils import get_minio_client, get_minio_bucket
+
+from accounts.models import UserProfile
+from accounts.utils import role_required, user_allowed_subsecretarias
 from coreview.base import get_template_context
-from ingesta.models import RegistroCarga, EvidenciaCarga
-from ingesta.forms import EvidenceUploadForm
+from coreview.minio_utils import get_minio_client, get_minio_bucket
 from globalfunctions.string_manager import get_string
+from ingesta.forms import EvidenceUploadForm
+from ingesta.models import EvidenciaCarga, RegistroCarga
 
 
 minio_client = get_minio_client()
@@ -21,9 +25,19 @@ def sanitize_filename(filename: str) -> str:
     return filename[:255]
 
 
-@login_required
+def _ensure_registro_access(user, registro):
+    allowed = user_allowed_subsecretarias(user)
+    if allowed is None:
+        return True
+    return registro.subsecretaria_origen in allowed
+
+
+@role_required([UserProfile.ROLE_ADMIN, UserProfile.ROLE_DATA_INGESTOR])
 def evidence_list_view(request, file_id):
     registro = get_object_or_404(RegistroCarga, id=file_id)
+    if not _ensure_registro_access(request.user, registro):
+        raise PermissionDenied
+
     evidencias = registro.evidencias.all().order_by('-fecha_hora_subida')
 
     if request.method == 'POST':
@@ -98,12 +112,15 @@ def evidence_list_view(request, file_id):
     return render(request, 'ingesta/evidence_list.html', context)
 
 
-@login_required
+@role_required([UserProfile.ROLE_ADMIN, UserProfile.ROLE_DATA_INGESTOR])
 def download_evidence(request, evidence_id):
     evidencia = get_object_or_404(EvidenciaCarga, id=evidence_id)
     if not evidencia.path_minio:
         messages.error(request, get_string('ingesta.errors.file_not_available', 'ingesta'))
         return redirect('ingesta:evidence_list', file_id=evidencia.registro_carga_id)
+
+    if not _ensure_registro_access(request.user, evidencia.registro_carga):
+        raise PermissionDenied
 
     try:
         response = minio_client.get_object(
@@ -124,11 +141,7 @@ def download_evidence(request, evidence_id):
         return redirect('ingesta:evidence_list', file_id=evidencia.registro_carga_id)
 
 
-def admin_required(user):
-    return user.is_staff or user.is_superuser
-
-
-@user_passes_test(admin_required)
+@role_required([UserProfile.ROLE_ADMIN])
 def delete_evidence(request, evidence_id):
     evidencia = get_object_or_404(EvidenciaCarga, id=evidence_id)
     registro_id = evidencia.registro_carga_id

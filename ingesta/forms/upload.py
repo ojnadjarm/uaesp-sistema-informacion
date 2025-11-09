@@ -28,9 +28,11 @@ def load_process_config():
 PROCESO_DATA = load_process_config()
 
 # Generate grouped choices for Process Types
-def get_grouped_choices():
+def get_grouped_choices(allowed_subsecretarias=None):
     choices = [('', get_string('forms.select_default', 'ingesta'))]
     for sub_key, sub_data in PROCESO_DATA.items():
+        if allowed_subsecretarias is not None and sub_key not in allowed_subsecretarias:
+            continue
         subsecretaria_name = sub_data['nombre']
         process_choices = []
         for proc_key, proc_data in sub_data.get('procesos', {}).items():
@@ -51,7 +53,7 @@ PROCESS_TO_SUBSECRETARIA = get_process_to_subsecretaria_map()
 class UploadFileForm(forms.Form):
     tipo_proceso = forms.ChoiceField(
         label=get_string('forms.tipo_proceso_label', 'ingesta'),
-        choices=get_grouped_choices(),
+        choices=[],
         required=True,
         widget=forms.Select(attrs={'class': 'form-select mb-3'})
     )
@@ -60,3 +62,8 @@ class UploadFileForm(forms.Form):
         required=True,
         widget=forms.FileInput(attrs={'class': 'form-control', 'accept': '.csv,.xlsx'})
     )
+
+    def __init__(self, *args, **kwargs):
+        allowed_subsecretarias = kwargs.pop('allowed_subsecretarias', None)
+        super().__init__(*args, **kwargs)
+        self.fields['tipo_proceso'].choices = get_grouped_choices(allowed_subsecretarias)

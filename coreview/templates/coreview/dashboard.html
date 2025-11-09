@@ -22,6 +22,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <div class="row g-3">
+                        {% if CAN_ACCESS_INGESTA %}
                         <div class="col-md-3">
                             <a href="#ingesta" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
@@ -30,6 +31,8 @@
                                 </div>
                             </a>
                         </div>
+                        {% endif %}
+                        {% if IS_ADMIN %}
                         <div class="col-md-3">
                             <a href="#presupuesto" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
@@ -46,6 +49,8 @@
                                 </div>
                             </a>
                         </div>
+                        {% endif %}
+                        {% if CAN_ACCESS_REPORTS %}
                         <div class="col-md-3">
                             <a href="#reportes" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
@@ -54,6 +59,7 @@
                                 </div>
                             </a>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -61,6 +67,7 @@
     </div>
 
     <!-- Ingesta Module Section -->
+    {% if CAN_ACCESS_INGESTA %}
     <div id="ingesta" class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -89,29 +96,34 @@
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6">
+                            {% if CAN_UPLOAD_FILES %}
                             <a href="{% url 'ingesta:upload_file' %}" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
                                     <span class="tile-icon"><i class="bi bi-upload"></i></span>
                                     <div class="tile-title">{{ TEMPLATE_UPLOAD_FILE }}</div>
                                 </div>
                             </a>
+                            {% endif %}
                         </div>
                         <div class="col-xl-3 col-md-6">
+                            {% if CAN_VIEW_INGESTA_HISTORY %}
                             <a href="{% url 'ingesta:file_history' %}" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
                                     <span class="tile-icon"><i class="bi bi-clock-history"></i></span>
                                     <div class="tile-title">{{ TEMPLATE_VIEW_HISTORY }}</div>
                                 </div>
                             </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
     
     <!-- Catálogos Section (Solo Admin/Superadmin) -->
-    {% if user.is_staff or user.is_superuser %}
+    {% if IS_ADMIN %}
     <div id="catalogos" class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -159,6 +171,7 @@
     </div>
     {% endif %}
     
+    {% if CAN_ACCESS_REPORTS %}
     <div id="reportes" class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -212,7 +225,9 @@
             </div>
         </div>
     </div>
+    {% endif %}
     <!-- Placeholder Sections for Other Modules -->
+    {% if IS_ADMIN %}
     <div id="presupuesto" class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -246,5 +261,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

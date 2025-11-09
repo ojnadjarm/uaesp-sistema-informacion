@@ -236,7 +236,7 @@
             </div>
         </div>
         <div class="col-lg-4 col-md-12 text-lg-end text-center">
-            {% if user.is_authenticated %}
+            {% if CAN_ACCESS_CUSTOM_REPORTS %}
             <a href="{% url 'reports:disposicion_final_reportes' %}" class="btn action-button btn-lg">
                 <i class="bi bi-tools me-2"></i>{{ TEMPLATE_REPORT_BUILDER_BUTTON }}
             </a>

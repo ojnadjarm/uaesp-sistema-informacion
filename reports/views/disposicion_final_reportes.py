@@ -1,18 +1,22 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.db import connection
-from django.core.paginator import Paginator
-from django.http import HttpResponse
 import csv
 import json
-from io import StringIO, BytesIO
 from datetime import datetime
-from globalfunctions.string_manager import get_string
-from coreview.base import get_template_context
-from .main_dashboard import get_areas_misionales_context
-import pandas as pd
+from io import BytesIO, StringIO
 
-@login_required
+import pandas as pd
+from django.core.paginator import Paginator
+from django.db import connection
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from accounts.models import UserProfile
+from accounts.utils import role_required
+from coreview.base import get_template_context
+from globalfunctions.string_manager import get_string
+from .main_dashboard import get_areas_misionales_context
+
+
+@role_required([UserProfile.ROLE_REGISTER_USER])
 def disposicion_final_reportes(request):
     """
     Simple report builder using the disposicion_final_detallada view.
@@ -257,7 +261,7 @@ def disposicion_final_reportes(request):
     
     return render(request, 'reports/disposicion_final_reportes.html', context)
 
-@login_required
+@role_required([UserProfile.ROLE_ADMIN, UserProfile.ROLE_DATA_INGESTOR, UserProfile.ROLE_REGISTER_USER])
 def export_report_csv(request):
     """
     Export filtered report data to CSV
