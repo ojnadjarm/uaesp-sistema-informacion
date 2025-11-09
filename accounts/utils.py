@@ -15,7 +15,6 @@ def get_user_profile(user) -> Optional[UserProfile]:
     except UserProfile.DoesNotExist:
         return None
 
-
 def get_user_role(user) -> Optional[str]:
     if not getattr(user, "is_authenticated", False):
         return None
@@ -83,12 +82,11 @@ def user_can_access_reports(user) -> bool:
 
 def user_can_access_custom_reports(user) -> bool:
     """
-    Solo administradores y usuarios con rol register_user pueden acceder
-    al constructor de reportes personalizados.
+    Cualquier usuario autenticado puede acceder al constructor de reportes personalizados.
     """
     if not getattr(user, "is_authenticated", False):
         return False
-    return user_has_role(user, {UserProfile.ROLE_REGISTER_USER})
+    return True
 
 
 def user_can_upload_files(user) -> bool:

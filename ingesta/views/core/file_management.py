@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from minio.error import S3Error
 
 from accounts.models import UserProfile
-from accounts.utils import role_required, user_allowed_subsecretarias
+from accounts.utils import get_user_role, role_required, user_allowed_subsecretarias
 from coreview.base import get_template_context, handle_error
 from coreview.minio_utils import get_minio_client, get_minio_bucket
 from globalfunctions.string_manager import get_string
@@ -54,6 +54,8 @@ def file_history_view(request):
             request.user,
             RegistroCarga.objects.all().order_by('-fecha_hora_carga'),
         )
+        if get_user_role(request.user) != UserProfile.ROLE_ADMIN:
+            cargas = cargas.filter(user=request.user)
         context = {
             'cargas': cargas,
             'TEMPLATE_HISTORY_TITLE': get_string('templates.history_title', 'ingesta'),

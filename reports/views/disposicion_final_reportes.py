@@ -11,12 +11,13 @@ from django.shortcuts import render
 
 from accounts.models import UserProfile
 from accounts.utils import role_required
+from django.contrib.auth.decorators import login_required
 from coreview.base import get_template_context
 from globalfunctions.string_manager import get_string
 from .main_dashboard import get_areas_misionales_context
 
 
-@role_required([UserProfile.ROLE_REGISTER_USER])
+@login_required
 def disposicion_final_reportes(request):
     """
     Simple report builder using the disposicion_final_detallada view.
