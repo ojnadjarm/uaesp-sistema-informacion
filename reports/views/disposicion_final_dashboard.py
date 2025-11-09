@@ -54,6 +54,8 @@ def disposicion_final_dashboard(request):
         total_residuos=Sum('peso_residuos')/1000,
     ).order_by('total_residuos').reverse()
 
+    concesion_count = stats_by_concesion.count()
+
     # Format stats with thousand separators
     for stat in stats_by_concesion:
         stat['total_residuos'] = intcomma(round(stat['total_residuos'], 2))
@@ -120,7 +122,7 @@ def disposicion_final_dashboard(request):
         total_data[month_index] = float(data_point['total'])
     
     chart_datasets.append({
-        'label': 'TOTAL ASES',
+        'label': get_string('templates.chart_total_ases', 'reports'),
         'data': total_data,
         'borderColor': 'rgba(0, 0, 0, 1)',
         'backgroundColor': 'rgba(0, 0, 0, 0.1)',
@@ -141,6 +143,8 @@ def disposicion_final_dashboard(request):
         'end_date': end_date,
         'total_residuos': intcomma(round(total_residuos/1000, 2)),
         'stats_by_concesion': stats_by_concesion,
+        'TEMPLATE_DISPOSICION_BREAKDOWN_SUBTITLE': get_string('templates.disposicion_final_breakdown_subtitle', 'reports'),
+        'TEMPLATE_DISPOSICION_CONCESION_COUNT': get_string('templates.disposicion_final_concesion_count', 'reports').format(count=concesion_count),
         'acumulado_texto': acumulado_texto,
         'promedio_toneladas_dia': intcomma(round(promedio_kg_dia/1000, 2)),
         'per_capita': intcomma(round(total_residuos/poblacion_bogota, 2)),
@@ -162,6 +166,11 @@ def disposicion_final_dashboard(request):
         'debug_labels': labels,
         'debug_datasets': chart_datasets,
         'HIDE_HEADER_FOOTER': not request.user.is_authenticated,
+        'TEMPLATE_REPORT_BUILDER_BUTTON': get_string('templates.dashboard_report_builder_button', 'reports'),
+        'TEMPLATE_UNIT_TON': get_string('templates.unit_ton', 'reports'),
+        'TEMPLATE_UNIT_KG_PER_CAPITA': get_string('templates.unit_kg_per_capita', 'reports'),
+        'TEMPLATE_UNIT_TON_PER_DAY': get_string('templates.unit_ton_per_day', 'reports'),
+        'TEMPLATE_NOT_AVAILABLE': get_string('templates.not_available', 'reports'),
     }
     context.update(get_areas_misionales_context())
     context.update(get_template_context())

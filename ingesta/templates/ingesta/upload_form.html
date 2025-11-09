@@ -64,22 +64,22 @@
 </div>
 
 <!-- Modal de procesamiento -->
-<div class="modal fade" id="processingModal" tabindex="-1" aria-labelledby="processingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="processingModal" tabindex="-1" aria-labelledby="processingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-processing-template="{{ TEMPLATE_PROCESSING_FILE_TEMPLATE }}" data-processing-default="{{ TEMPLATE_PROCESSING_DEFAULT_FILENAME }}">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="processingModalLabel">
-                    <i class="bi bi-hourglass-split text-primary me-2"></i>Procesando archivo
+                    <i class="bi bi-hourglass-split text-primary me-2"></i>{{ TEMPLATE_PROCESSING_MODAL_TITLE }}
                 </h5>
             </div>
             <div class="modal-body text-center">
                 <div class="mb-3">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Procesando...</span>
+                        <span class="visually-hidden">{{ TEMPLATE_PROCESSING_SPINNER }}</span>
                     </div>
                 </div>
-                <p class="mb-0" id="processingMessage">Iniciando procesamiento del archivo...</p>
-                <small class="text-muted">Por favor, no cierre esta ventana mientras se procesa el archivo.</small>
+                <p class="mb-0" id="processingMessage">{{ TEMPLATE_PROCESSING_INITIAL }}</p>
+                <small class="text-muted">{{ TEMPLATE_PROCESSING_WARNING }}</small>
             </div>
         </div>
     </div>
@@ -106,14 +106,18 @@
 
 // Función para mostrar el modal de procesamiento
 function showProcessingModal(form) {
+    const modalElement = document.getElementById('processingModal')
     const fileInput = form.querySelector('input[type="file"]')
-    const fileName = fileInput.files[0] ? fileInput.files[0].name : 'archivo'
+    const defaultFileName = modalElement.dataset.processingDefault || ''
+    const template = modalElement.dataset.processingTemplate || '{filename}'
+    const fileName = fileInput.files[0] ? fileInput.files[0].name : defaultFileName
+    const message = template.replace('{filename}', fileName)
     
     // Actualizar mensaje con el nombre del archivo
-    document.getElementById('processingMessage').textContent = `Procesando: ${fileName}`
+    document.getElementById('processingMessage').textContent = message
     
     // Mostrar modal
-    const modal = new bootstrap.Modal(document.getElementById('processingModal'))
+    const modal = new bootstrap.Modal(modalElement)
     modal.show()
     
     // Enviar formulario después de mostrar el modal

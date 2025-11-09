@@ -84,6 +84,15 @@ def evidence_list_view(request, file_id):
         'form': form,
         'TEMPLATE_EVIDENCE_TITLE': 'Evidencias del Archivo',
         'TEMPLATE_EVIDENCE_DESCRIPTION': 'Suba documentos de respaldo (hasta 10MB por archivo).',
+        'TEMPLATE_EVIDENCE_BACK_HISTORY': get_string('templates.evidence_back_to_history', 'ingesta'),
+        'TEMPLATE_EVIDENCE_UPLOAD_SECTION': get_string('templates.evidence_upload_section', 'ingesta'),
+        'TEMPLATE_EVIDENCE_EXISTING_SECTION': get_string('templates.evidence_existing_section', 'ingesta'),
+        'TEMPLATE_EVIDENCE_UPLOAD_BUTTON': get_string('templates.evidence_upload_button', 'ingesta'),
+        'TEMPLATE_EVIDENCE_TABLE_DATE': get_string('templates.evidence_table_date', 'ingesta'),
+        'TEMPLATE_EVIDENCE_TABLE_NAME': get_string('templates.evidence_table_name', 'ingesta'),
+        'TEMPLATE_EVIDENCE_TABLE_USER': get_string('templates.evidence_table_user', 'ingesta'),
+        'TEMPLATE_EVIDENCE_TABLE_ACTIONS': get_string('templates.evidence_table_actions', 'ingesta'),
+        'TEMPLATE_EVIDENCE_NO_RECORDS': get_string('templates.evidence_no_records', 'ingesta'),
     }
     context.update(get_template_context())
     return render(request, 'ingesta/evidence_list.html', context)

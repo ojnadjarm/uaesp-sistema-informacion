@@ -46,7 +46,8 @@ def file_history_view(request):
             'TEMPLATE_CONFIRM_DELETE': get_string('templates.confirm_delete', 'ingesta'),
             'TEMPLATE_CONFIRM_DELETE_MESSAGE': get_string('templates.confirm_delete_message', 'ingesta'),
             'TEMPLATE_CANCEL': get_string('templates.cancel', 'ingesta'),
-            'TEMPLATE_DELETE': get_string('templates.delete', 'ingesta')
+            'TEMPLATE_DELETE': get_string('templates.delete', 'ingesta'),
+            'TEMPLATE_CONFIRM_FILE_LABEL': get_string('templates.modal_file_label', 'ingesta')
         }
         context.update(get_template_context())
         return render(request, 'ingesta/file_history.html', context)
@@ -245,7 +246,13 @@ def render_upload_form(request, form):
         'TEMPLATE_UPLOAD_TITLE': get_string('templates.upload_title', 'ingesta'),
         'TEMPLATE_FILE_HELP': get_string('templates.file_help', 'ingesta'),
         'TEMPLATE_UPLOAD_BUTTON': get_string('templates.upload_button', 'ingesta'),
-        'TEMPLATE_DOWNLOAD_ERROR_FILE': get_string('errors.download_error_file', 'ingesta')
+        'TEMPLATE_DOWNLOAD_ERROR_FILE': get_string('errors.download_error_file', 'ingesta'),
+        'TEMPLATE_PROCESSING_MODAL_TITLE': get_string('templates.processing_modal_title', 'ingesta'),
+        'TEMPLATE_PROCESSING_SPINNER': get_string('templates.processing_spinner', 'ingesta'),
+        'TEMPLATE_PROCESSING_INITIAL': get_string('templates.processing_initial_message', 'ingesta'),
+        'TEMPLATE_PROCESSING_WARNING': get_string('templates.processing_warning', 'ingesta'),
+        'TEMPLATE_PROCESSING_FILE_TEMPLATE': get_string('templates.processing_file_template', 'ingesta'),
+        'TEMPLATE_PROCESSING_DEFAULT_FILENAME': get_string('templates.processing_default_filename', 'ingesta')
     }
     context.update(get_template_context())
     return render(request, 'ingesta/upload_form.html', context)

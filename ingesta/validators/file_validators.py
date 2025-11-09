@@ -168,7 +168,7 @@ def validar_catalogos_y_generar_log(df, proceso_config):
     
     # Validar que la configuración sea correcta
     if not catalog_mapping:
-        print("Advertencia: No se encontró mapeo de catálogos válido en la configuración")
+        print(get_string('messages.catalog_mapping_warning', 'ingesta'))
         return None, None
     
     error_rows = []
@@ -268,9 +268,13 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         
         # Check if file type matches configuration
         if uploaded_file.name.lower().endswith('.xlsx') and file_type != 'xlsx':
-            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo debe ser de tipo CSV (.csv)")
+            return False, get_string('errors.file_format', 'ingesta').format(
+                error=get_string('errors.file_format_csv', 'ingesta')
+            )
         elif uploaded_file.name.lower().endswith('.csv') and file_type != 'csv':
-            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo debe ser de tipo Excel (.xlsx)")
+            return False, get_string('errors.file_format', 'ingesta').format(
+                error=get_string('errors.file_format_excel', 'ingesta')
+            )
 
         # Read file based on configuration
         if file_type == 'xlsx':
@@ -336,7 +340,9 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         if "out-of-bounds indices" in error_str or "usecols" in error_str:
             return False, get_string('errors.file_structure_mismatch', 'ingesta')
         else:
-            return False, get_string('errors.file_format', 'ingesta').format(error="El archivo no tiene el formato esperado")
+            return False, get_string('errors.file_format', 'ingesta').format(
+                error=get_string('errors.file_format_generic', 'ingesta')
+            )
     except UnicodeDecodeError:
         return False, get_string('errors.file_encoding', 'ingesta')
     except Exception as e:
@@ -346,4 +352,6 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         if "out-of-bounds" in error_str or "usecols" in error_str:
             return False, get_string('errors.file_structure_mismatch', 'ingesta')
         else:
-            return False, get_string('errors.file_unexpected', 'ingesta').format(error="El archivo no cumple con la estructura esperada")
+            return False, get_string('errors.file_unexpected', 'ingesta').format(
+                error=get_string('errors.file_structure_generic', 'ingesta')
+            )

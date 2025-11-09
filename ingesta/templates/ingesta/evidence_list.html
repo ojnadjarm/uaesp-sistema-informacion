@@ -14,7 +14,7 @@
             </div>
             <div>
                 <a href="{% url 'ingesta:file_history' %}" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left me-1"></i> Volver al historial
+                    <i class="bi bi-arrow-left me-1"></i> {{ TEMPLATE_EVIDENCE_BACK_HISTORY }}
                 </a>
             </div>
         </div>
@@ -24,7 +24,7 @@
         <div class="col-lg-6">
             <div class="card shadow-sm mb-4">
                 <div class="card-header">
-                    <span class="fw-bold"><i class="bi bi-plus-square me-2"></i>Subir nuevas evidencias</span>
+                    <span class="fw-bold"><i class="bi bi-plus-square me-2"></i>{{ TEMPLATE_EVIDENCE_UPLOAD_SECTION }}</span>
                 </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
@@ -49,7 +49,7 @@
                         </div>
                         <div>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-upload me-1"></i> Subir
+                                <i class="bi bi-upload me-1"></i> {{ TEMPLATE_EVIDENCE_UPLOAD_BUTTON }}
                             </button>
                         </div>
                     </form>
@@ -59,17 +59,17 @@
         <div class="col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span class="fw-bold"><i class="bi bi-card-checklist me-2"></i>Evidencias existentes</span>
+                    <span class="fw-bold"><i class="bi bi-card-checklist me-2"></i>{{ TEMPLATE_EVIDENCE_EXISTING_SECTION }}</span>
                 </div>
                 <div class="card-body p-0">
                     {% if evidencias %}
                     <table class="table table-hover table-striped mb-0">
                         <thead>
                             <tr>
-                                <th class="ps-4">Fecha</th>
-                                <th>Nombre</th>
-                                <th>Usuario</th>
-                                <th class="pe-4">Acciones</th>
+                                <th class="ps-4">{{ TEMPLATE_EVIDENCE_TABLE_DATE }}</th>
+                                <th>{{ TEMPLATE_EVIDENCE_TABLE_NAME }}</th>
+                                <th>{{ TEMPLATE_EVIDENCE_TABLE_USER }}</th>
+                                <th class="pe-4">{{ TEMPLATE_EVIDENCE_TABLE_ACTIONS }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -93,7 +93,7 @@
                         </tbody>
                     </table>
                     {% else %}
-                    <div class="p-4 text-center text-muted">No hay evidencias registradas aún.</div>
+                    <div class="p-4 text-center text-muted">{{ TEMPLATE_EVIDENCE_NO_RECORDS }}</div>
                     {% endif %}
                 </div>
             </div>

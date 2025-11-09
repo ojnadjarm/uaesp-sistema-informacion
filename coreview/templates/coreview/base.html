@@ -91,7 +91,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit(); return false;">
                             <i class="bi bi-box-arrow-right"></i>
-                            Cerrar Sesión
+                            {{ TEMPLATE_LOGOUT }}
                         </a>
                     </li>
                 </ul>
@@ -111,7 +111,7 @@
             {% endif %}
             <div class="ms-auto">
                 {% if user.is_authenticated %}
-                <span class="text-muted">Hola, {{ user.username }}</span>
+                <span class="text-muted">{{ TEMPLATE_GREETING }}, {{ user.username }}</span>
                 {% endif %}
             </div>
         </div>
