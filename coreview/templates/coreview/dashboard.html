@@ -41,6 +41,8 @@
                                 </div>
                             </a>
                         </div>
+                        {% endif %}
+                        {% if CAN_ACCESS_PAA %}
                         <div class="col-md-3">
                             <a href="#paa" class="text-decoration-none">
                                 <div class="module-tile p-3 h-100">
@@ -244,7 +246,9 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
+    {% if CAN_ACCESS_PAA %}
     <div id="paa" class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -252,10 +256,35 @@
                     <h5 class="card-title mb-0">{{ TEMPLATE_MODULE_PAA }}</h5>
                 </div>
                 <div class="card-body">
-                    <div class="text-center py-5">
-                        <i class="bi bi-calendar-check display-1 text-muted"></i>
-                        <h4 class="mt-3">{{ TEMPLATE_MODULE_COMING_SOON }}</h4>
-                        <p class="text-muted">{{ TEMPLATE_MODULE_COMING_SOON_DESC }}</p>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{% url 'paa:list' %}" class="text-decoration-none">
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-list-ul"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_PAA_LIST }}</div>
+                                </div>
+                            </a>
+                        </div>
+                        {% if CAN_ACCESS_PAA and not IS_MASTER_PAA %}
+                        <div class="col-md-3">
+                            <a href="{% url 'paa:create' %}" class="text-decoration-none">
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-plus-circle"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_PAA_CREATE }}</div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% if CAN_APPROVE_PAA %}
+                        <div class="col-md-3">
+                            <a href="{% url 'paa:approval_list' %}" class="text-decoration-none">
+                                <div class="module-tile p-3 h-100">
+                                    <span class="tile-icon"><i class="bi bi-check-circle"></i></span>
+                                    <div class="tile-title">{{ TEMPLATE_PAA_APPROVALS }}</div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

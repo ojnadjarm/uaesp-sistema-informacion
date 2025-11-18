@@ -55,6 +55,47 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if CAN_ACCESS_PAA %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.app_name == 'paa' %}active{% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#paaSubmenu" aria-expanded="false" aria-controls="paaSubmenu">
+                            <i class="bi bi-calendar-check"></i>
+                            {{ TEMPLATE_PAA_MENU_TITLE }}
+                            <i class="bi bi-chevron-down ms-auto"></i>
+                        </a>
+                        <div class="collapse {% if request.resolver_match.app_name == 'paa' %}show{% endif %}" id="paaSubmenu">
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'paa:list' %}">
+                                        <i class="bi bi-list-ul"></i>
+                                        {{ TEMPLATE_PAA_MENU_LIST }}
+                                    </a>
+                                </li>
+                                {% if CAN_ACCESS_PAA and not IS_MASTER_PAA %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'create' %}active{% endif %}" href="{% url 'paa:create' %}">
+                                        <i class="bi bi-plus-circle"></i>
+                                        {{ TEMPLATE_PAA_MENU_CREATE }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'my_requests' %}active{% endif %}" href="{% url 'paa:my_requests' %}">
+                                        <i class="bi bi-inbox"></i>
+                                        {{ TEMPLATE_PAA_MENU_MY_REQUESTS }}
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if CAN_APPROVE_PAA %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.resolver_match.url_name == 'approval_list' %}active{% endif %}" href="{% url 'paa:approval_list' %}">
+                                        <i class="bi bi-check-circle"></i>
+                                        {{ TEMPLATE_PAA_MENU_APPROVALS }}
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </li>
+                    {% endif %}
                     {% if CAN_MANAGE_CATALOGS %}
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#catalogosSubmenu" aria-expanded="false" aria-controls="catalogosSubmenu">

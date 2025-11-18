@@ -7,11 +7,15 @@ class UserProfile(models.Model):
     ROLE_ADMIN = "admin"
     ROLE_DATA_INGESTOR = "data_ingestor"
     ROLE_REGISTER_USER = "register_user"
+    ROLE_EDITOR_PAA = "editor_paa"
+    ROLE_MASTER_PAA = "master_paa"
 
     ROLE_CHOICES = [
         (ROLE_ADMIN, "Admin"),
         (ROLE_DATA_INGESTOR, "Data Ingestor"),
         (ROLE_REGISTER_USER, "Register User"),
+        (ROLE_EDITOR_PAA, "Editor PAA"),
+        (ROLE_MASTER_PAA, "Master PAA"),
     ]
 
     user = models.OneToOneField(

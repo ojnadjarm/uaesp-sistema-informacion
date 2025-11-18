@@ -1,0 +1,448 @@
+{% extends 'coreview/base.html' %}
+{% load static %}
+
+{% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-1">
+                <i class="bi bi-calendar-check me-2 text-primary"></i>{{ TEMPLATE_TITLE }}
+            </h1>
+            <p class="text-muted mb-0">{{ TEMPLATE_DESCRIPTION }}</p>
+            {% if solicitud %}
+            <p class="text-muted mb-0">
+                <strong>Estado actual:</strong> 
+                {% if solicitud.estado == 'pendiente' %}
+                    <span class="badge bg-warning text-dark">Pendiente</span>
+                {% elif solicitud.estado == 'rechazada' %}
+                    <span class="badge bg-danger">Rechazada</span>
+                {% endif %}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-form me-2"></i>{{ TEMPLATE_FORM_TITLE }}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Subdirección y Códigos UNSPSC -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.subdireccion.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-building me-1"></i>{{ form.subdireccion.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {% if form.subdireccion.field.disabled %}
+                                        <input type="text" class="form-control" value="{{ solicitud.get_subdireccion_display }}" disabled readonly>
+                                        <input type="hidden" name="{{ form.subdireccion.name }}" value="{{ solicitud.subdireccion }}">
+                                    {% else %}
+                                        {{ form.subdireccion }}
+                                    {% endif %}
+                                    {% if form.subdireccion.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.subdireccion.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.subdireccion.field.disabled %}
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle me-1"></i>La subdirección no se puede modificar al editar una solicitud.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.codigos_unspsc.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-hash me-1"></i>{{ form.codigos_unspsc.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.codigos_unspsc }}
+                                    {% if form.codigos_unspsc.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.codigos_unspsc.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.codigos_unspsc.help_text %}
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle me-1"></i>{{ form.codigos_unspsc.help_text }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Descripción -->
+                        <div class="mb-4">
+                            <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-file-text me-1"></i>{{ form.descripcion.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.descripcion }}
+                            {% if form.descripcion.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.descripcion.errors %}
+                                        <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Fechas estimadas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.fecha_estimada_inicio.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-calendar-event me-1"></i>{{ form.fecha_estimada_inicio.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.fecha_estimada_inicio }}
+                                    {% if form.fecha_estimada_inicio.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.fecha_estimada_inicio.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.fecha_estimada_presentacion_ofertas.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-calendar-check me-1"></i>{{ form.fecha_estimada_presentacion_ofertas.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.fecha_estimada_presentacion_ofertas }}
+                                    {% if form.fecha_estimada_presentacion_ofertas.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.fecha_estimada_presentacion_ofertas.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Duración del contrato -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.duracion_contrato_numero.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-clock me-1"></i>{{ form.duracion_contrato_numero.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.duracion_contrato_numero }}
+                                    {% if form.duracion_contrato_numero.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.duracion_contrato_numero.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.duracion_contrato_intervalo.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-calendar-range me-1"></i>{{ form.duracion_contrato_intervalo.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.duracion_contrato_intervalo }}
+                                    {% if form.duracion_contrato_intervalo.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.duracion_contrato_intervalo.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Modalidad y Fuente de recursos -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.modalidad_seleccion.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-list-check me-1"></i>{{ form.modalidad_seleccion.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.modalidad_seleccion }}
+                                    {% if form.modalidad_seleccion.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.modalidad_seleccion.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.fuente_recursos.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-cash-coin me-1"></i>{{ form.fuente_recursos.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.fuente_recursos }}
+                                    {% if form.fuente_recursos.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.fuente_recursos.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Vigencias futuras -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        {{ form.requiere_vigencias_futuras }}
+                                        <label class="form-check-label fw-bold" for="{{ form.requiere_vigencias_futuras.id_for_label }}">
+                                            <i class="bi bi-calendar-plus me-1"></i>{{ form.requiere_vigencias_futuras.label }}
+                                        </label>
+                                        {% if form.requiere_vigencias_futuras.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.requiere_vigencias_futuras.errors %}
+                                                    <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6" id="estado-vigencias-container" style="display: none;">
+                                <div class="mb-4">
+                                    <label for="{{ form.estado_solicitud_vigencias_futuras.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-info-circle me-1"></i>{{ form.estado_solicitud_vigencias_futuras.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.estado_solicitud_vigencias_futuras }}
+                                    {% if form.estado_solicitud_vigencias_futuras.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.estado_solicitud_vigencias_futuras.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Valores estimados -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.valor_total_estimado.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-currency-dollar me-1"></i>{{ form.valor_total_estimado.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.valor_total_estimado }}
+                                        <span class="input-group-text">COP</span>
+                                    </div>
+                                    {% if form.valor_total_estimado.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.valor_total_estimado.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.valor_estimado_vigencia_actual.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-currency-exchange me-1"></i>{{ form.valor_estimado_vigencia_actual.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.valor_estimado_vigencia_actual }}
+                                        <span class="input-group-text">COP</span>
+                                    </div>
+                                    {% if form.valor_estimado_vigencia_actual.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.valor_estimado_vigencia_actual.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Correo responsable -->
+                        <div class="mb-4">
+                            <label for="{{ form.correo_responsable.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-envelope me-1"></i>{{ form.correo_responsable.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.correo_responsable }}
+                            {% if form.correo_responsable.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.correo_responsable.errors %}
+                                        <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Alimentos -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.debe_cumplir_30_porciento_alimentos.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-shop me-1"></i>{{ form.debe_cumplir_30_porciento_alimentos.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.debe_cumplir_30_porciento_alimentos }}
+                                    {% if form.debe_cumplir_30_porciento_alimentos.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.debe_cumplir_30_porciento_alimentos.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.incluye_bienes_servicios_distintos_alimentos.id_for_label }}" class="form-label fw-bold">
+                                        <i class="bi bi-box-seam me-1"></i>{{ form.incluye_bienes_servicios_distintos_alimentos.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.incluye_bienes_servicios_distintos_alimentos }}
+                                    {% if form.incluye_bienes_servicios_distintos_alimentos.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.incluye_bienes_servicios_distintos_alimentos.errors %}
+                                                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Justificación -->
+                        <div class="mb-4">
+                            <label for="{{ form.justificacion.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-file-text me-1"></i>{{ form.justificacion.label }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form.justificacion }}
+                            {% if form.justificacion.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.justificacion.errors %}
+                                        <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <hr class="my-4">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'paa:my_requests' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left me-2"></i>{{ TEMPLATE_BACK }}
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-check-circle me-2"></i>{{ TEMPLATE_SAVE }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar/ocultar campo de estado de vigencias futuras
+    const requiereVigencias = document.getElementById('{{ form.requiere_vigencias_futuras.id_for_label }}');
+    const estadoVigenciasContainer = document.getElementById('estado-vigencias-container');
+    
+    function toggleEstadoVigencias() {
+        if (requiereVigencias && estadoVigenciasContainer) {
+            if (requiereVigencias.checked) {
+                estadoVigenciasContainer.style.display = 'block';
+            } else {
+                estadoVigenciasContainer.style.display = 'none';
+            }
+        }
+    }
+    
+    if (requiereVigencias) {
+        requiereVigencias.addEventListener('change', toggleEstadoVigencias);
+        toggleEstadoVigencias(); // Ejecutar al cargar
+    }
+    
+    // Formateo de moneda
+    function formatCurrency(value) {
+        if (!value) return '';
+        const numericValue = value.toString().replace(/\./g, '');
+        if (numericValue === '') return '';
+        const num = parseInt(numericValue, 10);
+        if (isNaN(num)) return '';
+        return num.toLocaleString('es-CO').replace(/,/g, '.');
+    }
+    
+    function getNumericValue(value) {
+        if (!value) return '';
+        return value.toString().replace(/\./g, '');
+    }
+    
+    const currencyInputs = document.querySelectorAll('.currency-input');
+    currencyInputs.forEach(function(input) {
+        // Formatear al perder el foco
+        input.addEventListener('blur', function() {
+            const numericValue = getNumericValue(input.value);
+            if (numericValue) {
+                input.value = formatCurrency(numericValue);
+            }
+        });
+        
+        // Formatear mientras el usuario escribe
+        input.addEventListener('input', function(e) {
+            const cursorPosition = e.target.selectionStart;
+            const oldValue = e.target.value;
+            const numericValue = getNumericValue(oldValue);
+            const formattedValue = formatCurrency(numericValue);
+            
+            e.target.value = formattedValue;
+            
+            // Ajustar posición del cursor
+            const diff = formattedValue.length - oldValue.length;
+            e.target.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+        });
+        
+        // Guardar el valor numérico en un campo oculto antes de enviar
+        const form = input.closest('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const numericValue = getNumericValue(input.value);
+                input.value = numericValue;
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
+

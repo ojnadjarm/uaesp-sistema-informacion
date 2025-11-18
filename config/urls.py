@@ -22,4 +22,5 @@ urlpatterns = [
     path('ingesta/', include('ingesta.urls', namespace='ingesta')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('reports/', include('reports.urls')),
+    path('paa/', include('paa.urls', namespace='paa')),
 ]

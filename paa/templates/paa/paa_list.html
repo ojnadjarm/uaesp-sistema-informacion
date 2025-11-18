@@ -1,0 +1,255 @@
+{% extends 'coreview/base.html' %}
+{% load static %}
+
+{% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-list-ul me-2 text-primary"></i>{{ TEMPLATE_TITLE }}
+                </h1>
+                <p class="text-muted mb-0">{{ TEMPLATE_DESCRIPTION }}</p>
+            </div>
+            <div>
+                {% if CAN_ACCESS_PAA and not IS_MASTER_PAA %}
+                <a href="{% url 'paa:create' %}" class="btn btn-primary btn-lg px-4">
+                    <i class="bi bi-plus-circle me-2"></i>{{ TEMPLATE_CREATE }}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="GET" class="row g-3 align-items-end">
+                        <div class="col-md-2">
+                            <label for="codigo" class="form-label fw-bold">
+                                <i class="bi bi-hash me-1"></i>{{ TEMPLATE_FILTER_CODE }}
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="codigo" 
+                                   id="codigo" 
+                                   value="{{ codigo_filter }}"
+                                   placeholder="Ej: 001, 002"
+                                   pattern="[0-9]*"
+                                   inputmode="numeric">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="subdireccion" class="form-label fw-bold">
+                                <i class="bi bi-funnel me-1"></i>{{ TEMPLATE_FILTER_SUBDIRECCION }}
+                            </label>
+                            <select class="form-select" name="subdireccion" id="subdireccion">
+                                <option value="">{{ TEMPLATE_FILTER_ALL }}</option>
+                                {% for codigo, nombre in subdirecciones_choices %}
+                                <option value="{{ codigo }}" {% if subdireccion_filter == codigo %}selected{% endif %}>
+                                    {{ nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="fecha_desde" class="form-label fw-bold">
+                                <i class="bi bi-calendar-event me-1"></i>{{ TEMPLATE_FILTER_FECHA_DESDE }}
+                            </label>
+                            <input type="date" 
+                                   class="form-control" 
+                                   name="fecha_desde" 
+                                   id="fecha_desde" 
+                                   value="{{ fecha_desde }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="fecha_hasta" class="form-label fw-bold">
+                                <i class="bi bi-calendar-check me-1"></i>{{ TEMPLATE_FILTER_FECHA_HASTA }}
+                            </label>
+                            <input type="date" 
+                                   class="form-control" 
+                                   name="fecha_hasta" 
+                                   id="fecha_hasta" 
+                                   value="{{ fecha_hasta }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search me-1"></i> Filtrar
+                            </button>
+                        </div>
+                        {% if subdireccion_filter or codigo_filter or fecha_desde or fecha_hasta %}
+                        <div class="col-md-2">
+                            <a href="{% url 'paa:list' %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-x-circle me-1"></i> Limpiar
+                            </a>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Registros -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-table me-2"></i>Registros del Plan Anual de Adquisiciones
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if page_obj %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">{{ TEMPLATE_CODE_LABEL }}</th>
+                                    <th>Subdirección</th>
+                                    <th>{{ TEMPLATE_DESCRIPTION_LABEL }}</th>
+                                    <th>Valor Total Estimado</th>
+                                    <th>Modalidad</th>
+                                    <th class="pe-4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for registro in page_obj %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <strong>{{ registro.codigo }}</strong>
+                                    </td>
+                                    <td>{{ registro.get_subdireccion_display }}</td>
+                                    <td>{{ registro.descripcion|truncatewords:15 }}</td>
+                                    <td>${{ registro.valor_total_estimado|floatformat:0|default:"0" }} COP</td>
+                                    <td>{{ registro.get_modalidad_seleccion_display|truncatewords:5 }}</td>
+                                    <td class="pe-4">
+                                        {% if CAN_ACCESS_PAA and not IS_MASTER_PAA %}
+                                            {% if registro.pk in registros_con_solicitud_pendiente %}
+                                                <button class="btn btn-sm btn-outline-primary" disabled title="{{ TEMPLATE_PENDING_REQUEST }}">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" disabled title="{{ TEMPLATE_PENDING_REQUEST }}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                                <span class="badge bg-warning text-dark ms-2" title="{{ TEMPLATE_PENDING_REQUEST }}">
+                                                    <i class="bi bi-clock-history"></i> Solicitud pendiente
+                                                </span>
+                                            {% else %}
+                                                <a href="{% url 'paa:edit' registro.pk %}" class="btn btn-sm btn-outline-primary" title="Solicitar modificación">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{% url 'paa:delete' registro.pk %}" class="btn btn-sm btn-outline-danger" title="Solicitar eliminación">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted small">No hay acciones disponibles</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    {% if page_obj.has_other_pages %}
+                    <div class="d-flex justify-content-between align-items-center py-3 px-4 border-top">
+                        <div class="text-muted small">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+                        </div>
+                        
+                        <nav aria-label="Paginación">
+                            <ul class="pagination pagination-sm mb-0">
+                                <!-- Primera página -->
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if subdireccion_filter %}&subdireccion={{ subdireccion_filter }}{% endif %}{% if codigo_filter %}&codigo={{ codigo_filter }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}" title="Primera página">
+                                            <i class="bi bi-chevron-double-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if subdireccion_filter %}&subdireccion={{ subdireccion_filter }}{% endif %}{% if codigo_filter %}&codigo={{ codigo_filter }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}" title="Página anterior">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bi bi-chevron-double-left"></i>
+                                        </span>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </span>
+                                    </li>
+                                {% endif %}
+
+                                <!-- Páginas numeradas -->
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link bg-primary border-primary text-white">{{ num }}</span>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if subdireccion_filter %}&subdireccion={{ subdireccion_filter }}{% endif %}{% if codigo_filter %}&codigo={{ codigo_filter }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if subdireccion_filter %}&subdireccion={{ subdireccion_filter }}{% endif %}{% if codigo_filter %}&codigo={{ codigo_filter }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <!-- Última página -->
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if subdireccion_filter %}&subdireccion={{ subdireccion_filter }}{% endif %}{% if codigo_filter %}&codigo={{ codigo_filter }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}" title="Página siguiente">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if subdireccion_filter %}&subdireccion={{ subdireccion_filter }}{% endif %}{% if codigo_filter %}&codigo={{ codigo_filter }}{% endif %}{% if fecha_desde %}&fecha_desde={{ fecha_desde }}{% endif %}{% if fecha_hasta %}&fecha_hasta={{ fecha_hasta }}{% endif %}" title="Última página">
+                                            <i class="bi bi-chevron-double-right"></i>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="bi bi-chevron-double-right"></i>
+                                        </span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                        {{ TEMPLATE_NO_RECORDS }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

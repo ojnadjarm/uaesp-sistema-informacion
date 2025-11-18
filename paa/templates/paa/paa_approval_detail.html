@@ -1,0 +1,201 @@
+{% extends 'coreview/base.html' %}
+{% load static %}
+
+{% block title %}{{ TEMPLATE_TITLE }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-1">
+                <i class="bi bi-file-check me-2 text-primary"></i>{{ TEMPLATE_TITLE }}
+            </h1>
+            <p class="text-muted mb-0">
+                {% if solicitud.tipo_accion == 'crear' %}
+                    Solicitud de creación
+                {% elif solicitud.tipo_accion == 'modificar' %}
+                    Solicitud de modificación
+                {% elif solicitud.tipo_accion == 'eliminar' %}
+                    Solicitud de eliminación
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Información de la Solicitud
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Tipo de acción:</strong></div>
+                        <div class="col-md-9">
+                            {% if solicitud.tipo_accion == 'crear' %}
+                                <span class="badge bg-success">Crear</span>
+                            {% elif solicitud.tipo_accion == 'modificar' %}
+                                <span class="badge bg-warning text-dark">Modificar</span>
+                            {% elif solicitud.tipo_accion == 'eliminar' %}
+                                <span class="badge bg-danger">Eliminar</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Código:</strong></div>
+                        <div class="col-md-9">{{ solicitud.codigo|default:"N/A (se generará al aprobar)" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Solicitante:</strong></div>
+                        <div class="col-md-9">{{ solicitud.usuario_solicitante.username|default:"-" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Fecha de solicitud:</strong></div>
+                        <div class="col-md-9">{% if solicitud.get_fecha_creacion_datetime %}{{ solicitud.get_fecha_creacion_datetime|date:"Y-m-d H:i:s" }}{% else %}-{% endif %}</div>
+                    </div>
+                    {% if registro_original %}
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Registro original:</strong></div>
+                        <div class="col-md-9">
+                            <a href="#" class="text-decoration-none">{{ registro_original.codigo }} - {{ registro_original.descripcion|truncatewords:10 }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if solicitud.tipo_accion == 'modificar' and registro_original %}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Valores Actuales</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Subdirección:</strong> {{ registro_original.get_subdireccion_display }}</p>
+                    <p><strong>Descripción:</strong> {{ registro_original.descripcion }}</p>
+                    <p><strong>Valor Total:</strong> ${{ registro_original.valor_total_estimado|floatformat:0|default:"0" }} COP</p>
+                    <p><strong>Modalidad:</strong> {{ registro_original.get_modalidad_seleccion_display }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Valores Solicitados</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Subdirección:</strong> {{ solicitud.get_subdireccion_display }}</p>
+                    <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
+                    <p><strong>Valor Total:</strong> ${{ solicitud.valor_total_estimado|floatformat:0|default:"0" }} COP</p>
+                    <p><strong>Modalidad:</strong> {{ solicitud.get_modalidad_seleccion_display }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-file-text me-2"></i>Datos Completos de la Solicitud
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Subdirección:</strong><br>
+                            {{ solicitud.get_subdireccion_display }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Códigos UNSPSC:</strong><br>
+                            {{ solicitud.codigos_unspsc }}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <strong>Descripción:</strong><br>
+                            {{ solicitud.descripcion }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha estimada inicio:</strong><br>
+                            {{ solicitud.fecha_estimada_inicio }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha estimada presentación ofertas:</strong><br>
+                            {{ solicitud.fecha_estimada_presentacion_ofertas }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Duración contrato:</strong><br>
+                            {{ solicitud.duracion_contrato_numero }} {{ solicitud.get_duracion_contrato_intervalo_display }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Modalidad de selección:</strong><br>
+                            {{ solicitud.get_modalidad_seleccion_display }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fuente de recursos:</strong><br>
+                            {{ solicitud.get_fuente_recursos_display }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Valor total estimado:</strong><br>
+                            ${{ solicitud.valor_total_estimado|floatformat:0|default:"0" }} COP
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Valor vigencia actual:</strong><br>
+                            ${{ solicitud.valor_estimado_vigencia_actual|floatformat:0|default:"0" }} COP
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Correo responsable:</strong><br>
+                            {{ solicitud.correo_responsable }}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <strong>Justificación:</strong><br>
+                            {{ solicitud.justificacion }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-check-circle me-2"></i>Decisión
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="comentarios" class="form-label">{{ TEMPLATE_COMMENTS }}</label>
+                            <textarea class="form-control" id="comentarios" name="comentarios" rows="3" placeholder="Opcional: Agregue comentarios sobre su decisión"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'paa:approval_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left me-2"></i>{{ TEMPLATE_BACK }}
+                            </a>
+                            <div>
+                                <button type="submit" name="accion" value="rechazar" class="btn btn-danger btn-lg px-4 me-2">
+                                    <i class="bi bi-x-circle me-2"></i>{{ TEMPLATE_REJECT }}
+                                </button>
+                                <button type="submit" name="accion" value="aprobar" class="btn btn-success btn-lg px-5">
+                                    <i class="bi bi-check-circle me-2"></i>{{ TEMPLATE_APPROVE }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

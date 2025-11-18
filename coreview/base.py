@@ -32,6 +32,11 @@ def get_template_context():
         'TEMPLATE_CATALOGOS_ASE': get_string('catalogos.ase.title', 'ingesta'),
         'TEMPLATE_CATALOGOS_SERVICIO': get_string('catalogos.servicio.title', 'ingesta'),
         'TEMPLATE_CATALOGOS_ZONA_DESCARGA': get_string('catalogos.zona_descarga.title', 'ingesta'),
+        'TEMPLATE_PAA_MENU_TITLE': get_string('menu.title', 'paa'),
+        'TEMPLATE_PAA_MENU_LIST': get_string('menu.list', 'paa'),
+        'TEMPLATE_PAA_MENU_CREATE': get_string('menu.create', 'paa'),
+        'TEMPLATE_PAA_MENU_APPROVALS': get_string('menu.approvals', 'paa'),
+        'TEMPLATE_PAA_MENU_MY_REQUESTS': get_string('menu.my_requests', 'paa'),
         'STATIC_VERSION': STATIC_VERSION,
     }
 

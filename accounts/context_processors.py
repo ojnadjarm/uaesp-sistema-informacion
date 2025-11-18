@@ -3,7 +3,9 @@ from .utils import (
     get_user_role,
     user_allowed_subsecretarias,
     user_can_access_custom_reports,
+    user_can_access_paa,
     user_can_access_reports,
+    user_can_approve_paa,
     user_can_manage_catalogs,
     user_can_upload_files,
     user_can_view_ingesta_history,
@@ -19,6 +21,8 @@ def permissions(request):
     can_manage_catalogs = user_can_manage_catalogs(user)
     can_access_reports = user_can_access_reports(user)
     can_access_custom_reports = user_can_access_custom_reports(user)
+    can_access_paa = user_can_access_paa(user)
+    can_approve_paa = user_can_approve_paa(user)
 
     allowed_subsecretarias = user_allowed_subsecretarias(user) if user else set()
     if allowed_subsecretarias is None:
@@ -31,6 +35,8 @@ def permissions(request):
         "IS_ADMIN": role == UserProfile.ROLE_ADMIN,
         "IS_DATA_INGESTOR": role == UserProfile.ROLE_DATA_INGESTOR,
         "IS_REGISTER_USER": role == UserProfile.ROLE_REGISTER_USER,
+        "IS_EDITOR_PAA": role == UserProfile.ROLE_EDITOR_PAA,
+        "IS_MASTER_PAA": role == UserProfile.ROLE_MASTER_PAA,
         "ALLOWED_SUBSECRETARIAS": allowed_serialized,
         "CAN_UPLOAD_FILES": can_upload,
         "CAN_VIEW_INGESTA_HISTORY": can_view_history,
@@ -38,5 +44,7 @@ def permissions(request):
         "CAN_MANAGE_CATALOGS": can_manage_catalogs,
         "CAN_ACCESS_REPORTS": can_access_reports,
         "CAN_ACCESS_CUSTOM_REPORTS": can_access_custom_reports,
+        "CAN_ACCESS_PAA": can_access_paa,
+        "CAN_APPROVE_PAA": can_approve_paa,
     }
 

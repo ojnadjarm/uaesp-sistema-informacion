@@ -1,0 +1,76 @@
+{
+    "paa": {
+        "form": {
+            "create_title": "Crear Solicitud PAA",
+            "create_description": "Complete el formulario para crear una solicitud de nuevo registro del Plan Anual de Adquisiciones",
+            "edit_title": "Solicitar Modificación PAA",
+            "edit_description": "Complete el formulario para solicitar la modificación del registro del Plan Anual de Adquisiciones",
+            "delete_title": "Solicitar Eliminación PAA",
+            "delete_confirm": "¿Está seguro de que desea solicitar la eliminación de este registro? La solicitud será enviada para aprobación.",
+            "form_title": "Formulario de Plan Anual de Adquisiciones",
+            "code_label": "Código",
+            "description_label": "Descripción",
+            "back": "Volver",
+            "save": "Enviar Solicitud",
+            "delete": "Eliminar",
+            "cancel": "Cancelar"
+        },
+        "success": {
+            "created": "Registro PAA creado exitosamente",
+            "updated": "Registro PAA actualizado exitosamente",
+            "deleted": "Registro PAA eliminado exitosamente",
+            "request_created": "Solicitud enviada exitosamente. Será revisada por el administrador.",
+            "request_updated": "Solicitud actualizada exitosamente",
+            "request_deleted": "Solicitud eliminada exitosamente"
+        },
+        "errors": {
+            "record_deleted": "Este registro ha sido eliminado y no puede ser editado"
+        },
+        "approval": {
+            "list_title": "Solicitudes Pendientes de Aprobación",
+            "dashboard_title": "Aprobaciones",
+            "list_description": "Revise y apruebe o rechace las solicitudes de cambios al Plan Anual de Adquisiciones",
+            "detail_title": "Revisar Solicitud",
+            "approve": "Aprobar",
+            "reject": "Rechazar",
+            "comments": "Comentarios",
+            "approved": "Solicitud aprobada exitosamente",
+            "rejected": "Solicitud rechazada",
+            "already_processed": "Esta solicitud ya ha sido procesada"
+        },
+        "list": {
+            "title": "Lista de Plan Anual de Adquisiciones",
+            "description": "Visualice y gestione los registros del Plan Anual de Adquisiciones",
+            "filter_subdireccion": "Filtrar por Subdirección",
+            "filter_code": "Filtrar por Código (número)",
+            "filter_fecha_desde": "Fecha desde",
+            "filter_fecha_hasta": "Fecha hasta",
+            "filter_all": "Todas las Subdirecciones",
+            "no_records": "No hay registros disponibles",
+            "create": "Solicitudes",
+            "pending_request": "Este registro tiene una solicitud pendiente de aprobación. No se pueden realizar acciones hasta que se resuelva."
+        },
+        "menu": {
+            "title": "Plan Anual de Adquisiciones",
+            "list": "Lista",
+            "create": "Crear Solicitud",
+            "approvals": "Aprobaciones",
+            "my_requests": "Mis Solicitudes"
+        },
+        "my_requests": {
+            "title": "Mis Solicitudes",
+            "description": "Visualice el estado de sus solicitudes del Plan Anual de Adquisiciones",
+            "filter_estado": "Filtrar por Estado",
+            "filter_all": "Todos los Estados",
+            "no_records": "No tiene solicitudes registradas",
+            "estado_pendiente": "Pendiente",
+            "estado_aprobada": "Aprobada",
+            "estado_rechazada": "Rechazada",
+            "edit_title": "Editar Solicitud",
+            "edit_description": "Modifique los datos de su solicitud",
+            "delete_title": "Eliminar Solicitud",
+            "delete_confirm": "¿Está seguro de que desea eliminar esta solicitud? Esta acción no se puede deshacer."
+        }
+    }
+}
+

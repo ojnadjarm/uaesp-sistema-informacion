@@ -108,6 +108,20 @@ def user_can_manage_catalogs(user) -> bool:
     return user_has_role(user, {UserProfile.ROLE_ADMIN})
 
 
+def user_can_access_paa(user) -> bool:
+    """Puede acceder al módulo PAA si es admin, editor_paa o master_paa."""
+    if not getattr(user, "is_authenticated", False):
+        return False
+    return user_has_role(user, {UserProfile.ROLE_ADMIN, UserProfile.ROLE_EDITOR_PAA, UserProfile.ROLE_MASTER_PAA})
+
+
+def user_can_approve_paa(user) -> bool:
+    """Puede aprobar solicitudes PAA si es admin o master_paa."""
+    if not getattr(user, "is_authenticated", False):
+        return False
+    return user_has_role(user, {UserProfile.ROLE_ADMIN, UserProfile.ROLE_MASTER_PAA})
+
+
 def filter_queryset_by_subsecretarias(queryset, user, field_name: str):
     """
     Filtra un queryset por las subsecretarías permitidas del usuario.
