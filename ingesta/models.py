@@ -1,6 +1,6 @@
 """
-This module is maintained for backward compatibility.
-All models have been moved to their respective modules in the models directory.
+Este módulo se mantiene por compatibilidad con versiones anteriores.
+Todos los modelos se han movido a sus respectivos módulos en el directorio de modelos.
 """
 
 from .models import (

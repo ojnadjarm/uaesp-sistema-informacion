@@ -5,12 +5,12 @@ from django.http import HttpResponse, HttpResponseForbidden
 from globalfunctions.string_manager import get_string
 import time
 
-# Cache-busting version for static assets (changes on server restart)
+# Versión para invalidar caché de activos estáticos (cambia al reiniciar el servidor)
 STATIC_VERSION = str(int(time.time()))
 
 def get_template_context():
     """
-    Returns common template context variables.
+    Retorna variables de contexto comunes para las plantillas.
     """
     return {
         'TEMPLATE_TITLE': get_string('templates.title', 'ingesta'),
@@ -42,7 +42,7 @@ def get_template_context():
 
 def handle_error(request, error_message, template_name, context=None):
     """
-    Handles errors consistently across views.
+    Maneja los errores de manera consistente a través de las vistas.
     """
     messages.error(request, error_message)
     if context is None:

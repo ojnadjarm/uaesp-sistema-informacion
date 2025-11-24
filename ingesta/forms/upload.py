@@ -4,7 +4,7 @@ import os
 from django import forms
 from globalfunctions.string_manager import get_string
 
-# Load configuration from JSON files
+# Cargar configuración desde archivos JSON
 def load_process_config():
     config = {}
     base_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'file_structure')
@@ -27,7 +27,7 @@ def load_process_config():
 
 PROCESO_DATA = load_process_config()
 
-# Generate grouped choices for Process Types
+# Generar opciones agrupadas para Tipos de Proceso
 def get_grouped_choices(allowed_subsecretarias=None):
     choices = [('', get_string('forms.select_default', 'ingesta'))]
     for sub_key, sub_data in PROCESO_DATA.items():

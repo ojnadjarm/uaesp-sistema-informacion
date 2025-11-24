@@ -11,7 +11,7 @@ from ingesta.validators.catalog_validators import CatalogValidator
 
 def transform_value(value, transform_config):
     """
-    Transforms a value according to the configuration to match database format.
+    Transforma un valor según la configuración para coincidir con el formato de la base de datos.
     """
     if not transform_config:
         return value
@@ -22,13 +22,13 @@ def transform_value(value, transform_config):
     if function_name == 'transform_date':
         try:
             if isinstance(value, str):
-                # Try to parse the date string
+                # Intentar analizar la cadena de fecha
                 try:
-                    # First try to parse as datetime
+                    # Primero intentar analizar como datetime
                     dt = pd.to_datetime(value)
                     return dt.strftime('%Y-%m-%d')
                 except:
-                    # If that fails, try common formats
+                    # Si falla, intentar formatos comunes
                     for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%m/%d/%Y', '%d-%m-%Y', '%m-%d-%Y']:
                         try:
                             return datetime.strptime(value, fmt).strftime('%Y-%m-%d')
@@ -42,7 +42,7 @@ def transform_value(value, transform_config):
     elif function_name == 'transform_integer':
         try:
             if isinstance(value, str):
-                # Remove any non-numeric characters except decimal point
+                # Eliminar cualquier carácter no numérico excepto el punto decimal
                 cleaned = ''.join(c for c in value if c.isdigit() or c == '.')
                 return int(float(cleaned))
             return int(value)
@@ -59,27 +59,27 @@ def transform_value(value, transform_config):
 
 def validar_registros_existentes(df, proceso_config):
     """
-    Validates if any records already exist in the database by checking just one record.
-    Since files come from interventoria and cover full months, checking one record is sufficient.
-    Returns (bool, str) tuple: (is_valid, error_message)
+    Valida si algún registro ya existe en la base de datos verificando solo un registro.
+    Dado que los archivos provienen de interventoría y cubren meses completos, verificar un registro es suficiente.
+    Retorna una tupla (bool, str): (es_valido, mensaje_error)
     """
-    # Get table name from config
+    # Obtener nombre de tabla de la configuración
     table_name = proceso_config.get('table_name')
     if not table_name:
         return True, None
 
-    # Get model class from table name
+    # Obtener clase del modelo desde el nombre de la tabla
     try:
         model = apps.get_model('ingesta', table_name)
     except LookupError:
         return True, None
 
-    # Get validation fields from config
+    # Obtener campos de validación de la configuración
     validation_fields = proceso_config.get('validation', [])
     if not validation_fields:
         return True, None
 
-    # Transform values according to configuration for the first row only
+    # Transformar valores según la configuración solo para la primera fila
     if df.empty:
         return True, None
     
@@ -94,7 +94,7 @@ def validar_registros_existentes(df, proceso_config):
         if field_name in first_row and pd.notna(first_row[field_name]):
             value = first_row[field_name]
             
-            # Apply transformation based on field type if no specific transform is provided
+            # Aplicar transformación basada en el tipo de campo si no se proporciona una transformación específica
             if not transform_config and field_type:
                 if field_type == 'date':
                     transform_config = {'function': 'transform_date'}
@@ -106,7 +106,7 @@ def validar_registros_existentes(df, proceso_config):
             
             transformed_row[field_name] = value
 
-    # Check if this combination of fields already exists in the database
+    # Verificar si esta combinación de campos ya existe en la base de datos
     query = Q()
     for field_config in validation_fields:
         field_name = field_config['field']
@@ -115,7 +115,7 @@ def validar_registros_existentes(df, proceso_config):
         if field_name in transformed_row:
             query &= Q(**{db_field: transformed_row[field_name]})
 
-    # If we have a valid query and records exist, return False
+    # Si tenemos una consulta válida y existen registros, retornar False
     if query and model.objects.filter(query).exists():
         return False, get_string('errors.file_has_existing_records', 'ingesta')
 
@@ -138,7 +138,7 @@ def get_catalog_error_message(field, value, error_string_key):
 def validar_catalogos_y_generar_log(df, proceso_config):
     """
     Valida los catálogos en el archivo y genera un DataFrame con los errores encontrados.
-    Returns (error_message, error_dataframe) tuple.
+    Retorna una tupla (mensaje_error, dataframe_error).
     """
     from ingesta.models import Concesion, ASE, ZonaDescarga
     
@@ -248,7 +248,7 @@ def validar_catalogos_y_generar_log(df, proceso_config):
     return None, None
 
 def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
-    # Get process configuration from PROCESO_DATA
+    # Obtener configuración del proceso de PROCESO_DATA
     proceso_config = PROCESO_DATA.get(subsecretaria, {}).get('procesos', {}).get(tipo_proceso, {})
 
     if not proceso_config:
@@ -266,7 +266,7 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     try:
         uploaded_file.seek(0)
         
-        # Check if file type matches configuration
+        # Verificar si el tipo de archivo coincide con la configuración
         if uploaded_file.name.lower().endswith('.xlsx') and file_type != 'xlsx':
             return False, get_string('errors.file_format', 'ingesta').format(
                 error=get_string('errors.file_format_csv', 'ingesta')
@@ -276,16 +276,16 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
                 error=get_string('errors.file_format_excel', 'ingesta')
             )
 
-        # Read file based on configuration
+        # Leer archivo basado en la configuración
         if file_type == 'xlsx':
-            # Read XLSX file with configured start row and columns
+            # Leer archivo XLSX con fila de inicio y columnas configuradas
             df = pd.read_excel(
                 uploaded_file,
-                header=file_start_row - 1,  # Convert to 0-based index
+                header=file_start_row - 1,  # Convertir a índice basado en 0
                 usecols=f"{file_start_col}:{file_end_col}"
             )
         else:
-            # For CSV files, keep existing logic
+            # Para archivos CSV, mantener la lógica existente
             df = pd.read_csv(io.BytesIO(uploaded_file.read()), delimiter=';', dtype=str, keep_default_na=False)
         
         uploaded_file.seek(0)
@@ -319,12 +319,12 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
                 )
             return False, msg_error
 
-        # Validate if any records already exist
+        # Validar si algún registro ya existe
         is_valid, error_msg = validar_registros_existentes(df, proceso_config)
         if not is_valid:
             return False, error_msg
 
-        # Validate catalog values and generate error report
+        # Validar valores de catálogos y generar reporte de errores
         catalog_errors, error_df = validar_catalogos_y_generar_log(df, proceso_config)
 
         if catalog_errors:
@@ -335,7 +335,7 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
     except pd.errors.EmptyDataError:
         return False, get_string('errors.file_empty', 'ingesta')
     except pd.errors.ParserError as e:
-        # Check for specific column-related errors
+        # Verificar errores específicos relacionados con columnas
         error_str = str(e)
         if "out-of-bounds indices" in error_str or "usecols" in error_str:
             return False, get_string('errors.file_structure_mismatch', 'ingesta')
@@ -347,7 +347,7 @@ def validar_estructura_csv(uploaded_file, subsecretaria, tipo_proceso):
         return False, get_string('errors.file_encoding', 'ingesta')
     except Exception as e:
         print(get_string('messages.general_error', 'ingesta').format(error=e))
-        # Provide a more user-friendly error message
+        # Proporcionar un mensaje de error más amigable para el usuario
         error_str = str(e)
         if "out-of-bounds" in error_str or "usecols" in error_str:
             return False, get_string('errors.file_structure_mismatch', 'ingesta')

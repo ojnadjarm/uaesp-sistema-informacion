@@ -1,6 +1,6 @@
 """
-This module is maintained for backward compatibility.
-All views have been moved to their respective modules in the views directory.
+Este módulo se mantiene por compatibilidad con versiones anteriores.
+Todas las vistas se han movido a sus respectivos módulos en el directorio de vistas.
 """
 
 from .views import (

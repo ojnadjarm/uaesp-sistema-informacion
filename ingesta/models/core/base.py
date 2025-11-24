@@ -6,7 +6,7 @@ def get_current_timestamp():
 
 class TimeStampedModel(models.Model):
     """
-    Abstract base model that provides timestamp fields.
+    Modelo base abstracto que proporciona campos de marca de tiempo.
     """
     fecha_creacion = models.BigIntegerField(default=get_current_timestamp)
     fecha_actualizacion = models.BigIntegerField(default=get_current_timestamp)
@@ -20,7 +20,7 @@ class TimeStampedModel(models.Model):
 
 class EstadoModel(models.Model):
     """
-    Abstract base model that provides state management.
+    Modelo base abstracto que proporciona gestión de estado.
     """
     ESTADOS = (
         ('RECIBIDO', 'Recibido en Django'),

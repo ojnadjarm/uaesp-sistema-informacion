@@ -8,7 +8,7 @@ class MultiFileInput(forms.ClearableFileInput):
 
 class MultiFileField(forms.FileField):
     def to_python(self, data):
-        # Accept a list/tuple from the widget and pick the first file to satisfy FileField
+        # Aceptar una lista/tupla del widget y elegir el primer archivo para satisfacer FileField
         if isinstance(data, (list, tuple)):
             if not data:
                 return None
@@ -37,7 +37,7 @@ class EvidenceUploadForm(forms.Form):
         for f in files:
             if f.size and f.size > self.MAX_FILE_SIZE:
                 raise forms.ValidationError(f"Archivo '{f.name}' excede el límite de 10MB")
-        # Return first file to satisfy FileField, view will read all from request.FILES
+        # Retornar el primer archivo para satisfacer FileField, la vista leerá todos desde request.FILES
         return files[0]
 
 

@@ -33,14 +33,14 @@ class UserProfile(models.Model):
         blank=True,
         default=list,
         help_text=(
-            "Identifiers de subsecretaría/proceso permitidos para carga de datos. "
+            "Identificadores de subsecretaría/proceso permitidos para carga de datos. "
             "Dejar vacío para permitir todos (solo administradores)."
         ),
     )
 
     class Meta:
-        verbose_name = "User Profile"
-        verbose_name_plural = "User Profiles"
+        verbose_name = "Perfil de Usuario"
+        verbose_name_plural = "Perfiles de Usuario"
 
     def __str__(self):
         return f"{self.user.username} ({self.role})"
